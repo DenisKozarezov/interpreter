@@ -12,7 +12,7 @@ type lexer interface {
 type Parser struct {
 	lexer             lexer
 	errors            []error
-	statementsParsers map[tokens.TokenType]StatementParser
+	statementsParsers map[tokens.TokenType]statementParser
 
 	currentToken tokens.Token
 	peekToken    tokens.Token

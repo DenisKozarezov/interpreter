@@ -6,10 +6,10 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
-type StatementParser = func() ast.Statement
+type statementParser = func() ast.Statement
 
 func (p *Parser) initStatementParsers() {
-	p.statementsParsers = map[tokens.TokenType]StatementParser{
+	p.statementsParsers = map[tokens.TokenType]statementParser{
 		tokens.LET:    p.parseLetStatement,
 		tokens.RETURN: p.parseReturnStatement,
 	}
