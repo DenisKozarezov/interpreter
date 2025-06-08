@@ -26,8 +26,8 @@ let foobar = 838383;
 	program := p.Parse()
 
 	// 3. Assert
-	require.Len(t, program.Statements, 3)
 	require.Len(t, p.Errors(), 0)
+	require.Len(t, program.Statements, 3)
 
 	for i, tt := range []struct {
 		name               string

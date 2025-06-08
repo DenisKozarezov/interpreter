@@ -29,8 +29,8 @@ return add(x, x);
 	program := p.Parse()
 
 	// 3. Assert
-	require.Len(t, program.Statements, 5)
 	require.Zero(t, p.Errors())
+	require.Len(t, program.Statements, 5)
 
 	for i, tt := range []struct {
 		name string

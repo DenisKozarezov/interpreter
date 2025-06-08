@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"interpreter/internal/ast"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
@@ -73,7 +74,7 @@ func (p *Parser) expectToken(tokenType tokens.TokenType) bool {
 		p.nextToken()
 		return true
 	} else {
-		p.appendTokenTypeError(tokenType)
+		p.appendParseError(fmt.Sprintf("expected token type [%d] but got [%d]", tokenType, p.peekToken.Type))
 		return false
 	}
 }

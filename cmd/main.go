@@ -12,6 +12,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
 	}
+	defer func() {
+		_ = fileReader.Close()
+	}()
 
 	log.Println("parsing the file...")
 
