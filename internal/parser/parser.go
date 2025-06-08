@@ -27,8 +27,6 @@ func NewParser(lexer lexer) *Parser {
 	parser.initStatementParsers()
 	parser.initPrefixParsers()
 	parser.initInfixParsers()
-	parser.nextToken()
-	parser.nextToken()
 	return &parser
 }
 
@@ -38,6 +36,9 @@ func (p *Parser) Errors() []error {
 
 func (p *Parser) Parse() *ast.Program {
 	program := ast.Program{Statements: make([]statements.Statement, 0)}
+
+	p.nextToken()
+	p.nextToken()
 
 	for !p.currentTokenIs(tokens.EOF) {
 		if statement := p.parseStatement(); statement != nil {

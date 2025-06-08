@@ -1,24 +1,31 @@
 package lexer
 
 import (
+	"bytes"
 	"interpreter/internal/lexer/tokens"
+	"io"
 )
 
 type Symbol = rune
 
 const NULL Symbol = 0
 
+type Reader interface {
+	io.ReaderAt
+}
+
 type Lexer struct {
-	source          string
-	currentPosition int
-	nextPosition    int
+	reader Reader
+
+	currentPosition int64
+	nextPosition    int64
 	currentSymbol   Symbol
 }
 
-func NewLexer(source string) *Lexer {
-	lexer := &Lexer{source: source, currentSymbol: NULL}
-	lexer.readSymbol()
-	return lexer
+func NewLexer(reader Reader) *Lexer {
+	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0}
+	l.readSymbol()
+	return l
 }
 
 func (l *Lexer) NextToken() tokens.Token {
@@ -67,11 +74,14 @@ func (l *Lexer) parseCustomToken(literal string) tokens.Token {
 }
 
 func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
-	startPosition := l.currentPosition
+	var buffer bytes.Buffer
+
 	for fn(l.currentSymbol) {
+		buffer.WriteRune(l.currentSymbol)
 		l.readSymbol()
 	}
-	return l.source[startPosition:l.currentPosition]
+
+	return buffer.String()
 }
 
 func (l *Lexer) skipWhitespace() {
@@ -87,9 +97,11 @@ func (l *Lexer) readSymbol() {
 }
 
 func (l *Lexer) peekSymbol() Symbol {
-	if l.nextPosition >= len(l.source) {
+	bytes := make([]byte, 1)
+
+	if _, err := l.reader.ReadAt(bytes, l.nextPosition); err == io.EOF {
 		return NULL
-	} else {
-		return Symbol(l.source[l.nextPosition])
 	}
+
+	return Symbol(bytes[0])
 }

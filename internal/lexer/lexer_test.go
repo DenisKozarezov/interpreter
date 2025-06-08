@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,53 +12,53 @@ func TestReadSymbol(t *testing.T) {
 	for _, tt := range []struct {
 		name           string
 		source         string
-		index          int
+		index          int64
 		expectedSymbol Symbol
 	}{
 		{
 			name:           "empty source",
 			source:         "",
-			index:          1,
+			index:          0,
 			expectedSymbol: NULL,
 		},
 		{
 			name:           "source with 1 symbol",
 			source:         "A",
-			index:          1,
+			index:          0,
 			expectedSymbol: 'A',
 		},
 		{
 			name:           "source with some symbols",
 			source:         "ABCD",
-			index:          2,
+			index:          1,
 			expectedSymbol: 'B',
 		},
 		{
 			name:           "last symbol",
 			source:         "ABCD",
-			index:          4,
+			index:          3,
 			expectedSymbol: 'D',
 		},
 		{
 			name:           "out of range",
 			source:         "ABCD",
-			index:          5,
+			index:          4,
 			expectedSymbol: NULL,
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			// 1. Arrange
-			lexer := Lexer{source: tt.source}
+			l := NewLexer(strings.NewReader(tt.source))
 
 			// 2. Act
 			for range tt.index {
-				lexer.readSymbol()
+				l.readSymbol()
 			}
 
 			// 3. Assert
-			require.Equal(t, tt.expectedSymbol, lexer.currentSymbol, "current symbol should be equal")
-			require.Equal(t, tt.index-1, lexer.currentPosition, "current position should equal")
-			require.Equal(t, tt.index, lexer.nextPosition, "next position should equal")
+			require.Equal(t, tt.expectedSymbol, l.currentSymbol, "current symbol should be equal")
+			require.Equal(t, tt.index, l.currentPosition, "current position should equal")
+			require.Equal(t, tt.index+1, l.nextPosition, "next position should equal")
 		})
 	}
 }
@@ -175,11 +176,11 @@ if (5 < 10) {
 	}
 
 	// 1. Arrange
-	lexer := NewLexer(source)
+	l := NewLexer(strings.NewReader(source))
 
 	for _, tt := range tests {
 		// 2. Act
-		got := lexer.NextToken()
+		got := l.NextToken()
 
 		// 3. Assert
 		require.Equal(t, tt.expectedType, got.Type, "token type should be equal")

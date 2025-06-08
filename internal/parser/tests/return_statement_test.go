@@ -2,11 +2,12 @@ package tests
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"interpreter/internal/ast/statements"
-	lex "interpreter/internal/lexer"
+	"interpreter/internal/lexer"
 	"interpreter/internal/lexer/tokens"
 	"interpreter/internal/parser"
 )
@@ -21,7 +22,7 @@ return add(x, x);
 `
 
 	// 1. Arrange
-	l := lex.NewLexer(source)
+	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
 
 	// 2. Act

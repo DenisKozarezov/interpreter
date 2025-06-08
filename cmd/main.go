@@ -1,31 +1,26 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-
 	"interpreter/internal/lexer"
-	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/parser"
+	"log"
+	"os"
 )
 
-const PROMPT = ">> "
-
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for {
-		fmt.Print(PROMPT)
-		scanned := scanner.Scan()
-		if !scanned {
-			return
-		}
-
-		line := scanner.Text()
-		lexer := lexer.NewLexer(line)
-
-		for token := lexer.NextToken(); token.Type != tokens.EOF; token = lexer.NextToken() {
-			fmt.Printf("%+v\n", token)
-		}
+	fileReader, err := os.Open("cmd/someFile.txt")
+	if err != nil {
+		log.Fatalf("failed to open file: %s", err)
 	}
+
+	log.Println("parsing the file...")
+
+	l := lexer.NewLexer(fileReader)
+	p := parser.NewParser(l)
+	program := p.Parse()
+
+	for i, stmt := range program.Statements {
+		log.Printf("[%d]: %s", i, stmt.String())
+	}
+	log.Println("parsing completed!")
 }

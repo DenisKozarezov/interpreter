@@ -5,13 +5,14 @@ import (
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
+	"strings"
 	"testing"
 )
 
 func TestIdentifierExpression(t *testing.T) {
 	source := `foobar;`
 
-	l := lexer.NewLexer(source)
+	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
 	program := p.Parse()
 
