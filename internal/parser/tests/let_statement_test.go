@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/statements"
 	lex "interpreter/internal/lexer"
 	"interpreter/internal/lexer/tokens"
@@ -48,7 +47,7 @@ let = 15;
 	}
 }
 
-func checkLetStatement(s ast.Statement, expectedIdentifier string) (bool, error) {
+func checkLetStatement(s statements.Statement, expectedIdentifier string) (bool, error) {
 	tokenType := tokens.LookupIdentifierType(s.Literal())
 	if tokenType != tokens.LET {
 		return false, fmt.Errorf("expected let literal, got %s [%d]", s.Literal(), tokenType)

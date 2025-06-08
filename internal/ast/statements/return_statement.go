@@ -1,23 +1,30 @@
 package statements
 
 import (
-	"interpreter/internal/ast"
+	"bytes"
 	"interpreter/internal/lexer/tokens"
 )
 
 type ReturnStatement struct {
 	Token tokens.Token
-	Value ast.Expression
+	Value Expression
 }
 
-func (l *ReturnStatement) Literal() string {
-	return l.Token.Literal
+func (s *ReturnStatement) Literal() string {
+	return s.Token.Literal
 }
 
-func (l *ReturnStatement) String() string {
-	return l.Token.Literal
+func (s *ReturnStatement) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(s.Literal() + " ")
+
+	if s.Value != nil {
+		buffer.WriteString(s.Value.String())
+	}
+	buffer.WriteString(";")
+	return buffer.String()
 }
 
-func (l *ReturnStatement) statementNode() {
+func (s *ReturnStatement) statementNode() {
 
 }

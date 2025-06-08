@@ -1,21 +1,24 @@
 package parser
 
 import (
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
-type statementParser = func() ast.Statement
+type (
+	statementParserFn = func() statements.Statement
+	prefixParserFn    = func() statements.Statement
+	infixParserFn     = func(expression statements.Expression) statements.Statement
+)
 
 func (p *Parser) initStatementParsers() {
-	p.statementsParsers = map[tokens.TokenType]statementParser{
+	p.statementsParsersFns = map[tokens.TokenType]statementParserFn{
 		tokens.LET:    p.parseLetStatement,
 		tokens.RETURN: p.parseReturnStatement,
 	}
 }
 
-func (p *Parser) parseLetStatement() ast.Statement {
+func (p *Parser) parseLetStatement() statements.Statement {
 	statement := statements.LetStatement{Token: p.currentToken}
 
 	if !p.expectToken(tokens.IDENTIFIER) {
@@ -33,7 +36,7 @@ func (p *Parser) parseLetStatement() ast.Statement {
 	return &statement
 }
 
-func (p *Parser) parseReturnStatement() ast.Statement {
+func (p *Parser) parseReturnStatement() statements.Statement {
 	statement := statements.ReturnStatement{Token: p.currentToken}
 
 	p.nextToken()

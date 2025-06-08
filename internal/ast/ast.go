@@ -1,22 +1,12 @@
 package ast
 
-import "fmt"
-
-type Node interface {
-	fmt.Stringer
-	Literal() string
-}
-
-type Statement interface {
-	Node
-}
-
-type Expression interface {
-	Node
-}
+import (
+	"bytes"
+	"interpreter/internal/ast/statements"
+)
 
 type Program struct {
-	Statements []Statement
+	Statements []statements.Statement
 }
 
 func (p *Program) Literal() string {
@@ -25,4 +15,12 @@ func (p *Program) Literal() string {
 	} else {
 		return ""
 	}
+}
+
+func (p *Program) String() string {
+	var buffer bytes.Buffer
+	for i := range p.Statements {
+		buffer.WriteString(p.Statements[i].String())
+	}
+	return buffer.String()
 }

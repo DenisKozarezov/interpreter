@@ -12,7 +12,7 @@ func (l *Identifier) Literal() string {
 }
 
 func (l *Identifier) String() string {
-	return l.Token.Literal
+	return l.Value
 }
 
 func (l *Identifier) expressionNode() {}

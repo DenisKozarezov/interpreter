@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/statements"
 	lex "interpreter/internal/lexer"
 	"interpreter/internal/lexer/tokens"
@@ -51,7 +50,7 @@ return add(x, x);
 	}
 }
 
-func checkReturnStatement(s ast.Statement) (bool, error) {
+func checkReturnStatement(s statements.Statement) (bool, error) {
 	tokenType := tokens.LookupIdentifierType(s.Literal())
 	if tokenType != tokens.RETURN {
 		return false, fmt.Errorf("expected return literal, got %s [%d]", s.Literal(), tokenType)

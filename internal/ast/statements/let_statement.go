@@ -1,24 +1,33 @@
 package statements
 
 import (
-	"interpreter/internal/ast"
+	"bytes"
 	"interpreter/internal/lexer/tokens"
 )
 
 type LetStatement struct {
 	Token      tokens.Token
 	Identifier *Identifier
-	Value      ast.Expression
+	Value      Expression
 }
 
-func (l *LetStatement) Literal() string {
-	return l.Token.Literal
+func (s *LetStatement) Literal() string {
+	return s.Token.Literal
 }
 
-func (l *LetStatement) String() string {
-	return l.Token.Literal
+func (s *LetStatement) String() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(s.Literal() + " ")
+	buffer.WriteString(s.Identifier.String())
+	buffer.WriteString(" = ")
+
+	if s.Value != nil {
+		buffer.WriteString(s.Value.String())
+	}
+	buffer.WriteString(";")
+	return buffer.String()
 }
 
-func (l *LetStatement) statementNode() {
+func (s *LetStatement) statementNode() {
 
 }

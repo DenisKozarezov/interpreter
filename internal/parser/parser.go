@@ -2,6 +2,7 @@ package parser
 
 import (
 	"interpreter/internal/ast"
+	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
@@ -10,12 +11,15 @@ type lexer interface {
 }
 
 type Parser struct {
-	lexer             lexer
-	errors            []error
-	statementsParsers map[tokens.TokenType]statementParser
+	lexer  lexer
+	errors []error
 
 	currentToken tokens.Token
 	peekToken    tokens.Token
+
+	statementsParsersFns map[tokens.TokenType]statementParserFn
+	prefixParserFns      map[tokens.TokenType]prefixParserFn
+	infixParserFns       map[tokens.TokenType]infixParserFn
 }
 
 func NewParser(lexer lexer) *Parser {
@@ -31,7 +35,7 @@ func (p *Parser) Errors() []error {
 }
 
 func (p *Parser) Parse() *ast.Program {
-	program := ast.Program{Statements: make([]ast.Statement, 0)}
+	program := ast.Program{Statements: make([]statements.Statement, 0)}
 
 	for !p.currentTokenIs(tokens.EOF) {
 		if statement := p.parseStatement(); statement != nil {
@@ -43,8 +47,8 @@ func (p *Parser) Parse() *ast.Program {
 	return &program
 }
 
-func (p *Parser) parseStatement() ast.Statement {
-	statement, found := p.statementsParsers[p.currentToken.Type]
+func (p *Parser) parseStatement() statements.Statement {
+	statement, found := p.statementsParsersFns[p.currentToken.Type]
 	if !found {
 		return nil
 	}
