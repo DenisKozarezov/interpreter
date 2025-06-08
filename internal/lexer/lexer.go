@@ -1,6 +1,8 @@
 package lexer
 
-import "interpreter/internal/lexer/tokens"
+import (
+	"interpreter/internal/lexer/tokens"
+)
 
 type Symbol = rune
 
@@ -26,62 +28,42 @@ func (l *Lexer) NextToken() tokens.Token {
 		return tokens.NewToken(tokens.EOF, "")
 	}
 
-	sym := string(l.currentSymbol)
-	tokenType, found := tokens.LookupTokenType(sym)
+	currentSym := string(l.currentSymbol)
+	currentTokenType, found := tokens.LookupTokenType(currentSym)
 	if !found {
-		return l.parseCustomToken(sym)
+		return l.parseCustomToken(currentSym)
 	}
 
-	switch tokenType {
-	case tokens.ASSIGN:
-		if l.peekSymbol() == '=' {
-			l.readSymbol()
-			tokenType = tokens.EQ
-			sym = "=="
-		}
-	case tokens.BANG:
-		if l.peekSymbol() == '=' {
-			l.readSymbol()
-			tokenType = tokens.NOT_EQ
-			sym = "!="
-		}
-	default:
+	// Если текущий и следующий токены являются частью одного целого токена,
+	// то объединяем их. Например:
+	//  5 == 5 или 5 != 6
+	//    ^^         ^^
+	unitedSym := currentSym + string(l.peekSymbol())
+	unitedTokenType, found := tokens.LookupTokenType(unitedSym)
+	if found {
+		currentSym = unitedSym
+		currentTokenType = unitedTokenType
+		l.readSymbol()
 	}
 
 	l.readSymbol()
 
-	return tokens.NewToken(tokenType, sym)
+	return tokens.NewToken(currentTokenType, currentSym)
 }
 
 func (l *Lexer) parseCustomToken(literal string) tokens.Token {
-	supportedCustomTokensFns := [...]func() (tokens.Token, bool){
-		l.checkLetter,
-		l.checkDigit,
+	supportedCustomTokensParseFns := [...]func() (tokens.Token, bool){
+		l.parseWord,
+		l.parseDigit,
 	}
 
-	for i := range supportedCustomTokensFns {
-		if token, found := supportedCustomTokensFns[i](); found {
+	for i := range supportedCustomTokensParseFns {
+		if token, found := supportedCustomTokensParseFns[i](); found {
 			return token
 		}
 	}
 
 	return tokens.NewToken(tokens.ILLEGAL, literal)
-}
-
-func (l *Lexer) checkLetter() (tokens.Token, bool) {
-	if isLetter(l.currentSymbol) {
-		literal := l.readLiteral(isLetter)
-		tokenType := tokens.LookupIdentifierType(literal)
-		return tokens.NewToken(tokenType, literal), true
-	}
-	return tokens.Token{}, false
-}
-
-func (l *Lexer) checkDigit() (tokens.Token, bool) {
-	if isDigit(l.currentSymbol) {
-		return tokens.NewToken(tokens.INT, l.readLiteral(isDigit)), true
-	}
-	return tokens.Token{}, false
 }
 
 func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
