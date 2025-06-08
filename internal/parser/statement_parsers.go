@@ -7,12 +7,10 @@ import (
 
 type (
 	statementParserFn = func() statements.Statement
-	prefixParserFn    = func() statements.Statement
-	infixParserFn     = func(expression statements.Expression) statements.Statement
 )
 
 func (p *Parser) initStatementParsers() {
-	p.statementsParsersFns = map[tokens.TokenType]statementParserFn{
+	p.statementsParseFns = map[tokens.TokenType]statementParserFn{
 		tokens.LET:    p.parseLetStatement,
 		tokens.RETURN: p.parseReturnStatement,
 	}

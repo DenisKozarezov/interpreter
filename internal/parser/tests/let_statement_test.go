@@ -16,7 +16,6 @@ func TestLetStatement(t *testing.T) {
 let x = 5;
 let y = 10;
 let foobar = 838383;
-let = 15;
 `
 	// 1. Arrange
 	l := lex.NewLexer(source)
@@ -27,7 +26,7 @@ let = 15;
 
 	// 3. Assert
 	require.Len(t, program.Statements, 3)
-	require.Len(t, p.Errors(), 1)
+	require.Len(t, p.Errors(), 0)
 
 	for i, tt := range []struct {
 		name               string

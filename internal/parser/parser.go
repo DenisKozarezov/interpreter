@@ -17,14 +17,16 @@ type Parser struct {
 	currentToken tokens.Token
 	peekToken    tokens.Token
 
-	statementsParsersFns map[tokens.TokenType]statementParserFn
-	prefixParserFns      map[tokens.TokenType]prefixParserFn
-	infixParserFns       map[tokens.TokenType]infixParserFn
+	statementsParseFns map[tokens.TokenType]statementParserFn
+	prefixParseFns     map[tokens.TokenType]prefixParserFn
+	infixParseFns      map[tokens.TokenType]infixParserFn
 }
 
 func NewParser(lexer lexer) *Parser {
 	parser := Parser{lexer: lexer}
 	parser.initStatementParsers()
+	parser.initPrefixParsers()
+	parser.initInfixParsers()
 	parser.nextToken()
 	parser.nextToken()
 	return &parser
@@ -48,11 +50,21 @@ func (p *Parser) Parse() *ast.Program {
 }
 
 func (p *Parser) parseStatement() statements.Statement {
-	statement, found := p.statementsParsersFns[p.currentToken.Type]
-	if !found {
-		return nil
+	statementFn, isStatement := p.statementsParseFns[p.currentToken.Type]
+	if !isStatement {
+		return p.parseExpressionStatement()
 	}
-	return statement()
+	return statementFn()
+}
+
+func (p *Parser) parseExpressionStatement() *statements.ExpressionStatement {
+	statement := &statements.ExpressionStatement{Token: p.currentToken, Value: p.parseExpression(LOWEST)}
+
+	if p.peekTokenIs(tokens.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return statement
 }
 
 func (p *Parser) expectToken(tokenType tokens.TokenType) bool {

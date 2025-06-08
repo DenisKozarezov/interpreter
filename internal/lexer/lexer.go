@@ -54,13 +54,13 @@ func (l *Lexer) NextToken() tokens.Token {
 }
 
 func (l *Lexer) parseCustomToken(literal string) tokens.Token {
-	supportedCustomTokens := [...]func() (tokens.Token, bool){
+	supportedCustomTokensFns := [...]func() (tokens.Token, bool){
 		l.checkLetter,
 		l.checkDigit,
 	}
 
-	for i := range supportedCustomTokens {
-		if token, found := supportedCustomTokens[i](); found {
+	for i := range supportedCustomTokensFns {
+		if token, found := supportedCustomTokensFns[i](); found {
 			return token
 		}
 	}
