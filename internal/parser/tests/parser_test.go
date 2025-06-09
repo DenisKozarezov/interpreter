@@ -1,12 +1,13 @@
 package tests
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
-	"strings"
-	"testing"
 )
 
 func TestIdentifierExpression(t *testing.T) {

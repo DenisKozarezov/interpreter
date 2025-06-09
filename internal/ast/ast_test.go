@@ -1,9 +1,10 @@
 package ast
 
 import (
+	"testing"
+
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
-	"testing"
 )
 
 func TestString(t *testing.T) {

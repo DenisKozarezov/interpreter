@@ -1,10 +1,11 @@
 package main
 
 import (
-	"interpreter/internal/lexer"
-	"interpreter/internal/parser"
 	"log"
 	"os"
+
+	"interpreter/internal/lexer"
+	"interpreter/internal/parser"
 )
 
 func main() {

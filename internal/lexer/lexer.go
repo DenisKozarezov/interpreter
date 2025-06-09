@@ -2,8 +2,9 @@ package lexer
 
 import (
 	"bytes"
-	"interpreter/internal/lexer/tokens"
 	"io"
+
+	"interpreter/internal/lexer/tokens"
 )
 
 type Symbol = rune

@@ -2,9 +2,10 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
+
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
-	"strconv"
 )
 
 const (
