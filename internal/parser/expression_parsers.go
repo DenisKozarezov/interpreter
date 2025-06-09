@@ -27,6 +27,8 @@ func (p *Parser) initPrefixParsers() {
 	p.prefixParseFns = map[tokens.TokenType]prefixParserFn{
 		tokens.IDENTIFIER: p.parseIdentifier,
 		tokens.INT:        p.parseIntegerLiteral,
+		tokens.BANG:       p.parsePrefixExpression,
+		tokens.MINUS:      p.parsePrefixExpression,
 	}
 }
 
@@ -37,6 +39,7 @@ func (p *Parser) initInfixParsers() {
 func (p *Parser) parseExpression(precedence int) statements.Expression {
 	prefix := p.prefixParseFns[p.currentToken.Type]
 	if prefix == nil {
+		p.appendParseError(fmt.Sprintf("no prefix parse function found for token type = [%d]", p.currentToken.Type))
 		return nil
 	}
 	leftExpression := prefix()
@@ -67,7 +70,7 @@ func (p *Parser) parseIdentifier() statements.Expression {
 // не самим выражением. Это необходимо, чтобы были валидны следующие конструкции:
 //
 //	let y = 5;
-//	let x = 5; lex y = x;
+//	let x = 5; let y = x;
 //	let y = f(x);
 //
 // В последнем примере f(x) также является выражением, которое возвращает некое значение.
@@ -82,4 +85,13 @@ func (p *Parser) parseIntegerLiteral() statements.Expression {
 
 	literal.Value = value
 	return literal
+}
+
+func (p *Parser) parsePrefixExpression() statements.Expression {
+	expression := &statements.PrefixExpression{Token: p.currentToken, Operator: p.currentToken.Literal}
+
+	p.nextToken()
+
+	expression.RightExpression = p.parseExpression(PREFIX)
+	return expression
 }
