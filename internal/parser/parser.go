@@ -60,7 +60,7 @@ func (p *Parser) parseStatement() statements.Statement {
 	return statementFn()
 }
 
-func (p *Parser) parseExpressionStatement() *statements.ExpressionStatement {
+func (p *Parser) parseExpressionStatement() statements.Statement {
 	statement := &statements.ExpressionStatement{Token: p.currentToken, Value: p.parseExpression(LOWEST)}
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
@@ -68,6 +68,28 @@ func (p *Parser) parseExpressionStatement() *statements.ExpressionStatement {
 	}
 
 	return statement
+}
+
+func (p *Parser) parseExpression(precedence Precedence) statements.Expression {
+	prefix := p.prefixParseFns[p.currentToken.Type]
+	if prefix == nil {
+		p.appendParseError(fmt.Sprintf("no prefix parse function found for token type = [%d]", p.currentToken.Type))
+		return nil
+	}
+	expression := prefix()
+
+	for !p.currentTokenIs(tokens.SEMICOLON) && precedence < p.peekPrecedence() {
+		infix := p.infixParseFns[p.peekToken.Type]
+		if infix == nil {
+			return expression
+		}
+
+		p.nextToken()
+
+		expression = infix(expression)
+	}
+
+	return expression
 }
 
 func (p *Parser) expectToken(tokenType tokens.TokenType) bool {

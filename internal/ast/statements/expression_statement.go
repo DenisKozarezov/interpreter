@@ -14,7 +14,11 @@ func (s *ExpressionStatement) Literal() string {
 }
 
 func (s *ExpressionStatement) String() string {
-	return s.Token.Literal
+	if s.Value == nil {
+		return s.Literal()
+	} else {
+		return s.Value.String()
+	}
 }
 
 func (s *ExpressionStatement) statementNode() {

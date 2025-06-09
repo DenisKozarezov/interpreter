@@ -8,19 +8,8 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
-const (
-	LOWEST      = iota + 1
-	EQUALS      // ==
-	LESSGREATER // > or <
-	SUM         // +
-	PRODUCT     // *
-	PREFIX      // -X or !X
-	CALL        // myFunction(X)
-)
-
 type (
 	prefixParserFn = func() statements.Expression
-	infixParserFn  = func(expression statements.Expression) statements.Expression
 )
 
 func (p *Parser) initPrefixParsers() {
@@ -30,21 +19,6 @@ func (p *Parser) initPrefixParsers() {
 		tokens.BANG:       p.parsePrefixExpression,
 		tokens.MINUS:      p.parsePrefixExpression,
 	}
-}
-
-func (p *Parser) initInfixParsers() {
-	p.infixParseFns = map[tokens.TokenType]infixParserFn{}
-}
-
-func (p *Parser) parseExpression(precedence int) statements.Expression {
-	prefix := p.prefixParseFns[p.currentToken.Type]
-	if prefix == nil {
-		p.appendParseError(fmt.Sprintf("no prefix parse function found for token type = [%d]", p.currentToken.Type))
-		return nil
-	}
-	leftExpression := prefix()
-
-	return leftExpression
 }
 
 // parseIdentifier парсит некое строковое представление в идентификатор. Это может быть как

@@ -14,7 +14,7 @@ func (l *IntegerLiteral) Literal() string {
 }
 
 func (l *IntegerLiteral) String() string {
-	return l.Token.Literal
+	return l.Literal()
 }
 
 func (l *IntegerLiteral) expressionNode() {}

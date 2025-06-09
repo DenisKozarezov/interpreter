@@ -54,25 +54,14 @@ func TestIntegerLiteralExpression(t *testing.T) {
 
 func TestPrefixExpression(t *testing.T) {
 	for _, tt := range []struct {
-		name             string
 		source           string
 		expectedOperator string
-		expectedValue    int64
+		rightExpression  int64
 	}{
-		{
-			name:             "number",
-			source:           "!5;",
-			expectedOperator: "!",
-			expectedValue:    5,
-		},
-		{
-			name:             "minus",
-			source:           "-15;",
-			expectedOperator: "-",
-			expectedValue:    15,
-		},
+		{"!5;", "!", 5},
+		{"-15;", "-", 15},
 	} {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.source, func(t *testing.T) {
 			// 1. Arrange
 			l := lexer.NewLexer(strings.NewReader(tt.source))
 			p := parser.NewParser(l)
@@ -91,7 +80,7 @@ func TestPrefixExpression(t *testing.T) {
 			require.True(t, ok, "expression is not a prefix")
 			require.Equal(t, tt.expectedOperator, prefix.Operator)
 
-			checkIntegerExpression(t, prefix.RightExpression, tt.expectedValue)
+			checkIntegerExpression(t, prefix.RightExpression, tt.rightExpression)
 		})
 	}
 }
@@ -100,4 +89,45 @@ func checkIntegerExpression(t *testing.T, exp statements.Expression, value int64
 	integer, ok := exp.(*statements.IntegerLiteral)
 	require.True(t, ok, "expression is not an integer")
 	require.Equal(t, value, integer.Value)
+}
+
+func TestInfixExpression(t *testing.T) {
+	for _, tt := range []struct {
+		source           string
+		leftExpression   int64
+		expectedOperator string
+		rightExpression  int64
+	}{
+		{"5 + 5;", 5, "+", 5},
+		{"5 - 5;", 5, "-", 5},
+		{"5 * 5;", 5, "*", 5},
+		{"5 / 5;", 5, "/", 5},
+		{"5 > 5;", 5, ">", 5},
+		{"5 < 5;", 5, "<", 5},
+		{"5 == 5;", 5, "==", 5},
+		{"5 != 5;", 5, "!=", 5},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Arrange
+			l := lexer.NewLexer(strings.NewReader(tt.source))
+			p := parser.NewParser(l)
+
+			// 2. Act
+			program := p.Parse()
+
+			// 3. Assert
+			require.Len(t, p.Errors(), 0)
+			require.Len(t, program.Statements, 1)
+
+			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
+			require.True(t, ok, "statement is not an expression")
+
+			infix, ok := statement.Value.(*statements.InfixExpression)
+			require.True(t, ok, "expression is not an infix")
+			require.Equal(t, tt.expectedOperator, infix.Operator)
+
+			checkIntegerExpression(t, infix.LeftExpression, tt.leftExpression)
+			checkIntegerExpression(t, infix.RightExpression, tt.rightExpression)
+		})
+	}
 }
