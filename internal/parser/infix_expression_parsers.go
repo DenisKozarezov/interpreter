@@ -10,8 +10,22 @@ type (
 	infixParserFn = func(expression ast.Expression) ast.Expression
 )
 
+// Precedence означает порядок (ранг) оператора согласно арифметическим, семантическим
+// правилам языка программирования. Чем выше ранг, тем выше порядок выполнения, а, следовательно
+// приоритет выражения. Например, выражение (a + b + c) слева-направо можно представить
+// как:
+//
+//	((a + b) + c)
+//
+// Потому что в выражении оба оператора `+` имеют равнозначные ранги (SUM), а следовательно выполняются
+// последовательно. Выражение (a + b * c) содержит различные по рангу операторы, среди которых имеется
+// оператор `*` (PRODUCT). Таким образом, получаем:
+//
+//	(a + (b * c))
 type Precedence = int8
 
+// Здесь представлены ранги от самого младшего (LOWEST) до самого старшего (CALL).
+// LOWEST -> EQUALS -> LESSGREATER -> SUM -> PRODUCT -> PREFIX -> CALL
 const (
 	LOWEST      Precedence = iota + 1
 	EQUALS                 // ==
@@ -23,14 +37,14 @@ const (
 )
 
 var precedences = map[tokens.TokenType]Precedence{
-	tokens.EQ:       EQUALS,
-	tokens.NOT_EQ:   EQUALS,
-	tokens.LT:       LESSGREATER,
-	tokens.GT:       LESSGREATER,
-	tokens.PLUS:     SUM,
-	tokens.MINUS:    SUM,
-	tokens.SLASH:    PRODUCT,
-	tokens.ASTERISK: PRODUCT,
+	tokens.EQ:       EQUALS,      // a == b;
+	tokens.NOT_EQ:   EQUALS,      // a != b;
+	tokens.LT:       LESSGREATER, // a < b;
+	tokens.GT:       LESSGREATER, // a > b;
+	tokens.PLUS:     SUM,         // a + b
+	tokens.MINUS:    SUM,         // a - b;
+	tokens.SLASH:    PRODUCT,     // a / b;
+	tokens.ASTERISK: PRODUCT,     // a * b;
 }
 
 func (p *Parser) initInfixParsers() {

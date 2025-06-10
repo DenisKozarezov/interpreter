@@ -78,7 +78,7 @@ func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
 	}
 	expression := prefix()
 
-	for !p.currentTokenIs(tokens.SEMICOLON) && precedence < p.peekPrecedence() {
+	for !p.peekTokenIs(tokens.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return expression
