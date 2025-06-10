@@ -6,6 +6,15 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
+// PrefixExpression представляет собой выражение, состоящее из правого операнда,
+// а также оператора перед ним. Классическими примерами такого выражения являются
+// следующие виды конструкций:
+//
+//	!a;
+//	-a;
+//	--a;
+//
+// и т.п.
 type PrefixExpression struct {
 	Token           tokens.Token
 	Operator        string

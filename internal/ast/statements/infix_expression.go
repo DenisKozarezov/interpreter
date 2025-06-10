@@ -6,6 +6,17 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
+// InfixExpression представляет собой выражение, состоящее из двух операндов - левого
+// и правого, а также оператора между ними. Классическими примерами такого выражения
+// являются следующие виды конструкций:
+//
+//	a + b;
+//	a - b;
+//	a / b;
+//	a == b;
+//	a != b;
+//
+// и т.п.
 type InfixExpression struct {
 	Token           tokens.Token
 	Operator        string

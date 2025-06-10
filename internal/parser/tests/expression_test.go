@@ -85,12 +85,6 @@ func TestPrefixExpression(t *testing.T) {
 	}
 }
 
-func checkIntegerExpression(t *testing.T, exp statements.Expression, value int64) {
-	integer, ok := exp.(*statements.IntegerLiteral)
-	require.True(t, ok, "expression is not an integer")
-	require.Equal(t, value, integer.Value)
-}
-
 func TestInfixExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source           string
@@ -130,4 +124,10 @@ func TestInfixExpression(t *testing.T) {
 			checkIntegerExpression(t, infix.RightExpression, tt.rightExpression)
 		})
 	}
+}
+
+func checkIntegerExpression(t *testing.T, exp statements.Expression, value int64) {
+	integer, ok := exp.(*statements.IntegerLiteral)
+	require.True(t, ok, "expression is not an integer")
+	require.Equal(t, value, integer.Value)
 }

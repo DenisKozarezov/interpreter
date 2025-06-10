@@ -45,20 +45,6 @@ func (p *Parser) initInfixParsers() {
 	}
 }
 
-func (p *Parser) peekPrecedence() Precedence {
-	if precedence, found := precedences[p.peekToken.Type]; found {
-		return precedence
-	}
-	return LOWEST
-}
-
-func (p *Parser) currentPrecedence() Precedence {
-	if precedence, found := precedences[p.currentToken.Type]; found {
-		return precedence
-	}
-	return LOWEST
-}
-
 func (p *Parser) parseInfixExpression(leftExpression statements.Expression) statements.Expression {
 	expression := &statements.InfixExpression{
 		Token:          p.currentToken,
@@ -70,4 +56,18 @@ func (p *Parser) parseInfixExpression(leftExpression statements.Expression) stat
 	p.nextToken()
 	expression.RightExpression = p.parseExpression(precedence)
 	return expression
+}
+
+func (p *Parser) currentPrecedence() Precedence {
+	if precedence, found := precedences[p.currentToken.Type]; found {
+		return precedence
+	}
+	return LOWEST
+}
+
+func (p *Parser) peekPrecedence() Precedence {
+	if precedence, found := precedences[p.peekToken.Type]; found {
+		return precedence
+	}
+	return LOWEST
 }

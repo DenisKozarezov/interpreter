@@ -21,33 +21,10 @@ func (p *Parser) initPrefixParsers() {
 	}
 }
 
-// parseIdentifier парсит некое строковое представление в идентификатор. Это может быть как
-// идентификатор переменной, так и идентификатор функции и т.п. Например:
-//
-//	let x = 5;
-//	    ^
-//	let f = myFunc(x, y);
-//	    ^    ^^^^  ^  ^
 func (p *Parser) parseIdentifier() statements.Expression {
 	return &statements.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
 }
 
-// parseIntegerLiteral парсит токен с типом INT в выражение, которое производит
-// на свет некую целочисленную константу. Например:
-//
-//	5;
-//	^
-//	if 5 == 5 {
-//	   ^    ^
-//
-// Важно понимать, что само по себе число 5 является лишь РЕЗУЛЬТАТОМ выражения, а
-// не самим выражением. Это необходимо, чтобы были валидны следующие конструкции:
-//
-//	let y = 5;
-//	let x = 5; let y = x;
-//	let y = f(x);
-//
-// В последнем примере f(x) также является выражением, которое возвращает некое значение.
 func (p *Parser) parseIntegerLiteral() statements.Expression {
 	literal := &statements.IntegerLiteral{Token: p.currentToken}
 

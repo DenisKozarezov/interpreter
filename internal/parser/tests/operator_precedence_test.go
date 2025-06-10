@@ -47,6 +47,10 @@ func TestOperatorPrecedence(t *testing.T) {
 			"(((a + (b * c)) + (d / e)) - f)",
 		},
 		{
+			"a + b + c + d * e",
+			"(((a + b) + c) + (d * e))",
+		},
+		{
 			"3 + 4; -5 * 5",
 			"(3 + 4)((-5) * 5)",
 		},
