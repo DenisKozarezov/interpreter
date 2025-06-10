@@ -1,12 +1,13 @@
 package parser
 
 import (
-	"interpreter/internal/ast/statements"
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type (
-	infixParserFn = func(expression statements.Expression) statements.Expression
+	infixParserFn = func(expression ast.Expression) ast.Expression
 )
 
 type Precedence = int8
@@ -45,8 +46,8 @@ func (p *Parser) initInfixParsers() {
 	}
 }
 
-func (p *Parser) parseInfixExpression(leftExpression statements.Expression) statements.Expression {
-	expression := &statements.InfixExpression{
+func (p *Parser) parseInfixExpression(leftExpression ast.Expression) ast.Expression {
+	expression := &expressions.InfixExpression{
 		Token:          p.currentToken,
 		Operator:       p.currentToken.Literal,
 		LeftExpression: leftExpression,

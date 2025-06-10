@@ -1,22 +1,24 @@
-package ast
+package tests
 
 import (
 	"testing"
 
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
 func TestString(t *testing.T) {
-	program := &Program{
-		Statements: []statements.Statement{
+	program := &ast.Program{
+		Statements: []ast.Statement{
 			&statements.LetStatement{
 				Token: tokens.NewToken(tokens.LET, "let"),
-				Identifier: &statements.Identifier{
+				Identifier: &expressions.Identifier{
 					Token: tokens.NewToken(tokens.IDENTIFIER, "myVar"),
 					Value: "myVar",
 				},
-				Value: &statements.Identifier{
+				Value: &expressions.Identifier{
 					Token: tokens.NewToken(tokens.IDENTIFIER, "anotherVar"),
 					Value: "anotherVar",
 				},

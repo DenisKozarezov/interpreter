@@ -37,7 +37,7 @@ func (p *Parser) Errors() []error {
 }
 
 func (p *Parser) Parse() *ast.Program {
-	program := ast.Program{Statements: make([]statements.Statement, 0)}
+	program := ast.Program{Statements: make([]ast.Statement, 0)}
 
 	p.nextToken()
 	p.nextToken()
@@ -52,7 +52,7 @@ func (p *Parser) Parse() *ast.Program {
 	return &program
 }
 
-func (p *Parser) parseStatement() statements.Statement {
+func (p *Parser) parseStatement() ast.Statement {
 	statementFn, isStatement := p.statementsParseFns[p.currentToken.Type]
 	if !isStatement {
 		return p.parseExpressionStatement()
@@ -60,7 +60,7 @@ func (p *Parser) parseStatement() statements.Statement {
 	return statementFn()
 }
 
-func (p *Parser) parseExpressionStatement() statements.Statement {
+func (p *Parser) parseExpressionStatement() ast.Statement {
 	statement := &statements.ExpressionStatement{Token: p.currentToken, Value: p.parseExpression(LOWEST)}
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
@@ -70,7 +70,7 @@ func (p *Parser) parseExpressionStatement() statements.Statement {
 	return statement
 }
 
-func (p *Parser) parseExpression(precedence Precedence) statements.Expression {
+func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
 	prefix := p.prefixParseFns[p.currentToken.Type]
 	if prefix == nil {
 		p.appendParseError(fmt.Sprintf("no prefix parse function found for token type = [%d]", p.currentToken.Type))

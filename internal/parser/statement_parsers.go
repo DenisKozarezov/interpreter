@@ -1,12 +1,14 @@
 package parser
 
 import (
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
 type (
-	statementParserFn = func() statements.Statement
+	statementParserFn = func() ast.Statement
 )
 
 func (p *Parser) initStatementParsers() {
@@ -17,14 +19,14 @@ func (p *Parser) initStatementParsers() {
 }
 
 // parseLetStatement парсит конструкцию let.
-func (p *Parser) parseLetStatement() statements.Statement {
+func (p *Parser) parseLetStatement() ast.Statement {
 	statement := statements.LetStatement{Token: p.currentToken}
 
 	if !p.expectToken(tokens.IDENTIFIER) {
 		return nil
 	}
 
-	statement.Identifier = &statements.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+	statement.Identifier = &expressions.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
 
 	if !p.expectToken(tokens.ASSIGN) {
 		return nil
@@ -36,7 +38,7 @@ func (p *Parser) parseLetStatement() statements.Statement {
 }
 
 // parseReturnStatement парсит конструкцию return.
-func (p *Parser) parseReturnStatement() statements.Statement {
+func (p *Parser) parseReturnStatement() ast.Statement {
 	statement := statements.ReturnStatement{Token: p.currentToken}
 
 	p.nextToken()

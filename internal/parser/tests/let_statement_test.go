@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -38,33 +37,13 @@ let foobar = 838383;
 		{"foobar", "foobar"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			ok, err := checkLetStatement(program.Statements[i], tt.expectedIdentifier)
-			if !ok {
-				t.Fatal(err)
-				return
-			}
+			tokenType := tokens.LookupIdentifierType(program.Statements[i].Literal())
+			require.Equal(t, tokens.LET, tokenType, "expected let literal")
+
+			statement, ok := program.Statements[i].(*statements.LetStatement)
+			require.True(t, ok, "expected let statement")
+			require.Equal(t, tt.expectedIdentifier, statement.Identifier.Literal(), "expected identifier literal")
+			require.Equal(t, tt.expectedIdentifier, statement.Identifier.Value, "expected identifier value")
 		})
 	}
-}
-
-func checkLetStatement(s statements.Statement, expectedIdentifier string) (bool, error) {
-	tokenType := tokens.LookupIdentifierType(s.Literal())
-	if tokenType != tokens.LET {
-		return false, fmt.Errorf("expected let literal, got %s [%d]", s.Literal(), tokenType)
-	}
-
-	statement, ok := s.(*statements.LetStatement)
-	if !ok {
-		return false, fmt.Errorf("expected let statement, got %s", statement.Literal())
-	}
-
-	if statement.Identifier.Literal() != expectedIdentifier {
-		return false, fmt.Errorf("expected identifier literal %s, got %s", expectedIdentifier, s.Literal())
-	}
-
-	if statement.Identifier.Value != expectedIdentifier {
-		return false, fmt.Errorf("expected identifier value %s, got %s", expectedIdentifier, s.Literal())
-	}
-
-	return true, nil
 }

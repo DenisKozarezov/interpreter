@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
@@ -27,7 +29,7 @@ func TestIdentifierExpression(t *testing.T) {
 	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok, "statement is not an expression")
 
-	ident, ok := statement.Value.(*statements.Identifier)
+	ident, ok := statement.Value.(*expressions.Identifier)
 	require.True(t, ok, "expression is not an identifier")
 	require.Equal(t, "foobar", ident.Literal())
 }
@@ -76,7 +78,7 @@ func TestPrefixExpression(t *testing.T) {
 			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 			require.True(t, ok, "statement is not an expression")
 
-			prefix, ok := statement.Value.(*statements.PrefixExpression)
+			prefix, ok := statement.Value.(*expressions.PrefixExpression)
 			require.True(t, ok, "expression is not a prefix")
 			require.Equal(t, tt.expectedOperator, prefix.Operator)
 
@@ -116,7 +118,7 @@ func TestInfixExpression(t *testing.T) {
 			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 			require.True(t, ok, "statement is not an expression")
 
-			infix, ok := statement.Value.(*statements.InfixExpression)
+			infix, ok := statement.Value.(*expressions.InfixExpression)
 			require.True(t, ok, "expression is not an infix")
 			require.Equal(t, tt.expectedOperator, infix.Operator)
 
@@ -126,8 +128,8 @@ func TestInfixExpression(t *testing.T) {
 	}
 }
 
-func checkIntegerExpression(t *testing.T, exp statements.Expression, value int64) {
-	integer, ok := exp.(*statements.IntegerLiteral)
+func checkIntegerExpression(t *testing.T, exp ast.Expression, value int64) {
+	integer, ok := exp.(*expressions.IntegerLiteral)
 	require.True(t, ok, "expression is not an integer")
 	require.Equal(t, value, integer.Value)
 }

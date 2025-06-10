@@ -1,8 +1,9 @@
-package statements
+package expressions
 
 import (
 	"bytes"
 
+	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
 )
 
@@ -20,8 +21,8 @@ import (
 type InfixExpression struct {
 	Token           tokens.Token
 	Operator        string
-	LeftExpression  Expression
-	RightExpression Expression
+	LeftExpression  ast.Expression
+	RightExpression ast.Expression
 }
 
 func (s *InfixExpression) Literal() string {

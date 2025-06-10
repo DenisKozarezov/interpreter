@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -42,25 +41,11 @@ return add(x, x);
 		{"return add(x, x)"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			ok, err := checkReturnStatement(program.Statements[i])
-			if !ok {
-				t.Fatal(err)
-				return
-			}
+			tokenType := tokens.LookupIdentifierType(program.Statements[i].Literal())
+			require.Equal(t, tokens.RETURN, tokenType, "expected return literal")
+
+			_, ok := program.Statements[i].(*statements.ReturnStatement)
+			require.True(t, ok, "expected return statement")
 		})
 	}
-}
-
-func checkReturnStatement(s statements.Statement) (bool, error) {
-	tokenType := tokens.LookupIdentifierType(s.Literal())
-	if tokenType != tokens.RETURN {
-		return false, fmt.Errorf("expected return literal, got %s [%d]", s.Literal(), tokenType)
-	}
-
-	statement, ok := s.(*statements.ReturnStatement)
-	if !ok {
-		return false, fmt.Errorf("expected return statement, got %s", statement.Literal())
-	}
-
-	return true, nil
 }

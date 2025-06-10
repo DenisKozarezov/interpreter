@@ -3,13 +3,15 @@ package statements
 import (
 	"bytes"
 
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type LetStatement struct {
 	Token      tokens.Token
-	Identifier *Identifier
-	Value      Expression
+	Identifier *expressions.Identifier
+	Value      ast.Expression
 }
 
 func (s *LetStatement) Literal() string {

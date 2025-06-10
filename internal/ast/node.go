@@ -1,4 +1,4 @@
-package statements
+package ast
 
 import "fmt"
 
@@ -7,10 +7,10 @@ type Node interface {
 	Literal() string
 }
 
-type Statement interface {
+type Expression interface {
 	Node
 }
 
-type Expression interface {
+type Statement interface {
 	Node
 }

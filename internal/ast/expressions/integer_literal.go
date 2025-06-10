@@ -1,4 +1,4 @@
-package statements
+package expressions
 
 import (
 	"interpreter/internal/lexer/tokens"

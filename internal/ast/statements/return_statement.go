@@ -3,12 +3,13 @@ package statements
 import (
 	"bytes"
 
+	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
 )
 
 type ReturnStatement struct {
 	Token tokens.Token
-	Value Expression
+	Value ast.Expression
 }
 
 func (s *ReturnStatement) Literal() string {

@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"interpreter/internal/ast/statements"
+	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type (
-	prefixParserFn = func() statements.Expression
+	prefixParserFn = func() ast.Expression
 )
 
 func (p *Parser) initPrefixParsers() {
@@ -21,12 +22,12 @@ func (p *Parser) initPrefixParsers() {
 	}
 }
 
-func (p *Parser) parseIdentifier() statements.Expression {
-	return &statements.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &expressions.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
 }
 
-func (p *Parser) parseIntegerLiteral() statements.Expression {
-	literal := &statements.IntegerLiteral{Token: p.currentToken}
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	literal := &expressions.IntegerLiteral{Token: p.currentToken}
 
 	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
 	if err != nil {
@@ -38,8 +39,8 @@ func (p *Parser) parseIntegerLiteral() statements.Expression {
 	return literal
 }
 
-func (p *Parser) parsePrefixExpression() statements.Expression {
-	expression := &statements.PrefixExpression{Token: p.currentToken, Operator: p.currentToken.Literal}
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &expressions.PrefixExpression{Token: p.currentToken, Operator: p.currentToken.Literal}
 
 	p.nextToken()
 
