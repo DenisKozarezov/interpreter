@@ -71,16 +71,16 @@ func (p *Parser) parseExpressionStatement() ast.Statement {
 }
 
 func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
-	prefix := p.prefixParseFns[p.currentToken.Type]
-	if prefix == nil {
-		p.appendParseError(fmt.Sprintf("no prefix parse function found for token type = [%d]", p.currentToken.Type))
+	prefix, prefixFound := p.prefixParseFns[p.currentToken.Type]
+	if !prefixFound {
+		p.appendParseError(fmt.Sprintf("no prefix parse function found for token `%s [%d]`", p.currentToken.Literal, p.currentToken.Type))
 		return nil
 	}
 	expression := prefix()
 
 	for !p.peekTokenIs(tokens.SEMICOLON) && precedence < p.peekPrecedence() {
-		infix := p.infixParseFns[p.peekToken.Type]
-		if infix == nil {
+		infix, infixFound := p.infixParseFns[p.peekToken.Type]
+		if !infixFound {
 			return expression
 		}
 

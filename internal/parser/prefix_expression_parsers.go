@@ -21,6 +21,8 @@ func (p *Parser) initPrefixParsers() {
 		tokens.MINUS:      p.parsePrefixExpression,
 		tokens.TRUE:       p.parseBooleanLiteral,
 		tokens.FALSE:      p.parseBooleanLiteral,
+		tokens.LPAREN:     p.parseGroupedExpression,
+		tokens.IF:         p.parseConditionExpression,
 	}
 }
 
@@ -52,4 +54,58 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 
 	expression.RightExpression = p.parseExpression(PREFIX)
 	return expression
+}
+
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.nextToken()
+
+	exp := p.parseExpression(LOWEST)
+
+	if !p.expectToken(tokens.RPAREN) {
+		return nil
+	}
+
+	return exp
+}
+
+func (p *Parser) parseConditionExpression() ast.Expression {
+	expression := &expressions.ConditionExpression{Token: p.currentToken}
+
+	if !p.expectToken(tokens.LPAREN) {
+		return nil
+	}
+
+	expression.Condition = p.parseExpression(LOWEST)
+
+	if !p.currentTokenIs(tokens.RPAREN) || !p.expectToken(tokens.LBRACE) {
+		return nil
+	}
+
+	expression.Then = p.parseBlockStatement()
+
+	if p.peekTokenIs(tokens.ELSE) {
+		p.nextToken()
+
+		if !p.expectToken(tokens.LBRACE) {
+			return nil
+		}
+
+		expression.Else = p.parseBlockStatement()
+	}
+
+	return expression
+}
+
+func (p *Parser) parseBlockStatement() *expressions.BlockStatement {
+	block := &expressions.BlockStatement{Token: p.currentToken}
+	block.Statements = []ast.Statement{}
+
+	p.nextToken()
+
+	for !p.currentTokenIs(tokens.RBRACE) && !p.currentTokenIs(tokens.EOF) {
+		block.Statements = append(block.Statements, p.parseStatement())
+		p.nextToken()
+	}
+
+	return block
 }

@@ -14,12 +14,12 @@ type Identifier struct {
 	Value string
 }
 
-func (l *Identifier) Literal() string {
-	return l.Token.Literal
+func (i *Identifier) Literal() string {
+	return i.Token.Literal
 }
 
-func (l *Identifier) String() string {
-	return l.Value
+func (i *Identifier) String() string {
+	return i.Value
 }
 
-func (l *Identifier) expressionNode() {}
+func (i *Identifier) expressionNode() {}

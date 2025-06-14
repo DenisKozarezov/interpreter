@@ -124,15 +124,11 @@ func TestInfixExpression(t *testing.T) {
 			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 			require.True(t, ok, "statement is not an expression")
 
-			infix, ok := statement.Value.(*expressions.InfixExpression)
-			require.True(t, ok, "expression is not an infix")
-			require.Equal(t, tt.expectedOperator, infix.Operator)
-
-			testLiteralExpression(t, infix.LeftExpression, tt.leftExpression)
-			testLiteralExpression(t, infix.RightExpression, tt.rightExpression)
+			testInfixExpression(t, statement.Value, tt.leftExpression, tt.expectedOperator, tt.rightExpression)
 		})
 	}
 }
+
 func TestBooleanExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source   string
@@ -159,6 +155,15 @@ func TestBooleanExpression(t *testing.T) {
 			testLiteralExpression(t, statement.Value, tt.expected)
 		})
 	}
+}
+
+func testInfixExpression(t *testing.T, exp ast.Expression, left any, op string, right any) {
+	infix, ok := exp.(*expressions.InfixExpression)
+	require.True(t, ok, "expression is not an infix")
+	require.Equal(t, op, infix.Operator)
+
+	testLiteralExpression(t, infix.LeftExpression, left)
+	testLiteralExpression(t, infix.RightExpression, right)
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {

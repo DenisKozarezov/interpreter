@@ -7,12 +7,12 @@ type Boolean struct {
 	Value bool
 }
 
-func (l *Boolean) Literal() string {
-	return l.Token.Literal
+func (b *Boolean) Literal() string {
+	return b.Token.Literal
 }
 
-func (l *Boolean) String() string {
-	return l.Token.Literal
+func (b *Boolean) String() string {
+	return b.Token.Literal
 }
 
-func (l *Boolean) expressionNode() {}
+func (b *Boolean) expressionNode() {}
