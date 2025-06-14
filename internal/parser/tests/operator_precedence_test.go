@@ -4,9 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestOperatorPrecedence(t *testing.T) {
@@ -69,6 +70,22 @@ func TestOperatorPrecedence(t *testing.T) {
 		{
 			"3 + 4 * 5 == 3 * 1 + 4 * 5",
 			"((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
+		},
+		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			"3 > 5 == false",
+			"((3 > 5) == false)",
+		},
+		{
+			"3 < 5 == true",
+			"((3 < 5) == true)",
 		},
 	} {
 		t.Run(tt.source, func(t *testing.T) {

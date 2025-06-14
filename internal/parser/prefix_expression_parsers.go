@@ -19,6 +19,8 @@ func (p *Parser) initPrefixParsers() {
 		tokens.INT:        p.parseIntegerLiteral,
 		tokens.BANG:       p.parsePrefixExpression,
 		tokens.MINUS:      p.parsePrefixExpression,
+		tokens.TRUE:       p.parseBooleanLiteral,
+		tokens.FALSE:      p.parseBooleanLiteral,
 	}
 }
 
@@ -37,6 +39,10 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	literal.Value = value
 	return literal
+}
+
+func (p *Parser) parseBooleanLiteral() ast.Expression {
+	return &expressions.Boolean{Token: p.currentToken, Value: p.currentTokenIs(tokens.TRUE)}
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {

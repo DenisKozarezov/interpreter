@@ -1,15 +1,18 @@
 package tests
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestIdentifierExpression(t *testing.T) {
@@ -29,9 +32,7 @@ func TestIdentifierExpression(t *testing.T) {
 	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok, "statement is not an expression")
 
-	ident, ok := statement.Value.(*expressions.Identifier)
-	require.True(t, ok, "expression is not an identifier")
-	require.Equal(t, "foobar", ident.Literal())
+	testLiteralExpression(t, statement.Value, "foobar")
 }
 
 func TestIntegerLiteralExpression(t *testing.T) {
@@ -51,17 +52,19 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok, "statement is not an expression")
 
-	checkIntegerExpression(t, statement.Value, 5)
+	testLiteralExpression(t, statement.Value, 5)
 }
 
 func TestPrefixExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source           string
 		expectedOperator string
-		rightExpression  int64
+		rightExpression  any
 	}{
 		{"!5;", "!", 5},
 		{"-15;", "-", 15},
+		{"!true;", "!", true},
+		{"!false;", "!", false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Arrange
@@ -82,7 +85,7 @@ func TestPrefixExpression(t *testing.T) {
 			require.True(t, ok, "expression is not a prefix")
 			require.Equal(t, tt.expectedOperator, prefix.Operator)
 
-			checkIntegerExpression(t, prefix.RightExpression, tt.rightExpression)
+			testLiteralExpression(t, prefix.RightExpression, tt.rightExpression)
 		})
 	}
 }
@@ -90,9 +93,9 @@ func TestPrefixExpression(t *testing.T) {
 func TestInfixExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source           string
-		leftExpression   int64
+		leftExpression   any
 		expectedOperator string
-		rightExpression  int64
+		rightExpression  any
 	}{
 		{"5 + 5;", 5, "+", 5},
 		{"5 - 5;", 5, "-", 5},
@@ -102,6 +105,9 @@ func TestInfixExpression(t *testing.T) {
 		{"5 < 5;", 5, "<", 5},
 		{"5 == 5;", 5, "==", 5},
 		{"5 != 5;", 5, "!=", 5},
+		{"true == true", true, "==", true},
+		{"true != false", true, "!=", false},
+		{"false == false", false, "==", false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Arrange
@@ -122,14 +128,74 @@ func TestInfixExpression(t *testing.T) {
 			require.True(t, ok, "expression is not an infix")
 			require.Equal(t, tt.expectedOperator, infix.Operator)
 
-			checkIntegerExpression(t, infix.LeftExpression, tt.leftExpression)
-			checkIntegerExpression(t, infix.RightExpression, tt.rightExpression)
+			testLiteralExpression(t, infix.LeftExpression, tt.leftExpression)
+			testLiteralExpression(t, infix.RightExpression, tt.rightExpression)
+		})
+	}
+}
+func TestBooleanExpression(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected bool
+	}{
+		{"true;", true},
+		{"false;", false},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Arrange
+			l := lexer.NewLexer(strings.NewReader(tt.source))
+			p := parser.NewParser(l)
+
+			// 2. Act
+			program := p.Parse()
+
+			// 3. Assert
+			require.Len(t, p.Errors(), 0)
+			require.Len(t, program.Statements, 1)
+
+			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
+			require.True(t, ok, "statement is not an expression")
+
+			testLiteralExpression(t, statement.Value, tt.expected)
 		})
 	}
 }
 
-func checkIntegerExpression(t *testing.T, exp ast.Expression, value int64) {
+func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
+	switch v := expected.(type) {
+	case int:
+		testIntegerExpression(t, exp, int64(v))
+		return
+	case int64:
+		testIntegerExpression(t, exp, v)
+		return
+	case string:
+		testIdentifier(t, exp, v)
+		return
+	case bool:
+		testBooleanLiteral(t, exp, v)
+		return
+	default:
+		t.Fatalf("unexpected type")
+	}
+}
+
+func testIdentifier(t *testing.T, exp ast.Expression, expected string) {
+	ident, ok := exp.(*expressions.Identifier)
+	require.True(t, ok, "expression is not an identifier")
+	require.Equal(t, expected, ident.Literal())
+}
+
+func testIntegerExpression(t *testing.T, exp ast.Expression, expected int64) {
 	integer, ok := exp.(*expressions.IntegerLiteral)
 	require.True(t, ok, "expression is not an integer")
-	require.Equal(t, value, integer.Value)
+	require.Equal(t, expected, integer.Value)
+	require.Equal(t, strconv.FormatInt(expected, 10), integer.Literal())
+}
+
+func testBooleanLiteral(t *testing.T, exp ast.Expression, expected bool) {
+	boolean, ok := exp.(*expressions.Boolean)
+	require.True(t, ok, "expression is not a boolean")
+	require.Equal(t, expected, boolean.Value)
+	require.Equal(t, fmt.Sprintf("%t", expected), boolean.Literal())
 }
