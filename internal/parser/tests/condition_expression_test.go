@@ -13,7 +13,7 @@ func TestConditionExpression(t *testing.T) {
 	source := `if (x < y) { x }`
 
 	// 2. Act
-	statement := parseProgramAndCheck(t, source)
+	statement := parseProgramAndCheckExpression(t, source)
 
 	// 3. Assert
 	condition, ok := statement.Value.(*expressions.ConditionExpression)

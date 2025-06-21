@@ -12,7 +12,7 @@ func (b *Boolean) Literal() string {
 }
 
 func (b *Boolean) String() string {
-	return b.Token.Literal
+	return b.Literal()
 }
 
 func (b *Boolean) expressionNode() {}

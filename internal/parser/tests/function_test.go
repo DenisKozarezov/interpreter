@@ -13,7 +13,7 @@ func TestFunctionLiteral(t *testing.T) {
 	source := `fn(x, y) { x + y }`
 
 	// 2. Act
-	statement := parseProgramAndCheck(t, source)
+	statement := parseProgramAndCheckExpression(t, source)
 
 	// 3. Assert
 	fn, ok := statement.Value.(*expressions.FunctionLiteral)
@@ -41,7 +41,7 @@ func TestFunctionArguments(t *testing.T) {
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
-			statement := parseProgramAndCheck(t, tt.source)
+			statement := parseProgramAndCheckExpression(t, tt.source)
 
 			// 2. Assert
 			fn, ok := statement.Value.(*expressions.FunctionLiteral)

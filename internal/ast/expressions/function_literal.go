@@ -26,7 +26,7 @@ func (f *FunctionLiteral) String() string {
 
 	buffer.WriteString(f.Literal())
 	buffer.WriteString("(")
-	buffer.WriteString(strings.Join(args, ","))
+	buffer.WriteString(strings.Join(args, ", "))
 	buffer.WriteString(") {")
 	buffer.WriteString(f.Body.String())
 	buffer.WriteString("}")

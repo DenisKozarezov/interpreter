@@ -106,12 +106,6 @@ func (p *Parser) peekTokenIs(tokenType tokens.TokenType) bool {
 	return p.peekToken.Type == tokenType
 }
 
-func (p *Parser) skipUntilNextStatement() {
-	for !p.currentTokenIs(tokens.SEMICOLON) {
-		p.nextToken()
-	}
-}
-
 func (p *Parser) currentTokenIs(tokenType tokens.TokenType) bool {
 	return p.currentToken.Type == tokenType
 }

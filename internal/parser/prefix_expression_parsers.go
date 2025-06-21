@@ -155,3 +155,33 @@ func (p *Parser) parseFunctionArguments() []*expressions.Identifier {
 
 	return identifiers
 }
+
+func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+	exp := &expressions.CallExpression{Token: p.currentToken, Function: function}
+	exp.Args = p.parseCallArguments()
+	return exp
+}
+
+func (p *Parser) parseCallArguments() []ast.Expression {
+	var args []ast.Expression
+
+	if p.peekTokenIs(tokens.RPAREN) {
+		p.nextToken()
+		return args
+	}
+
+	p.nextToken()
+
+	args = append(args, p.parseExpression(LOWEST))
+	for p.peekTokenIs(tokens.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		args = append(args, p.parseExpression(LOWEST))
+	}
+
+	if !p.expectToken(tokens.RPAREN) {
+		return nil
+	}
+
+	return args
+}

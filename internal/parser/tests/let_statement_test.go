@@ -1,22 +1,52 @@
 package tests
 
 import (
+	"interpreter/internal/ast"
+	"interpreter/internal/lexer"
+	"interpreter/internal/parser"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"interpreter/internal/ast/statements"
-	"interpreter/internal/lexer"
-	"interpreter/internal/lexer/tokens"
-	"interpreter/internal/parser"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestLetStatement(t *testing.T) {
-	source := `
-let x = 5;
-let y = 10;
-let foobar = 838383;
-`
+	for _, tt := range []struct {
+		source             string
+		expectedIdentifier string
+		expectedValue      any
+	}{
+		{"let x = 5;", "x", 5},
+		{"let y = true;", "y", true},
+		{"let foobar = y;", "foobar", "y"},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			statement := parseProgramAndCheck(t, tt.source)
+
+			// 2. Assert
+			let, ok := statement.(*statements.LetStatement)
+			require.True(t, ok, "expected let statement")
+			require.Equal(t, tt.expectedIdentifier, let.Identifier.Literal(), "expected identifier literal")
+			testLiteralExpression(t, let.Value, tt.expectedValue)
+		})
+	}
+}
+
+func parseProgramAndCheckExpression(t *testing.T, source string) *statements.ExpressionStatement {
+	// 1. Act
+	statement := parseProgramAndCheck(t, source)
+
+	// 2. Assert
+	expression, ok := statement.(*statements.ExpressionStatement)
+	require.True(t, ok, "statement is not an expression")
+
+	return expression
+}
+
+func parseProgramAndCheck(t *testing.T, source string) ast.Statement {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
@@ -26,24 +56,7 @@ let foobar = 838383;
 
 	// 3. Assert
 	require.Len(t, p.Errors(), 0)
-	require.Len(t, program.Statements, 3)
+	require.Len(t, program.Statements, 1)
 
-	for i, tt := range []struct {
-		name               string
-		expectedIdentifier string
-	}{
-		{"x", "x"},
-		{"y", "y"},
-		{"foobar", "foobar"},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			tokenType := tokens.LookupIdentifierType(program.Statements[i].Literal())
-			require.Equal(t, tokens.LET, tokenType, "expected let literal")
-
-			statement, ok := program.Statements[i].(*statements.LetStatement)
-			require.True(t, ok, "expected let statement")
-			require.Equal(t, tt.expectedIdentifier, statement.Identifier.Literal(), "expected identifier literal")
-			require.Equal(t, tt.expectedIdentifier, statement.Identifier.Value, "expected identifier value")
-		})
-	}
+	return program.Statements[0]
 }
