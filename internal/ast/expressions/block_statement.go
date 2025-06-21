@@ -6,6 +6,15 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
+// BlockStatement представляет собой блок различных инструкций. Например:
+//
+//  1. Пустое множество: {  }
+//
+//  2. Одна инструкция: { return 1; }
+//
+//  3. Несколько инструкций:
+//
+//     { let x = 1; return x; }
 type BlockStatement struct {
 	Token      tokens.Token
 	Statements []ast.Statement

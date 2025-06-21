@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+// FunctionLiteral выражение, которое определяет функцию со списком аргументов Args и блоком
+// инструкций Body. Например:
+//
+//	fn(x, y) { return x + y; }
+//
+// где:
+//  1. 'fn' - ключевое слово;
+//  2. 'x, y' - аргументы функции;
+//  3. '{ return x + y; }' - блок выполнения, состоящий из одной единственной инструкции statements.ReturnStatement.
 type FunctionLiteral struct {
 	Token tokens.Token
 	Args  []*Identifier

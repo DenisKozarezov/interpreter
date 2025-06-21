@@ -2,6 +2,13 @@ package expressions
 
 import "interpreter/internal/lexer/tokens"
 
+// Boolean выражение, возвращающее булевую константу: true либо false. Примеры,
+// где может применяться булевая константа:
+//
+//	true;
+//	false;
+//	let x = true;
+//	let x = fn() { return true; }
 type Boolean struct {
 	Token tokens.Token
 	Value bool

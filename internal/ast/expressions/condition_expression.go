@@ -6,6 +6,19 @@ import (
 	"interpreter/internal/lexer/tokens"
 )
 
+// ConditionExpression обозначает выражение, содержажее блок выполнения Then и
+// блок альтернативы Else, а также условие Condition для выбора между ними. Если условие
+// истинно, то срабатывает блок Then, в противном случае выполняться будет фрагмент кода
+// в блоке Else (если он присутствует).
+//
+//	if (x > y) { return x; } else { return y; }
+//
+// где:
+//  1. 'if' - ключевое слово;
+//  2. '(x > y)' - infix-выражение, возвращающее истину либо ложь;
+//  3. '{ return x; }' - блок выполнения Then при истинности условия Condition;
+//  4. 'else' - ключевое слово блока альтернативы;
+//  5. '{ return y; }' - блок альтернативы Else при ложном условии Condition.
 type ConditionExpression struct {
 	Token     tokens.Token
 	Condition ast.Expression
