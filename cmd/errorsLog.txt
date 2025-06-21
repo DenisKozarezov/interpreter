@@ -1,0 +1,6 @@
+========================== PARSE ERRORS ==========================
+4 parser errors found:
+	1. [line: 1; pos: 30] parse error: no prefix parse function found for token `return [28]`
+	2. [line: 7; pos: 4] parse error: expected token type [16] but got [2]
+	3. [line: 7; pos: 13] parse error: no prefix parse function found for token `{ [18]`
+	4. [line: 7; pos: 13] parse error: no prefix parse function found for token `} [19]`

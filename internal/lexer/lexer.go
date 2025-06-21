@@ -2,9 +2,8 @@ package lexer
 
 import (
 	"bytes"
-	"io"
-
 	"interpreter/internal/lexer/tokens"
+	"io"
 )
 
 type Symbol = rune
@@ -18,15 +17,25 @@ type Reader interface {
 type Lexer struct {
 	reader Reader
 
-	currentPosition int64
-	nextPosition    int64
-	currentSymbol   Symbol
+	currentPosition   int64
+	lineStartPosition int64
+	currentLine       int64
+	nextPosition      int64
+	currentSymbol     Symbol
 }
 
 func NewLexer(reader Reader) *Lexer {
-	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0}
+	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0, currentLine: 1}
 	l.readSymbol()
 	return l
+}
+
+func (l *Lexer) CurrentPositionAtLine() int64 {
+	return l.currentPosition - l.lineStartPosition
+}
+
+func (l *Lexer) CurrentLine() int64 {
+	return l.currentLine
 }
 
 func (l *Lexer) NextToken() tokens.Token {
@@ -95,6 +104,11 @@ func (l *Lexer) readSymbol() {
 	l.currentSymbol = l.peekSymbol()
 	l.currentPosition = l.nextPosition
 	l.nextPosition++
+
+	if l.currentSymbol == '\n' {
+		l.lineStartPosition = l.nextPosition
+		l.currentLine++
+	}
 }
 
 func (l *Lexer) peekSymbol() Symbol {

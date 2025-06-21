@@ -4,24 +4,22 @@ import (
 	"fmt"
 )
 
-type SyntaxError struct {
-	err string
-}
-
-func (e *SyntaxError) Error() string {
-	return fmt.Sprintf("syntax error: %s", e.err)
-}
-
 type ParseError struct {
-	err string
+	currentLine     int64
+	currentPosition int64
+	err             string
 }
 
 func (e *ParseError) Error() string {
-	return fmt.Sprintf("parse error: %s", e.err)
+	return fmt.Sprintf("[line: %d; pos: %d] parse error: %s", e.currentLine, e.currentPosition, e.err)
 }
 
 func (p *Parser) appendParseError(err string) {
-	p.appendError(&ParseError{err: err})
+	p.appendError(&ParseError{
+		err:             err,
+		currentLine:     p.lexer.CurrentLine(),
+		currentPosition: p.lexer.CurrentPositionAtLine(),
+	})
 }
 
 func (p *Parser) appendError(err error) {

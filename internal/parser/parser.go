@@ -10,6 +10,8 @@ import (
 
 type lexer interface {
 	NextToken() tokens.Token
+	CurrentPositionAtLine() int64
+	CurrentLine() int64
 }
 
 type Parser struct {
@@ -113,4 +115,8 @@ func (p *Parser) currentTokenIs(tokenType tokens.TokenType) bool {
 func (p *Parser) nextToken() {
 	p.currentToken = p.peekToken
 	p.peekToken = p.lexer.NextToken()
+
+	if p.peekToken.Type == tokens.ILLEGAL {
+		p.appendParseError(fmt.Sprintf("illegal token found '%s'", p.peekToken.Literal))
+	}
 }

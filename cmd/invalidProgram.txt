@@ -1,0 +1,7 @@
+let invalidReturn = return xyz;
+let validReturn = fn() { return xyz; }
+
+if (5 == 5) { }
+if (5 == 5) { } else { }
+
+if 5 == 5 { }
