@@ -18,24 +18,19 @@ type Lexer struct {
 	reader Reader
 
 	currentPosition   int64
-	lineStartPosition int64
-	currentLine       int64
 	nextPosition      int64
+	lineStartPosition int64
 	currentSymbol     Symbol
 }
 
 func NewLexer(reader Reader) *Lexer {
-	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0, currentLine: 1}
+	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0}
 	l.readSymbol()
 	return l
 }
 
 func (l *Lexer) CurrentPositionAtLine() int64 {
 	return l.currentPosition - l.lineStartPosition
-}
-
-func (l *Lexer) CurrentLine() int64 {
-	return l.currentLine
 }
 
 func (l *Lexer) NextToken() tokens.Token {
@@ -95,7 +90,7 @@ func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.currentSymbol == ' ' || l.currentSymbol == '\t' || l.currentSymbol == '\n' || l.currentSymbol == '\r' {
+	for l.currentSymbol == whitespace || l.currentSymbol == tabulation || isNewline(l.currentSymbol) {
 		l.readSymbol()
 	}
 }
@@ -105,9 +100,8 @@ func (l *Lexer) readSymbol() {
 	l.currentPosition = l.nextPosition
 	l.nextPosition++
 
-	if l.currentSymbol == '\n' {
+	if isNewline(l.currentSymbol) {
 		l.lineStartPosition = l.nextPosition
-		l.currentLine++
 	}
 }
 

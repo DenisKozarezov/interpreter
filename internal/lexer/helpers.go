@@ -25,3 +25,14 @@ func (l *Lexer) parseDigit() (tokens.Token, bool) {
 func isDigit(symbol Symbol) bool {
 	return '0' <= symbol && symbol <= '9'
 }
+
+const (
+	whitespace     = ' '
+	tabulation     = '\t'
+	newline        = '\n'
+	carriageReturn = '\r'
+)
+
+func isNewline(symbol Symbol) bool {
+	return symbol == newline || symbol == carriageReturn
+}

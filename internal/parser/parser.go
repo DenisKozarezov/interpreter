@@ -11,7 +11,6 @@ import (
 type lexer interface {
 	NextToken() tokens.Token
 	CurrentPositionAtLine() int64
-	CurrentLine() int64
 }
 
 type Parser struct {
