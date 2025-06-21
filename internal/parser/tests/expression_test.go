@@ -19,19 +19,10 @@ func TestIdentifierExpression(t *testing.T) {
 	// 1. Arrange
 	source := `foobar;`
 
-	l := lexer.NewLexer(strings.NewReader(source))
-	p := parser.NewParser(l)
-
 	// 2. Act
-	program := p.Parse()
+	statement := parseProgramAndCheck(t, source)
 
 	// 3. Assert
-	require.Len(t, p.Errors(), 0)
-	require.Len(t, program.Statements, 1)
-
-	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
-	require.True(t, ok, "statement is not an expression")
-
 	testLiteralExpression(t, statement.Value, "foobar")
 }
 
@@ -39,19 +30,10 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	// 1. Arrange
 	source := `5;`
 
-	l := lexer.NewLexer(strings.NewReader(source))
-	p := parser.NewParser(l)
-
 	// 2. Act
-	program := p.Parse()
+	statement := parseProgramAndCheck(t, source)
 
 	// 3. Assert
-	require.Len(t, p.Errors(), 0)
-	require.Len(t, program.Statements, 1)
-
-	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
-	require.True(t, ok, "statement is not an expression")
-
 	testLiteralExpression(t, statement.Value, 5)
 }
 
@@ -67,20 +49,10 @@ func TestPrefixExpression(t *testing.T) {
 		{"!false;", "!", false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
-			// 1. Arrange
-			l := lexer.NewLexer(strings.NewReader(tt.source))
-			p := parser.NewParser(l)
+			// 1. Act
+			statement := parseProgramAndCheck(t, tt.source)
 
-			// 2. Act
-			program := p.Parse()
-
-			// 3. Assert
-			require.Len(t, p.Errors(), 0)
-			require.Len(t, program.Statements, 1)
-
-			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
-			require.True(t, ok, "statement is not an expression")
-
+			// 2. Assert
 			prefix, ok := statement.Value.(*expressions.PrefixExpression)
 			require.True(t, ok, "expression is not a prefix")
 			require.Equal(t, tt.expectedOperator, prefix.Operator)
@@ -110,20 +82,10 @@ func TestInfixExpression(t *testing.T) {
 		{"false == false", false, "==", false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
-			// 1. Arrange
-			l := lexer.NewLexer(strings.NewReader(tt.source))
-			p := parser.NewParser(l)
+			// 1. Act
+			statement := parseProgramAndCheck(t, tt.source)
 
-			// 2. Act
-			program := p.Parse()
-
-			// 3. Assert
-			require.Len(t, p.Errors(), 0)
-			require.Len(t, program.Statements, 1)
-
-			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
-			require.True(t, ok, "statement is not an expression")
-
+			// 2. Assert
 			testInfixExpression(t, statement.Value, tt.leftExpression, tt.expectedOperator, tt.rightExpression)
 		})
 	}
@@ -138,23 +100,30 @@ func TestBooleanExpression(t *testing.T) {
 		{"false;", false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
-			// 1. Arrange
-			l := lexer.NewLexer(strings.NewReader(tt.source))
-			p := parser.NewParser(l)
+			// 1. Act
+			statement := parseProgramAndCheck(t, tt.source)
 
-			// 2. Act
-			program := p.Parse()
-
-			// 3. Assert
-			require.Len(t, p.Errors(), 0)
-			require.Len(t, program.Statements, 1)
-
-			statement, ok := program.Statements[0].(*statements.ExpressionStatement)
-			require.True(t, ok, "statement is not an expression")
-
+			// 2. Assert
 			testLiteralExpression(t, statement.Value, tt.expected)
 		})
 	}
+}
+
+func parseProgramAndCheck(t *testing.T, source string) *statements.ExpressionStatement {
+	// 1. Arrange
+	l := lexer.NewLexer(strings.NewReader(source))
+	p := parser.NewParser(l)
+
+	// 2. Act
+	program := p.Parse()
+
+	// 3. Assert
+	require.Len(t, p.Errors(), 0)
+	require.Len(t, program.Statements, 1)
+
+	statement, ok := program.Statements[0].(*statements.ExpressionStatement)
+	require.True(t, ok, "statement is not an expression")
+	return statement
 }
 
 func testInfixExpression(t *testing.T, exp ast.Expression, left any, op string, right any) {

@@ -16,3 +16,7 @@ func (b *Boolean) String() string {
 }
 
 func (b *Boolean) expressionNode() {}
+
+func NewBoolean(token tokens.Token) *Boolean {
+	return &Boolean{Token: token, Value: token.Type == tokens.TRUE}
+}

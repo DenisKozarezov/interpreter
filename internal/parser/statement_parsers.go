@@ -26,7 +26,7 @@ func (p *Parser) parseLetStatement() ast.Statement {
 		return nil
 	}
 
-	statement.Identifier = &expressions.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+	statement.Identifier = expressions.NewIdentifier(p.currentToken)
 
 	if !p.expectToken(tokens.ASSIGN) {
 		return nil

@@ -61,7 +61,7 @@ func (p *Parser) parseStatement() ast.Statement {
 }
 
 func (p *Parser) parseExpressionStatement() ast.Statement {
-	statement := &statements.ExpressionStatement{Token: p.currentToken, Value: p.parseExpression(LOWEST)}
+	statement := statements.NewStatement(p.currentToken, p.parseExpression(LOWEST))
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
 		p.nextToken()

@@ -23,11 +23,12 @@ func (p *Parser) initPrefixParsers() {
 		tokens.FALSE:      p.parseBooleanLiteral,
 		tokens.LPAREN:     p.parseGroupedExpression,
 		tokens.IF:         p.parseConditionExpression,
+		tokens.FUNCTION:   p.parseFunction,
 	}
 }
 
 func (p *Parser) parseIdentifier() ast.Expression {
-	return &expressions.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+	return expressions.NewIdentifier(p.currentToken)
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
@@ -44,7 +45,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 }
 
 func (p *Parser) parseBooleanLiteral() ast.Expression {
-	return &expressions.Boolean{Token: p.currentToken, Value: p.currentTokenIs(tokens.TRUE)}
+	return expressions.NewBoolean(p.currentToken)
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
@@ -103,9 +104,54 @@ func (p *Parser) parseBlockStatement() *expressions.BlockStatement {
 	p.nextToken()
 
 	for !p.currentTokenIs(tokens.RBRACE) && !p.currentTokenIs(tokens.EOF) {
-		block.Statements = append(block.Statements, p.parseStatement())
+		statement := p.parseStatement()
+		if statement != nil {
+			block.Statements = append(block.Statements, statement)
+		}
 		p.nextToken()
 	}
 
 	return block
+}
+
+func (p *Parser) parseFunction() ast.Expression {
+	expression := &expressions.FunctionLiteral{Token: p.currentToken}
+
+	if !p.expectToken(tokens.LPAREN) {
+		return nil
+	}
+
+	expression.Args = p.parseFunctionArguments()
+
+	if !p.expectToken(tokens.LBRACE) {
+		return nil
+	}
+
+	expression.Body = p.parseBlockStatement()
+
+	return expression
+}
+
+func (p *Parser) parseFunctionArguments() []*expressions.Identifier {
+	var identifiers []*expressions.Identifier
+
+	if p.peekTokenIs(tokens.RPAREN) {
+		p.nextToken()
+		return identifiers
+	}
+
+	p.nextToken()
+
+	identifiers = append(identifiers, expressions.NewIdentifier(p.currentToken))
+	for p.peekTokenIs(tokens.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		identifiers = append(identifiers, expressions.NewIdentifier(p.currentToken))
+	}
+
+	if !p.expectToken(tokens.RPAREN) {
+		return nil
+	}
+
+	return identifiers
 }

@@ -23,3 +23,7 @@ func (i *Identifier) String() string {
 }
 
 func (i *Identifier) expressionNode() {}
+
+func NewIdentifier(token tokens.Token) *Identifier {
+	return &Identifier{Token: token, Value: token.Literal}
+}

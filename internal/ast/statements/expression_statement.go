@@ -25,3 +25,7 @@ func (s *ExpressionStatement) String() string {
 func (s *ExpressionStatement) statementNode() {
 
 }
+
+func NewStatement(token tokens.Token, exp ast.Expression) *ExpressionStatement {
+	return &ExpressionStatement{Token: token, Value: exp}
+}
