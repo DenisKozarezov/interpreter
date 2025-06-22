@@ -4,8 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"interpreter/internal/lexer/tokens"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestReadSymbol(t *testing.T) {
@@ -59,6 +60,51 @@ func TestReadSymbol(t *testing.T) {
 			require.Equal(t, tt.expectedSymbol, l.currentSymbol, "current symbol should be equal")
 			require.Equal(t, tt.index, l.currentPosition, "current position should equal")
 			require.Equal(t, tt.index+1, l.nextPosition, "next position should equal")
+		})
+	}
+}
+
+func TestNextTokenWithWhitespaces(t *testing.T) {
+	for _, tt := range []struct {
+		name             string
+		source           string
+		expectedPosition int64
+	}{
+		{
+			name:             "empty source",
+			source:           "",
+			expectedPosition: 0,
+		},
+		{
+			name:             "1 tabulation",
+			source:           "\t",
+			expectedPosition: 1,
+		},
+		{
+			name:             "2 tabulations",
+			source:           "\t\t",
+			expectedPosition: 2,
+		},
+		{
+			name:             "newlines",
+			source:           "\n\n",
+			expectedPosition: 2,
+		},
+		{
+			name:             "whitespaces",
+			source:           "\n\n\t\t\rhello",
+			expectedPosition: 10,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			// 1. Arrange
+			l := NewLexer(strings.NewReader(tt.source))
+
+			// 2. Act
+			_ = l.NextToken()
+
+			// 3. Assert
+			require.Equal(t, tt.expectedPosition, l.currentPosition)
 		})
 	}
 }
@@ -185,5 +231,52 @@ if (5 < 10) {
 		// 3. Assert
 		require.Equal(t, tt.expectedType, got.Type, "token type should be equal")
 		require.Equal(t, tt.expectedLiteral, got.Literal, "token literal should be equal")
+	}
+}
+
+func TestCommentLine(t *testing.T) {
+	for _, tt := range []struct {
+		name             string
+		source           string
+		expectedPosition int64
+	}{
+		{
+			name:             "only commentary token appears in source, we start from zero index and skip 2 symbols",
+			source:           `//`,
+			expectedPosition: 2,
+		},
+		{
+			name:             "whole line is commented, we skip all of it",
+			source:           `// let x = 5;`,
+			expectedPosition: 13,
+		},
+		{
+			name: "first line is commented, we skip it and go straight to the let statement",
+			source: `// comment
+let x = 5;
+`,
+			expectedPosition: 14, // 10 symbols from the first line + 1 symbol of newline '\n' + 3 symbols of 'let'
+		},
+		{
+			name: "many lines are commented, we skip all of them and go straight to the let statement",
+			source: `// comment
+// comment
+// comment
+// comment
+let x = 5;
+`,
+			expectedPosition: 47, // 40 symbols from the commented lines + 4 symbols of newlines '\n' + 3 symbols of 'let'
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			// 1. Arrange
+			l := NewLexer(strings.NewReader(tt.source))
+
+			// 2. Act
+			_ = l.NextToken()
+
+			// 3. Assert
+			require.Equal(t, tt.expectedPosition, l.currentPosition)
+		})
 	}
 }

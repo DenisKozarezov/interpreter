@@ -25,7 +25,7 @@ func NewREPL(in io.Reader, out io.Writer, errors io.Writer) *REPL {
 func (r *REPL) StartParser() {
 	scanner := bufio.NewScanner(r.in)
 
-	_ = outputString(r.out, "Started to parse an input...")
+	_ = outputString(r.out, "Started to parse an input...\n")
 
 	for {
 		if scanned := scanner.Scan(); !scanned {
@@ -50,13 +50,13 @@ func (r *REPL) StartParser() {
 			_ = outputString(r.out, "\n[%d]: %s", i, stmt.String())
 		}
 	}
-	_ = outputString(r.out, "Parsing completed!")
+	_ = outputString(r.out, "\nParsing completed!")
 }
 
 func (r *REPL) printParserErrors(line *string, errors []error) error {
 	var err error
 
-	if err = outputString(r.errors, "⛔ Syntax error in input:\n>>> %s <<<\n", *line); err != nil {
+	if err = outputString(r.errors, "⛔ Syntax error in input:\n>>> %s <<<\n", strings.TrimSpace(*line)); err != nil {
 		return err
 	}
 

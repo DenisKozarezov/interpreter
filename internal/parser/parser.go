@@ -74,7 +74,7 @@ func (p *Parser) parseExpressionStatement() ast.Statement {
 func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
 	prefix, prefixFound := p.prefixParseFns[p.currentToken.Type]
 	if !prefixFound {
-		p.appendParseError(fmt.Sprintf("no prefix parse function found for token `%s [%d]`", p.currentToken.Literal, p.currentToken.Type))
+		p.appendParseError(fmt.Sprintf("no prefix parse function found for token '%s' [%d]", p.currentToken.Literal, p.currentToken.Type))
 		return nil
 	}
 	expression := prefix()

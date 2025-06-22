@@ -55,6 +55,10 @@ func (l *Lexer) NextToken() tokens.Token {
 	if found {
 		currentSym = unitedSym
 		currentTokenType = unitedTokenType
+		if unitedTokenType == tokens.COMMENT_LINE {
+			l.skipLine()
+			return l.NextToken()
+		}
 		l.readSymbol()
 	}
 
@@ -91,6 +95,12 @@ func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
 
 func (l *Lexer) skipWhitespace() {
 	for l.currentSymbol == whitespace || l.currentSymbol == tabulation || isNewline(l.currentSymbol) {
+		l.readSymbol()
+	}
+}
+
+func (l *Lexer) skipLine() {
+	for !isNewline(l.currentSymbol) && l.currentSymbol != NULL {
 		l.readSymbol()
 	}
 }

@@ -33,6 +33,7 @@ const (
 	RBRACE
 	LBRACKET
 	RBRACKET
+	COMMENT_LINE
 
 	// Ключевые слова
 	FUNCTION
@@ -57,14 +58,15 @@ var tokenTypes = map[string]TokenType{
 	"==": EQ,
 	"!=": NOT_EQ,
 
-	",": COMMA,
-	";": SEMICOLON,
-	"(": LPAREN,
-	")": RPAREN,
-	"{": LBRACE,
-	"}": RBRACE,
-	"[": LBRACKET,
-	"]": RBRACKET,
+	",":  COMMA,
+	";":  SEMICOLON,
+	"(":  LPAREN,
+	")":  RPAREN,
+	"{":  LBRACE,
+	"}":  RBRACE,
+	"[":  LBRACKET,
+	"]":  RBRACKET,
+	"//": COMMENT_LINE,
 }
 
 func LookupTokenType(literal string) (TokenType, bool) {
