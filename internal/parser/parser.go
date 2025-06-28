@@ -10,6 +10,7 @@ import (
 
 type lexer interface {
 	NextToken() tokens.Token
+	CurrentLine() int64
 	CurrentPositionAtLine() int64
 }
 
@@ -74,7 +75,7 @@ func (p *Parser) parseExpressionStatement() ast.Statement {
 func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
 	prefix, prefixFound := p.prefixParseFns[p.currentToken.Type]
 	if !prefixFound {
-		p.appendParseError(fmt.Sprintf("no prefix parse function found for token '%s' [%d]", p.currentToken.Literal, p.currentToken.Type))
+		p.parseError(fmt.Sprintf("no prefix parse function found for token '%s' [%d]", p.currentToken.Literal, p.currentToken.Type))
 		return nil
 	}
 	expression := prefix()
@@ -98,7 +99,7 @@ func (p *Parser) expectToken(tokenType tokens.TokenType) bool {
 		p.nextToken()
 		return true
 	} else {
-		p.appendParseError(fmt.Sprintf("expected token type [%d] but got [%d]", tokenType, p.peekToken.Type))
+		p.parseError(fmt.Sprintf("expected token type [%d] but got [%d]", tokenType, p.peekToken.Type))
 		return false
 	}
 }
@@ -116,6 +117,6 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.lexer.NextToken()
 
 	if p.peekToken.Type == tokens.ILLEGAL {
-		p.appendParseError(fmt.Sprintf("illegal token found '%s'", p.peekToken.Literal))
+		p.parseError(fmt.Sprintf("illegal token found '%s'", p.peekToken.Literal))
 	}
 }

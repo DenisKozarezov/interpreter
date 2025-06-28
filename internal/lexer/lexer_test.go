@@ -119,7 +119,7 @@ let add = fn(x, y) {
 
 let result = add(five, ten);
 
-!-/*5;
+!*-/5;
 5 < 10 > 5;
 
 if (5 < 10) {
@@ -177,9 +177,9 @@ if (5 < 10) {
 		{tokens.SEMICOLON, ";"},
 
 		{tokens.BANG, "!"},
+		{tokens.ASTERISK, "*"},
 		{tokens.MINUS, "-"},
 		{tokens.SLASH, "/"},
-		{tokens.ASTERISK, "*"},
 		{tokens.INT, "5"},
 		{tokens.SEMICOLON, ";"},
 
@@ -266,6 +266,28 @@ let x = 5;
 let x = 5;
 `,
 			expectedPosition: 47, // 40 symbols from the commented lines + 4 symbols of newlines '\n' + 3 symbols of 'let'
+		},
+		{
+			name:             "empty block comment",
+			source:           `/**/`,
+			expectedPosition: 4,
+		},
+		{
+			name:             "one-line block comment",
+			source:           `/* comment */`,
+			expectedPosition: 13,
+		},
+		{
+			name:             "one-line block comment 2",
+			source:           `/*comment*/`,
+			expectedPosition: 11,
+		},
+		{
+			name: "multi-line block comment",
+			source: `/*
+comment
+*/`,
+			expectedPosition: 13,
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {

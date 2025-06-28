@@ -36,7 +36,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
 	if err != nil {
-		p.appendParseError(fmt.Sprintf("could not parse '%q' as integer", p.currentToken.Literal))
+		p.parseError(fmt.Sprintf("could not parse '%q' as integer", p.currentToken.Literal))
 		return nil
 	}
 

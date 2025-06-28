@@ -1,20 +1,13 @@
-// some comment
-// another comment
-//
-// still another comment...
-
 // let invalidReturn = return xyz;
 let invalidReturn = return xyz; // this is not correct: function, constant or variable must be assigned
 let validReturn = fn() { return xyz; } // correct
 
-if (5 == 5) { }
-if (5 == 5) { } else { }
-if (true) { }
-if (5) { }
+/* comment */
+/*
+comment
+*/
 
 // comment // comment // comment
 if 5 == 5 { } // not correct, parentheses are missed
-
              if true { } // is it far enough?
-
                                  if false { } // still not far enough? huh?

@@ -17,16 +17,26 @@ type Reader interface {
 type Lexer struct {
 	reader Reader
 
+	currentSymbol     Symbol
+	currentLine       int64
 	currentPosition   int64
 	nextPosition      int64
 	lineStartPosition int64
-	currentSymbol     Symbol
 }
 
 func NewLexer(reader Reader) *Lexer {
-	l := &Lexer{reader: reader, currentSymbol: NULL, currentPosition: -1, nextPosition: 0}
+	l := &Lexer{
+		reader:          reader,
+		currentLine:     1,
+		currentSymbol:   NULL,
+		currentPosition: -1,
+		nextPosition:    0}
 	l.readSymbol()
 	return l
+}
+
+func (l *Lexer) CurrentLine() int64 {
+	return l.currentLine
 }
 
 func (l *Lexer) CurrentPositionAtLine() int64 {
@@ -57,10 +67,15 @@ func (l *Lexer) NextToken() tokens.Token {
 			literal = unitedLiteral
 			currentTokenType = unitedTokenType
 
-			if unitedTokenType == tokens.COMMENT_LINE {
+			switch unitedTokenType {
+			case tokens.COMMENT_LINE:
 				l.skipLine()
 				continue
+			case tokens.COMMENT_BEGIN:
+				l.skipBlockComment()
+				continue
 			}
+
 			l.readSymbol()
 		}
 
@@ -108,12 +123,24 @@ func (l *Lexer) skipLine() {
 	}
 }
 
+func (l *Lexer) skipBlockComment() {
+	for l.peekSymbol() != NULL {
+		if l.currentSymbol == '*' && l.peekSymbol() == '/' {
+			l.readSymbol()
+			l.readSymbol()
+			break
+		}
+		l.readSymbol()
+	}
+}
+
 func (l *Lexer) readSymbol() {
 	l.currentSymbol = l.peekSymbol()
 	l.currentPosition = l.nextPosition
 	l.nextPosition++
 
-	if isNewline(l.currentSymbol) {
+	if l.currentSymbol == '\n' {
+		l.currentLine++
 		l.lineStartPosition = l.nextPosition
 	}
 }
