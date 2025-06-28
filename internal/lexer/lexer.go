@@ -34,37 +34,40 @@ func (l *Lexer) CurrentPositionAtLine() int64 {
 }
 
 func (l *Lexer) NextToken() tokens.Token {
-	l.skipWhitespace()
+	for {
+		l.skipWhitespace()
 
-	if l.currentSymbol == NULL {
-		return tokens.NewToken(tokens.EOF, "")
-	}
-
-	currentSym := string(l.currentSymbol)
-	currentTokenType, found := tokens.LookupTokenType(currentSym)
-	if !found {
-		return l.parseCustomToken(currentSym)
-	}
-
-	// Если текущий и следующий токены являются частью одного целого токена,
-	// то объединяем их. Например:
-	//  5 == 5 или 5 != 6
-	//    ^^         ^^
-	unitedSym := currentSym + string(l.peekSymbol())
-	unitedTokenType, found := tokens.LookupTokenType(unitedSym)
-	if found {
-		currentSym = unitedSym
-		currentTokenType = unitedTokenType
-		if unitedTokenType == tokens.COMMENT_LINE {
-			l.skipLine()
-			return l.NextToken()
+		if l.currentSymbol == NULL {
+			return tokens.NewToken(tokens.EOF, "")
 		}
+
+		literal := string(l.currentSymbol)
+		currentTokenType, found := tokens.LookupTokenType(literal)
+		if !found {
+			return l.parseCustomToken(literal)
+		}
+
+		// Если текущий и следующий токены являются частью одного целого токена,
+		// то объединяем их. Например:
+		//  5 == 5 или 5 != 6
+		//    ^^         ^^
+		unitedLiteral := literal + string(l.peekSymbol())
+		unitedTokenType, found := tokens.LookupTokenType(unitedLiteral)
+		if found {
+			literal = unitedLiteral
+			currentTokenType = unitedTokenType
+
+			if unitedTokenType == tokens.COMMENT_LINE {
+				l.skipLine()
+				continue
+			}
+			l.readSymbol()
+		}
+
 		l.readSymbol()
+
+		return tokens.NewToken(currentTokenType, literal)
 	}
-
-	l.readSymbol()
-
-	return tokens.NewToken(currentTokenType, currentSym)
 }
 
 func (l *Lexer) parseCustomToken(literal string) tokens.Token {
