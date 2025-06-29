@@ -15,7 +15,7 @@ func main() {
 		_ = errorsLogger.Close()
 	}()
 
-	fileReader, err := os.OpenFile("cmd/invalidProgram.txt", os.O_RDONLY, os.ModeDevice)
+	fileReader, err := os.OpenFile("cmd/program2.txt", os.O_RDONLY, os.ModeDevice)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
 	}

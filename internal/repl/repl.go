@@ -2,6 +2,7 @@ package repl
 
 import (
 	"fmt"
+	"interpreter/internal/evaluator"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
 	"io"
@@ -31,8 +32,9 @@ func (r *REPL) StartParser() {
 		}
 	}
 
-	for i, stmt := range program.Statements {
-		_ = outputString(r.out, "\n[%d]: %s", i, stmt.String())
+	result := evaluator.Evaluate(program)
+	if result != nil {
+		_ = outputString(r.out, "%s\n", result.Inspect())
 	}
 
 	_ = outputString(r.out, "\nParsing completed!")

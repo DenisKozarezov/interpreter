@@ -3,7 +3,7 @@ package object
 type ObjectType string
 
 const (
-	INTEGER ObjectType = "INTEGER"
-	BOOLEAN ObjectType = "BOOLEAN"
-	NULL    ObjectType = "NULL"
+	INTEGER_TYPE ObjectType = "INTEGER_TYPE"
+	BOOLEAN_TYPE ObjectType = "BOOLEAN_TYPE"
+	NULL_TYPE    ObjectType = "NULL"
 )

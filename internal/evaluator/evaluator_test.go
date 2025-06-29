@@ -17,6 +17,8 @@ func TestEvalIntegerExpression(t *testing.T) {
 	}{
 		{"5", 5},
 		{"10", 10},
+		{"-5", -5},
+		{"-10", -10},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -47,4 +49,50 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) {
 	result, ok := obj.(*object.Integer)
 	require.True(t, ok, "expected integer object")
 	require.Equal(t, expected, result.Value, "object's value is wrong")
+}
+
+func TestEvalBoolean(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected bool
+	}{
+		{"true", true},
+		{"false", false},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			testBooleanObject(t, got, tt.expected)
+		})
+	}
+}
+
+func testBooleanObject(t *testing.T, obj object.Object, expected bool) {
+	result, ok := obj.(*object.Boolean)
+	require.True(t, ok, "expected boolean object")
+	require.Equal(t, expected, result.Value, "object's value is wrong")
+}
+
+func TestEvalBangOperator(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected bool
+	}{
+		{"!true", false},
+		{"!false", true},
+		{"!5", false},
+		{"!!true", true},
+		{"!!false", false},
+		{"!!5", true},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			testBooleanObject(t, got, tt.expected)
+		})
+	}
 }

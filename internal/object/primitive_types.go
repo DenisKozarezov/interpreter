@@ -9,7 +9,7 @@ func (i *Null) Inspect() string {
 }
 
 func (i *Null) Type() ObjectType {
-	return NULL
+	return NULL_TYPE
 }
 
 type Integer struct {
@@ -21,8 +21,14 @@ func (i *Integer) Inspect() string {
 }
 
 func (i *Integer) Type() ObjectType {
-	return INTEGER
+	return INTEGER_TYPE
 }
+
+var (
+	TRUE  = &Boolean{Value: true}
+	FALSE = &Boolean{Value: false}
+	NULL  = &Boolean{}
+)
 
 type Boolean struct {
 	Value bool
@@ -33,5 +39,12 @@ func (i *Boolean) Inspect() string {
 }
 
 func (i *Boolean) Type() ObjectType {
-	return BOOLEAN
+	return BOOLEAN_TYPE
+}
+
+func NativeBooleanToObject(input bool) Object {
+	if input {
+		return TRUE
+	}
+	return FALSE
 }
