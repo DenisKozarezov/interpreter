@@ -33,7 +33,7 @@ func (i *Integer) Type() ObjectType {
 var (
 	TRUE  = &Boolean{Value: true}
 	FALSE = &Boolean{Value: false}
-	NULL  = &Boolean{}
+	NULL  = &Null{}
 )
 
 type Boolean struct {
