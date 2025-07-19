@@ -4,6 +4,7 @@ import (
 	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
+	"interpreter/internal/lexer/tokens"
 	"interpreter/internal/object"
 )
 
@@ -33,10 +34,10 @@ func evaluateStatements(statements []ast.Statement) object.Object {
 
 func evalPrefixExpression(exp *expressions.PrefixExpression) object.Object {
 	right := Evaluate(exp.RightExpression)
-	switch exp.Operator {
-	case "!":
+	switch exp.Token.Type {
+	case tokens.BANG:
 		return evalBangOperator(right)
-	case "-":
+	case tokens.MINUS:
 		return evalMinusOperator(right)
 	default:
 		return object.NULL

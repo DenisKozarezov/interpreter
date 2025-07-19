@@ -3,6 +3,7 @@ package tests
 import (
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
+	"interpreter/internal/lexer/tokens"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -21,7 +22,7 @@ func TestConditionExpression(t *testing.T) {
 	require.NotNil(t, condition.Then, "`then` block must have some body")
 	require.Len(t, condition.Then.Statements, 1)
 	require.Nil(t, condition.Else, "`else` block must be empty")
-	testInfixExpression(t, condition.Condition, "x", "<", "y")
+	testInfixExpression(t, condition.Condition, "x", tokens.LT, "y")
 
 	statement, ok = condition.Then.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok)

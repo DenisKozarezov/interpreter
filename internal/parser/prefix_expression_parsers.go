@@ -49,7 +49,7 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 }
 
 func (p *Parser) parsePrefixExpression() ast.Expression {
-	expression := &expressions.PrefixExpression{Token: p.currentToken, Operator: p.currentToken.Literal}
+	expression := &expressions.PrefixExpression{Token: p.currentToken}
 
 	p.nextToken()
 

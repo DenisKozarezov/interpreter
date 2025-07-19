@@ -3,6 +3,7 @@ package tests
 import (
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
+	"interpreter/internal/lexer/tokens"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,7 @@ func TestFunctionLiteral(t *testing.T) {
 
 	exp, ok := fn.Body.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok, "expected expression in function's body")
-	testInfixExpression(t, exp.Value, "x", "+", "y")
+	testInfixExpression(t, exp.Value, "x", tokens.PLUS, "y")
 }
 
 func TestFunctionArguments(t *testing.T) {

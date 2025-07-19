@@ -2,6 +2,7 @@ package tests
 
 import (
 	"interpreter/internal/ast/expressions"
+	"interpreter/internal/lexer/tokens"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,6 +21,6 @@ func TestCallExpression(t *testing.T) {
 	testIdentifier(t, call.Function, "myFunc")
 	require.Len(t, call.Args, 3, "expected 3 arguments passed in function")
 	testLiteralExpression(t, call.Args[0], 1)
-	testInfixExpression(t, call.Args[1], 2, "*", 3)
-	testInfixExpression(t, call.Args[2], 4, "+", 5)
+	testInfixExpression(t, call.Args[1], 2, tokens.ASTERISK, 3)
+	testInfixExpression(t, call.Args[2], 4, tokens.PLUS, 5)
 }

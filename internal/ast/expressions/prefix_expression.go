@@ -18,7 +18,6 @@ import (
 // и т.п.
 type PrefixExpression struct {
 	Token           tokens.Token
-	Operator        string
 	RightExpression ast.Expression
 }
 
@@ -29,7 +28,7 @@ func (s *PrefixExpression) Literal() string {
 func (s *PrefixExpression) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("(")
-	buffer.WriteString(s.Operator)
+	buffer.WriteString(s.Token.Literal)
 	buffer.WriteString(s.RightExpression.String())
 	buffer.WriteString(")")
 	return buffer.String()

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"interpreter/internal/lexer/tokens"
 	"strconv"
 	"testing"
 
@@ -36,13 +37,13 @@ func TestIntegerLiteralExpression(t *testing.T) {
 func TestPrefixExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source           string
-		expectedOperator string
+		expectedOperator tokens.TokenType
 		rightExpression  any
 	}{
-		{"!5;", "!", 5},
-		{"-15;", "-", 15},
-		{"!true;", "!", true},
-		{"!false;", "!", false},
+		{"!5;", tokens.BANG, 5},
+		{"-15;", tokens.MINUS, 15},
+		{"!true;", tokens.BANG, true},
+		{"!false;", tokens.BANG, false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -51,7 +52,7 @@ func TestPrefixExpression(t *testing.T) {
 			// 2. Assert
 			prefix, ok := statement.Value.(*expressions.PrefixExpression)
 			require.True(t, ok, "expression is not a prefix")
-			require.Equal(t, tt.expectedOperator, prefix.Operator)
+			require.Equal(t, tt.expectedOperator, prefix.Token.Type)
 
 			testLiteralExpression(t, prefix.RightExpression, tt.rightExpression)
 		})
@@ -62,20 +63,20 @@ func TestInfixExpression(t *testing.T) {
 	for _, tt := range []struct {
 		source           string
 		leftExpression   any
-		expectedOperator string
+		expectedOperator tokens.TokenType
 		rightExpression  any
 	}{
-		{"5 + 5;", 5, "+", 5},
-		{"5 - 5;", 5, "-", 5},
-		{"5 * 5;", 5, "*", 5},
-		{"5 / 5;", 5, "/", 5},
-		{"5 > 5;", 5, ">", 5},
-		{"5 < 5;", 5, "<", 5},
-		{"5 == 5;", 5, "==", 5},
-		{"5 != 5;", 5, "!=", 5},
-		{"true == true", true, "==", true},
-		{"true != false", true, "!=", false},
-		{"false == false", false, "==", false},
+		{"5 + 5;", 5, tokens.PLUS, 5},
+		{"5 - 5;", 5, tokens.MINUS, 5},
+		{"5 * 5;", 5, tokens.ASTERISK, 5},
+		{"5 / 5;", 5, tokens.SLASH, 5},
+		{"5 > 5;", 5, tokens.GT, 5},
+		{"5 < 5;", 5, tokens.LT, 5},
+		{"5 == 5;", 5, tokens.EQ, 5},
+		{"5 != 5;", 5, tokens.NOT_EQ, 5},
+		{"true == true", true, tokens.EQ, true},
+		{"true != false", true, tokens.NOT_EQ, false},
+		{"false == false", false, tokens.EQ, false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -105,10 +106,10 @@ func TestBooleanExpression(t *testing.T) {
 	}
 }
 
-func testInfixExpression(t *testing.T, exp ast.Expression, left any, op string, right any) {
+func testInfixExpression(t *testing.T, exp ast.Expression, left any, op tokens.TokenType, right any) {
 	infix, ok := exp.(*expressions.InfixExpression)
 	require.True(t, ok, "expression is not an infix")
-	require.Equal(t, op, infix.Operator)
+	require.Equal(t, op, infix.Token.Type)
 
 	testLiteralExpression(t, infix.LeftExpression, left)
 	testLiteralExpression(t, infix.RightExpression, right)

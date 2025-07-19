@@ -65,7 +65,6 @@ func (p *Parser) initInfixParsers() {
 func (p *Parser) parseInfixExpression(leftExpression ast.Expression) ast.Expression {
 	expression := &expressions.InfixExpression{
 		Token:          p.currentToken,
-		Operator:       p.currentToken.Literal,
 		LeftExpression: leftExpression,
 	}
 

@@ -20,7 +20,6 @@ import (
 // и т.п.
 type InfixExpression struct {
 	Token           tokens.Token
-	Operator        string
 	LeftExpression  ast.Expression
 	RightExpression ast.Expression
 }
@@ -33,7 +32,7 @@ func (s *InfixExpression) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("(")
 	buffer.WriteString(s.LeftExpression.String())
-	buffer.WriteString(" " + s.Operator + " ")
+	buffer.WriteString(" " + s.Token.Literal + " ")
 	buffer.WriteString(s.RightExpression.String())
 	buffer.WriteString(")")
 	return buffer.String()
