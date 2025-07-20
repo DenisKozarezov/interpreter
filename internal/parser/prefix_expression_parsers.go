@@ -97,23 +97,6 @@ func (p *Parser) parseConditionExpression() ast.Expression {
 	return expression
 }
 
-func (p *Parser) parseBlockStatement() *expressions.BlockStatement {
-	block := &expressions.BlockStatement{Token: p.currentToken}
-	block.Statements = []ast.Statement{}
-
-	p.nextToken()
-
-	for !p.currentTokenIs(tokens.RBRACE) && !p.currentTokenIs(tokens.EOF) {
-		statement := p.parseStatement()
-		if statement != nil {
-			block.Statements = append(block.Statements, statement)
-		}
-		p.nextToken()
-	}
-
-	return block
-}
-
 func (p *Parser) parseFunction() ast.Expression {
 	expression := &expressions.FunctionLiteral{Token: p.currentToken}
 

@@ -2,6 +2,7 @@ package expressions
 
 import (
 	"bytes"
+	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 	"strings"
 )
@@ -18,7 +19,7 @@ import (
 type FunctionLiteral struct {
 	Token tokens.Token
 	Args  []*Identifier
-	Body  *BlockStatement
+	Body  *statements.BlockStatement
 }
 
 func (f *FunctionLiteral) Literal() string {

@@ -57,7 +57,7 @@ func (r *REPL) printParserErrors(errors []error) error {
 }
 
 func outputString(out io.Writer, s string, args ...any) error {
-	if _, err := out.Write([]byte(fmt.Sprintf(s, args...))); err != nil {
+	if _, err := fmt.Fprintf(out, s, args...); err != nil {
 		return fmt.Errorf("failed to put a string in output: %w", err)
 	}
 	return nil

@@ -56,3 +56,20 @@ func (p *Parser) parseReturnStatement() ast.Statement {
 
 	return &statement
 }
+
+func (p *Parser) parseBlockStatement() *statements.BlockStatement {
+	block := &statements.BlockStatement{Token: p.currentToken}
+	block.Statements = []ast.Statement{}
+
+	p.nextToken()
+
+	for !p.currentTokenIs(tokens.RBRACE) && !p.currentTokenIs(tokens.EOF) {
+		statement := p.parseStatement()
+		if statement != nil {
+			block.Statements = append(block.Statements, statement)
+		}
+		p.nextToken()
+	}
+
+	return block
+}

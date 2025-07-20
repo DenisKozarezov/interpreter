@@ -4,13 +4,12 @@ import (
 	"bytes"
 
 	"interpreter/internal/ast"
-	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type LetStatement struct {
 	Token      tokens.Token
-	Identifier *expressions.Identifier
+	Identifier ast.Expression
 	Value      ast.Expression
 }
 

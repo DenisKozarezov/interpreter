@@ -3,6 +3,7 @@ package expressions
 import (
 	"bytes"
 	"interpreter/internal/ast"
+	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
@@ -22,8 +23,8 @@ import (
 type ConditionExpression struct {
 	Token     tokens.Token
 	Condition ast.Expression
-	Then      *BlockStatement
-	Else      *BlockStatement
+	Then      *statements.BlockStatement
+	Else      *statements.BlockStatement
 }
 
 func (c *ConditionExpression) Literal() string {
