@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // InfixExpression представляет собой выражение, состоящее из двух операндов - левого
@@ -37,6 +38,6 @@ func (s *InfixExpression) String() string {
 	return buffer.String()
 }
 
-func (s *InfixExpression) expressionNode() {
-
+func (s *InfixExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitInfix(s)
 }

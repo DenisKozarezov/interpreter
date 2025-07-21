@@ -3,8 +3,8 @@ package expressions
 import (
 	"bytes"
 
-	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // ConditionExpression обозначает выражение, содержажее блок выполнения Then и
@@ -23,8 +23,8 @@ import (
 type ConditionExpression struct {
 	Token     tokens.Token
 	Condition Expression
-	Then      *statements.BlockStatement
-	Else      *statements.BlockStatement
+	Then      Statement
+	Else      Statement
 }
 
 func (c *ConditionExpression) Literal() string {
@@ -46,4 +46,6 @@ func (c *ConditionExpression) String() string {
 	return buffer.String()
 }
 
-func (c *ConditionExpression) expressionNode() {}
+func (c *ConditionExpression) Accept(_ ExpressionVisitor) object.Object {
+	return nil
+}

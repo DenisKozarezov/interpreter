@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // BlockStatement представляет собой блок различных инструкций. Например:
@@ -32,6 +33,6 @@ func (s *BlockStatement) String() string {
 	return buffer.String()
 }
 
-func (s *BlockStatement) statementNode() {
-
+func (s *BlockStatement) Accept(_ StatementVisitor) object.Object {
+	return nil
 }

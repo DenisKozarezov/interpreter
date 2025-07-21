@@ -3,14 +3,13 @@ package tests
 import (
 	"testing"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
 
 func TestString(t *testing.T) {
-	program := &ast.Program{
+	program := &statements.Program{
 		Statements: []statements.Statement{
 			&statements.LetStatement{
 				Token: tokens.NewToken(tokens.LET, "let"),

@@ -1,6 +1,10 @@
 package lexer
 
-import "interpreter/internal/lexer/tokens"
+import (
+	"unicode"
+
+	"interpreter/internal/lexer/tokens"
+)
 
 func (l *Lexer) parseWord() (tokens.Token, bool) {
 	if isLetter(l.currentSymbol) {
@@ -12,7 +16,7 @@ func (l *Lexer) parseWord() (tokens.Token, bool) {
 }
 
 func isLetter(symbol Symbol) bool {
-	return 'a' <= symbol && symbol <= 'z' || 'A' <= symbol && symbol <= 'Z' || symbol == '_'
+	return unicode.IsLetter(symbol)
 }
 
 func (l *Lexer) parseDigit() (tokens.Token, bool) {
@@ -23,7 +27,7 @@ func (l *Lexer) parseDigit() (tokens.Token, bool) {
 }
 
 func isDigit(symbol Symbol) bool {
-	return '0' <= symbol && symbol <= '9'
+	return unicode.IsDigit(symbol)
 }
 
 const (

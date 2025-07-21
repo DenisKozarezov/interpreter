@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // PrefixExpression представляет собой выражение, состоящее из правого операнда,
@@ -33,6 +34,6 @@ func (s *PrefixExpression) String() string {
 	return buffer.String()
 }
 
-func (s *PrefixExpression) expressionNode() {
-
+func (s *PrefixExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitPrefix(s)
 }

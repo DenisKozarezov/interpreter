@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"strings"
 
-	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // FunctionLiteral выражение, которое определяет функцию со списком аргументов Args и блоком
@@ -20,7 +20,7 @@ import (
 type FunctionLiteral struct {
 	Token tokens.Token
 	Args  []*Identifier
-	Body  *statements.BlockStatement
+	Body  Statement
 }
 
 func (f *FunctionLiteral) Literal() string {
@@ -44,4 +44,6 @@ func (f *FunctionLiteral) String() string {
 	return buffer.String()
 }
 
-func (f *FunctionLiteral) expressionNode() {}
+func (f *FunctionLiteral) Accept(_ ExpressionVisitor) object.Object {
+	return nil
+}

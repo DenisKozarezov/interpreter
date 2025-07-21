@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // CallExpression представляет собой выражение, которое обозначает вызов функции и содержит
@@ -43,4 +44,6 @@ func (c *CallExpression) String() string {
 	return buffer.String()
 }
 
-func (c *CallExpression) expressionNode() {}
+func (c *CallExpression) Accept(_ ExpressionVisitor) object.Object {
+	return nil
+}

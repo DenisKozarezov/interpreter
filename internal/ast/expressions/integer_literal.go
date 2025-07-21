@@ -2,6 +2,7 @@ package expressions
 
 import (
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // IntegerLiteral представляет собой выражение, которое производит на свет некую
@@ -29,4 +30,6 @@ func (l *IntegerLiteral) String() string {
 	return l.Literal()
 }
 
-func (l *IntegerLiteral) expressionNode() {}
+func (l *IntegerLiteral) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitInteger(l)
+}

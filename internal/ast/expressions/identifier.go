@@ -1,6 +1,9 @@
 package expressions
 
-import "interpreter/internal/lexer/tokens"
+import (
+	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
+)
 
 // Identifier представляет собой выражение, которое образует строковый идентификатор.
 // Это может быть как идентификатор переменной, так и идентификатор функции и т.п. Например:
@@ -22,7 +25,9 @@ func (i *Identifier) String() string {
 	return i.Value
 }
 
-func (i *Identifier) expressionNode() {}
+func (i *Identifier) Accept(_ ExpressionVisitor) object.Object {
+	return nil
+}
 
 func NewIdentifier(token tokens.Token) *Identifier {
 	return &Identifier{Token: token, Value: token.Literal}

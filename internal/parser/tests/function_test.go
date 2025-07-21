@@ -24,9 +24,11 @@ func TestFunctionLiteral(t *testing.T) {
 	require.Equal(t, fn.Args[0].Literal(), "x")
 	require.Equal(t, fn.Args[1].Literal(), "y")
 	require.NotNil(t, fn.Body)
-	require.Len(t, fn.Body.Statements, 1, "expected some statements in function's body")
+	body, ok := fn.Body.(*statements.BlockStatement)
+	require.True(t, ok, "expected block statement")
+	require.Len(t, body.Statements, 1, "expected some statements in function's body")
 
-	exp, ok := fn.Body.Statements[0].(*statements.ExpressionStatement)
+	exp, ok := body.Statements[0].(*statements.ExpressionStatement)
 	require.True(t, ok, "expected expression in function's body")
 	testInfixExpression(t, exp.Value, "x", tokens.PLUS, "y")
 }

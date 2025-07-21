@@ -3,12 +3,14 @@ package statements
 import (
 	"bytes"
 
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 type ReturnStatement struct {
 	Token tokens.Token
-	Value Expression
+	Value expressions.Expression
 }
 
 func (s *ReturnStatement) Literal() string {
@@ -26,6 +28,6 @@ func (s *ReturnStatement) String() string {
 	return buffer.String()
 }
 
-func (s *ReturnStatement) statementNode() {
-
+func (s *ReturnStatement) Accept(_ StatementVisitor) object.Object {
+	return nil
 }

@@ -54,7 +54,7 @@ func testEval(t *testing.T, source string) object.Object {
 	require.Len(t, p.Errors(), 0)
 	require.Len(t, program.Statements, 1)
 
-	return Evaluate(program)
+	return EvaluateStatement(program)
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) {

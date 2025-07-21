@@ -2,11 +2,12 @@ package repl
 
 import (
 	"fmt"
+	"io"
+	"log"
+
 	"interpreter/internal/evaluator"
 	"interpreter/internal/lexer"
 	"interpreter/internal/parser"
-	"io"
-	"log"
 )
 
 type REPL struct {
@@ -32,7 +33,7 @@ func (r *REPL) StartParser() {
 		}
 	}
 
-	result := evaluator.Evaluate(program)
+	result := evaluator.EvaluateStatement(program)
 	if result != nil {
 		_ = outputString(r.out, "%s\n", result.Inspect())
 	}

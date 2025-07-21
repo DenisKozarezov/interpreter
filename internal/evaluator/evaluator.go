@@ -1,60 +1,29 @@
 package evaluator
 
 import (
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 	"interpreter/internal/object"
 )
 
-func Evaluate(node ast.Node) object.Object {
-	switch obj := node.(type) {
-	case *ast.Program:
-		return evaluateStatements(obj.Statements)
-	case *statements.ExpressionStatement:
-		return Evaluate(obj.Value)
-	case *expressions.IntegerLiteral:
-		return &object.Integer{Value: obj.Value}
-	case *expressions.Boolean:
-		return object.NativeBooleanToObject(obj.Value)
-	case *expressions.PrefixExpression:
-		return evalPrefixExpression(obj)
-	case *expressions.InfixExpression:
-		return evalInfixExpression(obj)
-	}
-	return nil
+type IVisitable[TVisitor any, TReturn any] interface {
+	Accept(TVisitor) TReturn
 }
 
-func evaluateStatements(statements []statements.Statement) object.Object {
-	var result object.Object
-	for i := range statements {
-		result = Evaluate(statements[i])
-	}
-	return result
+type (
+	ExpressionNode = IVisitable[expressions.ExpressionVisitor, object.Object]
+	StatementNode  = IVisitable[statements.StatementVisitor, object.Object]
+)
+
+func EvaluateExpression(node ExpressionNode) object.Object {
+	var v ASTVisitor
+	return node.Accept(&v)
 }
 
-func evalPrefixExpression(exp *expressions.PrefixExpression) object.Object {
-	right := Evaluate(exp.RightExpression)
-	switch exp.Token.Type {
-	case tokens.BANG:
-		return evalBangOperator(right)
-	case tokens.MINUS:
-		return evalMinusOperator(right)
-	default:
-		return object.NULL
-	}
-}
-
-func evalInfixExpression(exp *expressions.InfixExpression) object.Object {
-	left := Evaluate(exp.LeftExpression)
-	right := Evaluate(exp.RightExpression)
-	switch {
-	case left.Type() == object.INTEGER_TYPE && right.Type() == object.INTEGER_TYPE:
-		return evalInfixIntegerExpression(left, right, exp.Token.Type)
-	default:
-		return object.NULL
-	}
+func EvaluateStatement(node StatementNode) object.Object {
+	var v ASTVisitor
+	return node.Accept(&v)
 }
 
 func evalInfixIntegerExpression(left, right object.Object, operator tokens.TokenType) object.Object {
