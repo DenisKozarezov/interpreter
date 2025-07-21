@@ -54,3 +54,14 @@ func NativeBooleanToObject(input bool) Object {
 	}
 	return FALSE
 }
+
+func ObjectToNativeBoolean(obj Object) bool {
+	switch obj {
+	case NULL, FALSE:
+		return false
+	case TRUE:
+		return true
+	default:
+		return true
+	}
+}

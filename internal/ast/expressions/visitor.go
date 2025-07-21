@@ -7,4 +7,5 @@ type ExpressionVisitor interface {
 	VisitBoolean(boolean *Boolean) object.Object
 	VisitPrefix(prefix *PrefixExpression) object.Object
 	VisitInfix(infix *InfixExpression) object.Object
+	VisitCondition(condition *ConditionExpression) object.Object
 }

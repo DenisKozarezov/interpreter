@@ -46,6 +46,6 @@ func (c *ConditionExpression) String() string {
 	return buffer.String()
 }
 
-func (c *ConditionExpression) Accept(_ ExpressionVisitor) object.Object {
-	return nil
+func (c *ConditionExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitCondition(c)
 }

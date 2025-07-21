@@ -33,6 +33,6 @@ func (s *BlockStatement) String() string {
 	return buffer.String()
 }
 
-func (s *BlockStatement) Accept(_ StatementVisitor) object.Object {
-	return nil
+func (s *BlockStatement) Accept(visitor StatementVisitor) object.Object {
+	return visitor.VisitBlockStatement(s)
 }

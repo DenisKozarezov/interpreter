@@ -10,11 +10,7 @@ import (
 type ASTVisitor struct{}
 
 func (v *ASTVisitor) VisitProgram(program *statements.Program) object.Object {
-	var result object.Object
-	for i := range program.Statements {
-		result = EvaluateStatement(program.Statements[i])
-	}
-	return result
+	return evalStatements(program.Statements)
 }
 
 func (v *ASTVisitor) VisitExpression(expression *statements.ExpressionStatement) object.Object {
@@ -50,4 +46,19 @@ func (v *ASTVisitor) VisitInfix(infix *expressions.InfixExpression) object.Objec
 	default:
 		return object.NULL
 	}
+}
+
+func (v *ASTVisitor) VisitCondition(condition *expressions.ConditionExpression) object.Object {
+	cond := EvaluateExpression(condition.Condition)
+	if object.ObjectToNativeBoolean(cond) {
+		return EvaluateStatement(condition.Then.(*statements.BlockStatement))
+	} else if condition.Else != nil {
+		return EvaluateStatement(condition.Else.(*statements.BlockStatement))
+	} else {
+		return object.NULL
+	}
+}
+
+func (v *ASTVisitor) VisitBlockStatement(condition *statements.BlockStatement) object.Object {
+	return evalStatements(condition.Statements)
 }

@@ -12,16 +12,16 @@ type IVisitable[TVisitor any, TReturn any] interface {
 }
 
 type (
-	ExpressionNode = IVisitable[expressions.ExpressionVisitor, object.Object]
-	StatementNode  = IVisitable[statements.StatementVisitor, object.Object]
+	VisitableExpression = IVisitable[expressions.ExpressionVisitor, object.Object]
+	VisitableStatement  = IVisitable[statements.StatementVisitor, object.Object]
 )
 
-func EvaluateExpression(node ExpressionNode) object.Object {
+func EvaluateExpression(node VisitableExpression) object.Object {
 	var v ASTVisitor
 	return node.Accept(&v)
 }
 
-func EvaluateStatement(node StatementNode) object.Object {
+func EvaluateStatement(node VisitableStatement) object.Object {
 	var v ASTVisitor
 	return node.Accept(&v)
 }
@@ -50,6 +50,14 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 	default:
 		return object.NULL
 	}
+}
+
+func evalStatements(statements []statements.Statement) object.Object {
+	var result object.Object
+	for i := range statements {
+		result = EvaluateStatement(statements[i])
+	}
+	return result
 }
 
 func evalBangOperator(right object.Object) object.Object {

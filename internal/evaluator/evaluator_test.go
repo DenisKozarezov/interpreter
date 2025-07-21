@@ -116,3 +116,35 @@ func TestEvalBangOperator(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalIfElse(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected any
+	}{
+		{"if (true) { 10 }", 10},
+		{"if (false) { 10 }", nil},
+		{"if (1) { 10 }", 10},
+		{"if (1 < 2) { 10 }", 10},
+		{"if (1 > 2) { 10 }", nil},
+		{"if (1 > 2) { 10 } else { 20 }", 20},
+		{"if (1 < 2) { 10 } else { 20 }", 10},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				testNullObject(t, got)
+			}
+		})
+	}
+}
+
+func testNullObject(t *testing.T, obj object.Object) {
+	require.Equal(t, obj, object.NULL, "object is not NULL. got=%T", obj)
+}
