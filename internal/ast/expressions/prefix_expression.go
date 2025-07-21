@@ -3,7 +3,6 @@ package expressions
 import (
 	"bytes"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
 )
 
@@ -18,7 +17,7 @@ import (
 // и т.п.
 type PrefixExpression struct {
 	Token           tokens.Token
-	RightExpression ast.Expression
+	RightExpression Expression
 }
 
 func (s *PrefixExpression) Literal() string {

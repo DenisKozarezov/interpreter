@@ -1,10 +1,11 @@
 package tests
 
 import (
+	"testing"
+
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 )

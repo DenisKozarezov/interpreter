@@ -2,9 +2,10 @@ package expressions
 
 import (
 	"bytes"
+	"strings"
+
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
-	"strings"
 )
 
 // FunctionLiteral выражение, которое определяет функцию со списком аргументов Args и блоком

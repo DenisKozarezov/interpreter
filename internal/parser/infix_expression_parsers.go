@@ -1,17 +1,16 @@
 package parser
 
 import (
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type (
-	infixParserFn = func(expression ast.Expression) ast.Expression
+	infixParserFn = func(expression expressions.Expression) expressions.Expression
 )
 
 // Precedence означает порядок (ранг) оператора согласно арифметическим, семантическим
-// правилам языка программирования. Чем выше ранг, тем выше порядок выполнения, а, следовательно
+// правилам языка программирования. Чем выше ранг, тем выше порядок выполнения, а, следовательно,
 // приоритет выражения. Например, выражение (a + b + c) слева-направо можно представить
 // как:
 //
@@ -62,7 +61,7 @@ func (p *Parser) initInfixParsers() {
 	}
 }
 
-func (p *Parser) parseInfixExpression(leftExpression ast.Expression) ast.Expression {
+func (p *Parser) parseInfixExpression(leftExpression expressions.Expression) expressions.Expression {
 	expression := &expressions.InfixExpression{
 		Token:          p.currentToken,
 		LeftExpression: leftExpression,

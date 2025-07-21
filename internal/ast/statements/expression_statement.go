@@ -1,13 +1,12 @@
 package statements
 
 import (
-	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
 )
 
 type ExpressionStatement struct {
 	Token tokens.Token
-	Value ast.Expression
+	Value Expression
 }
 
 func (s *ExpressionStatement) Literal() string {
@@ -26,6 +25,6 @@ func (s *ExpressionStatement) statementNode() {
 
 }
 
-func NewStatement(token tokens.Token, exp ast.Expression) *ExpressionStatement {
+func NewStatement(token tokens.Token, exp Expression) *ExpressionStatement {
 	return &ExpressionStatement{Token: token, Value: exp}
 }

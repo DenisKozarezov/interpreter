@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
 )
 
 type (
-	prefixParserFn = func() ast.Expression
+	prefixParserFn = func() expressions.Expression
 )
 
 func (p *Parser) initPrefixParsers() {
@@ -27,11 +26,11 @@ func (p *Parser) initPrefixParsers() {
 	}
 }
 
-func (p *Parser) parseIdentifier() ast.Expression {
+func (p *Parser) parseIdentifier() expressions.Expression {
 	return expressions.NewIdentifier(p.currentToken)
 }
 
-func (p *Parser) parseIntegerLiteral() ast.Expression {
+func (p *Parser) parseIntegerLiteral() expressions.Expression {
 	literal := &expressions.IntegerLiteral{Token: p.currentToken}
 
 	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
@@ -44,11 +43,11 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return literal
 }
 
-func (p *Parser) parseBooleanLiteral() ast.Expression {
+func (p *Parser) parseBooleanLiteral() expressions.Expression {
 	return expressions.NewBoolean(p.currentToken)
 }
 
-func (p *Parser) parsePrefixExpression() ast.Expression {
+func (p *Parser) parsePrefixExpression() expressions.Expression {
 	expression := &expressions.PrefixExpression{Token: p.currentToken}
 
 	p.nextToken()
@@ -57,7 +56,7 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
-func (p *Parser) parseGroupedExpression() ast.Expression {
+func (p *Parser) parseGroupedExpression() expressions.Expression {
 	p.nextToken()
 
 	exp := p.parseExpression(LOWEST)
@@ -69,7 +68,7 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	return exp
 }
 
-func (p *Parser) parseConditionExpression() ast.Expression {
+func (p *Parser) parseConditionExpression() expressions.Expression {
 	expression := &expressions.ConditionExpression{Token: p.currentToken}
 
 	if !p.expectToken(tokens.LPAREN) {
@@ -97,7 +96,7 @@ func (p *Parser) parseConditionExpression() ast.Expression {
 	return expression
 }
 
-func (p *Parser) parseFunction() ast.Expression {
+func (p *Parser) parseFunction() expressions.Expression {
 	expression := &expressions.FunctionLiteral{Token: p.currentToken}
 
 	if !p.expectToken(tokens.LPAREN) {
@@ -139,14 +138,14 @@ func (p *Parser) parseFunctionArguments() []*expressions.Identifier {
 	return identifiers
 }
 
-func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+func (p *Parser) parseCallExpression(function expressions.Expression) expressions.Expression {
 	exp := &expressions.CallExpression{Token: p.currentToken, Function: function}
 	exp.Args = p.parseCallArguments()
 	return exp
 }
 
-func (p *Parser) parseCallArguments() []ast.Expression {
-	var args []ast.Expression
+func (p *Parser) parseCallArguments() []expressions.Expression {
+	var args []expressions.Expression
 
 	if p.peekTokenIs(tokens.RPAREN) {
 		p.nextToken()

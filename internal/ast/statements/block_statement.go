@@ -2,7 +2,7 @@ package statements
 
 import (
 	"bytes"
-	"interpreter/internal/ast"
+
 	"interpreter/internal/lexer/tokens"
 )
 
@@ -17,7 +17,7 @@ import (
 //     { let x = 1; return x; }
 type BlockStatement struct {
 	Token      tokens.Token
-	Statements []ast.Statement
+	Statements []Statement
 }
 
 func (s *BlockStatement) Literal() string {

@@ -2,10 +2,12 @@ package ast
 
 import (
 	"bytes"
+
+	"interpreter/internal/ast/statements"
 )
 
 type Program struct {
-	Statements []Statement
+	Statements []statements.Statement
 }
 
 func (p *Program) Literal() string {

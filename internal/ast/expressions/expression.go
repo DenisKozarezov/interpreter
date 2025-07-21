@@ -1,8 +1,8 @@
-package ast
+package expressions
 
 import "fmt"
 
-type Node interface {
+type Expression interface {
 	fmt.Stringer
 	Literal() string
 }

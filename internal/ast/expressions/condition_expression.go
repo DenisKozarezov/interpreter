@@ -2,7 +2,7 @@ package expressions
 
 import (
 	"bytes"
-	"interpreter/internal/ast"
+
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
@@ -22,7 +22,7 @@ import (
 //  5. '{ return y; }' - блок альтернативы Else при ложном условии Condition.
 type ConditionExpression struct {
 	Token     tokens.Token
-	Condition ast.Expression
+	Condition Expression
 	Then      *statements.BlockStatement
 	Else      *statements.BlockStatement
 }

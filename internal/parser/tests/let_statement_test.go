@@ -1,11 +1,11 @@
 package tests
 
 import (
-	"interpreter/internal/ast"
-	"interpreter/internal/lexer"
-	"interpreter/internal/parser"
 	"strings"
 	"testing"
+
+	"interpreter/internal/lexer"
+	"interpreter/internal/parser"
 
 	"interpreter/internal/ast/statements"
 
@@ -46,7 +46,7 @@ func parseProgramAndCheckExpression(t *testing.T, source string) *statements.Exp
 	return expression
 }
 
-func parseProgramAndCheck(t *testing.T, source string) ast.Statement {
+func parseProgramAndCheck(t *testing.T, source string) statements.Statement {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)

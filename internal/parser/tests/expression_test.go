@@ -2,11 +2,11 @@ package tests
 
 import (
 	"fmt"
-	"interpreter/internal/lexer/tokens"
 	"strconv"
 	"testing"
 
-	"interpreter/internal/ast"
+	"interpreter/internal/lexer/tokens"
+
 	"interpreter/internal/ast/expressions"
 
 	"github.com/stretchr/testify/require"
@@ -106,7 +106,7 @@ func TestBooleanExpression(t *testing.T) {
 	}
 }
 
-func testInfixExpression(t *testing.T, exp ast.Expression, left any, op tokens.TokenType, right any) {
+func testInfixExpression(t *testing.T, exp expressions.Expression, left any, op tokens.TokenType, right any) {
 	infix, ok := exp.(*expressions.InfixExpression)
 	require.True(t, ok, "expression is not an infix")
 	require.Equal(t, op, infix.Token.Type)
@@ -115,7 +115,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left any, op tokens.T
 	testLiteralExpression(t, infix.RightExpression, right)
 }
 
-func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
+func testLiteralExpression(t *testing.T, exp expressions.Expression, expected any) {
 	switch v := expected.(type) {
 	case int:
 		testIntegerExpression(t, exp, int64(v))
@@ -134,20 +134,20 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) {
 	}
 }
 
-func testIdentifier(t *testing.T, exp ast.Expression, expected string) {
+func testIdentifier(t *testing.T, exp expressions.Expression, expected string) {
 	ident, ok := exp.(*expressions.Identifier)
 	require.True(t, ok, "expression is not an identifier")
 	require.Equal(t, expected, ident.Literal())
 }
 
-func testIntegerExpression(t *testing.T, exp ast.Expression, expected int64) {
+func testIntegerExpression(t *testing.T, exp expressions.Expression, expected int64) {
 	integer, ok := exp.(*expressions.IntegerLiteral)
 	require.True(t, ok, "expression is not an integer")
 	require.Equal(t, expected, integer.Value)
 	require.Equal(t, strconv.FormatInt(expected, 10), integer.Literal())
 }
 
-func testBooleanLiteral(t *testing.T, exp ast.Expression, expected bool) {
+func testBooleanLiteral(t *testing.T, exp expressions.Expression, expected bool) {
 	boolean, ok := exp.(*expressions.Boolean)
 	require.True(t, ok, "expression is not a boolean")
 	require.Equal(t, expected, boolean.Value)

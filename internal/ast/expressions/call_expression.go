@@ -2,9 +2,9 @@ package expressions
 
 import (
 	"bytes"
-	"interpreter/internal/ast"
-	"interpreter/internal/lexer/tokens"
 	"strings"
+
+	"interpreter/internal/lexer/tokens"
 )
 
 // CallExpression представляет собой выражение, которое обозначает вызов функции и содержит
@@ -20,8 +20,8 @@ import (
 //  3. 'x, y' - идентификаторы аргументов функции.
 type CallExpression struct {
 	Token    tokens.Token
-	Function ast.Expression
-	Args     []ast.Expression
+	Function Expression
+	Args     []Expression
 }
 
 func (c *CallExpression) Literal() string {

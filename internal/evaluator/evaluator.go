@@ -26,7 +26,7 @@ func Evaluate(node ast.Node) object.Object {
 	return nil
 }
 
-func evaluateStatements(statements []ast.Statement) object.Object {
+func evaluateStatements(statements []statements.Statement) object.Object {
 	var result object.Object
 	for i := range statements {
 		result = Evaluate(statements[i])

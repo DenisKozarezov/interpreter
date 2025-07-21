@@ -1,11 +1,12 @@
 package evaluator
 
 import (
+	"strings"
+	"testing"
+
 	"interpreter/internal/lexer"
 	"interpreter/internal/object"
 	"interpreter/internal/parser"
-	"strings"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 )
