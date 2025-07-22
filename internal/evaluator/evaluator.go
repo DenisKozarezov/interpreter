@@ -52,10 +52,26 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 	}
 }
 
-func evalStatements(statements []statements.Statement) object.Object {
+func evalProgram(statements []statements.Statement) object.Object {
 	var result object.Object
 	for i := range statements {
 		result = EvaluateStatement(statements[i])
+
+		if returnValue, ok := result.(*object.Return); ok {
+			return returnValue.Value
+		}
+	}
+	return result
+}
+
+func evalBlockStatements(statements []statements.Statement) object.Object {
+	var result object.Object
+	for i := range statements {
+		result = EvaluateStatement(statements[i])
+
+		if result != nil && result.Type() == object.RETURN_TYPE {
+			return result
+		}
 	}
 	return result
 }

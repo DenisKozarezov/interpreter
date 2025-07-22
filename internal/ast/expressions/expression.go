@@ -1,17 +1,15 @@
 package expressions
 
 import (
-	"fmt"
-
+	"interpreter/internal/ast"
 	"interpreter/internal/object"
 )
 
-type Statement interface {
-	fmt.Stringer
+type statement interface {
+	ast.Node
 }
 
 type Expression interface {
-	fmt.Stringer
-	Literal() string
+	ast.Node
 	Accept(visitor ExpressionVisitor) object.Object
 }

@@ -28,6 +28,6 @@ func (s *ReturnStatement) String() string {
 	return buffer.String()
 }
 
-func (s *ReturnStatement) Accept(_ StatementVisitor) object.Object {
-	return nil
+func (s *ReturnStatement) Accept(visitor StatementVisitor) object.Object {
+	return visitor.VisitReturn(s)
 }

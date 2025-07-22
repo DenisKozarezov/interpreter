@@ -52,7 +52,7 @@ func testEval(t *testing.T, source string) object.Object {
 
 	// 3. Assert
 	require.Len(t, p.Errors(), 0)
-	require.Len(t, program.Statements, 1)
+	require.Greater(t, len(program.Statements), 0)
 
 	return EvaluateStatement(program)
 }
@@ -147,4 +147,33 @@ func TestEvalIfElse(t *testing.T) {
 
 func testNullObject(t *testing.T, obj object.Object) {
 	require.Equal(t, obj, object.NULL, "object is not NULL. got=%T", obj)
+}
+
+func TestReturnStatements(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected int64
+	}{
+		{"return 10;", 10},
+		{"return 10; 9;", 10},
+		{"return 2 * 5; 9;", 10},
+		{"9; return 2 * 5; 9;", 10},
+		{`
+if (10 > 1) {
+	if (10 > 1) {
+		return 10;
+	}
+  return 1;
+}`,
+			10,
+		},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Arrange
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			testIntegerObject(t, got, tt.expected)
+		})
+	}
 }

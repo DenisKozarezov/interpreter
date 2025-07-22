@@ -10,7 +10,7 @@ import (
 type ASTVisitor struct{}
 
 func (v *ASTVisitor) VisitProgram(program *statements.Program) object.Object {
-	return evalStatements(program.Statements)
+	return evalProgram(program.Statements)
 }
 
 func (v *ASTVisitor) VisitExpression(expression *statements.ExpressionStatement) object.Object {
@@ -59,6 +59,10 @@ func (v *ASTVisitor) VisitCondition(condition *expressions.ConditionExpression) 
 	}
 }
 
-func (v *ASTVisitor) VisitBlockStatement(condition *statements.BlockStatement) object.Object {
-	return evalStatements(condition.Statements)
+func (v *ASTVisitor) VisitBlockStatement(block *statements.BlockStatement) object.Object {
+	return evalBlockStatements(block.Statements)
+}
+
+func (v *ASTVisitor) VisitReturn(r *statements.ReturnStatement) object.Object {
+	return &object.Return{Value: EvaluateExpression(r.Value)}
 }

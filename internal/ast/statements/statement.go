@@ -1,13 +1,11 @@
 package statements
 
 import (
-	"fmt"
-
+	"interpreter/internal/ast"
 	"interpreter/internal/object"
 )
 
 type Statement interface {
-	fmt.Stringer
-	Literal() string
+	ast.Node
 	Accept(visitor StatementVisitor) object.Object
 }

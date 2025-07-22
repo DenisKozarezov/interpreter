@@ -20,7 +20,7 @@ import (
 type FunctionLiteral struct {
 	Token tokens.Token
 	Args  []*Identifier
-	Body  Statement
+	Body  statement
 }
 
 func (f *FunctionLiteral) Literal() string {

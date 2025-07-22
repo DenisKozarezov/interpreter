@@ -23,8 +23,8 @@ import (
 type ConditionExpression struct {
 	Token     tokens.Token
 	Condition Expression
-	Then      Statement
-	Else      Statement
+	Then      statement
+	Else      statement
 }
 
 func (c *ConditionExpression) Literal() string {
