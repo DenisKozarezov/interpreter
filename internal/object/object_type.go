@@ -7,4 +7,5 @@ const (
 	BOOLEAN_TYPE ObjectType = "BOOLEAN_TYPE"
 	NULL_TYPE    ObjectType = "NULL"
 	RETURN_TYPE  ObjectType = "RETURN_TYPE"
+	ERROR_TYPE   ObjectType = "ERROR_TYPE"
 )
