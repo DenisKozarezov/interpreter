@@ -39,7 +39,7 @@ func (p *Parser) Errors() []error {
 }
 
 func (p *Parser) Parse() *statements.Program {
-	program := statements.Program{Statements: make([]statements.Statement, 0)}
+	program := statements.Program{Statements: []statements.Statement{}}
 
 	p.nextToken()
 	p.nextToken()
@@ -63,13 +63,14 @@ func (p *Parser) parseStatement() statements.Statement {
 }
 
 func (p *Parser) parseExpressionStatement() statements.Statement {
-	statement := statements.NewStatement(p.currentToken, p.parseExpression(LOWEST))
+	expression := &statements.ExpressionStatement{Token: p.currentToken}
+	expression.Value = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
 		p.nextToken()
 	}
 
-	return statement
+	return expression
 }
 
 func (p *Parser) parseExpression(precedence Precedence) expressions.Expression {

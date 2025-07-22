@@ -31,7 +31,8 @@ func NewLexer(reader Reader) *Lexer {
 		currentLine:     1,
 		currentSymbol:   NULL,
 		currentPosition: -1,
-		nextPosition:    0}
+		nextPosition:    0,
+	}
 	l.readSymbol()
 	return l
 }
@@ -140,7 +141,7 @@ func (l *Lexer) readSymbol() {
 	l.currentPosition = l.nextPosition
 	l.nextPosition++
 
-	if l.currentSymbol == '\n' {
+	if isNewline(l.currentSymbol) {
 		l.currentLine++
 		l.lineStartPosition = l.nextPosition
 	}

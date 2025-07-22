@@ -26,7 +26,3 @@ func (s *ExpressionStatement) String() string {
 func (s *ExpressionStatement) Accept(visitor StatementVisitor) object.Object {
 	return visitor.VisitExpression(s)
 }
-
-func NewStatement(token tokens.Token, exp expressions.Expression) *ExpressionStatement {
-	return &ExpressionStatement{Token: token, Value: exp}
-}

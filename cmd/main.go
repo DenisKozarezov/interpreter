@@ -1,9 +1,10 @@
 package main
 
 import (
-	"interpreter/internal/repl"
 	"log"
 	"os"
+
+	"interpreter/internal/repl"
 )
 
 func main() {
@@ -15,7 +16,7 @@ func main() {
 		_ = errorsLogger.Close()
 	}()
 
-	fileReader, err := os.OpenFile("cmd/program2.txt", os.O_RDONLY, os.ModeDevice)
+	fileReader, err := os.OpenFile("cmd/program1.txt", os.O_RDONLY, os.ModeDevice)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
 	}

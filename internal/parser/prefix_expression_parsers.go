@@ -75,9 +75,10 @@ func (p *Parser) parseConditionExpression() expressions.Expression {
 		return nil
 	}
 
+	p.nextToken()
 	expression.Condition = p.parseExpression(LOWEST)
 
-	if !p.currentTokenIs(tokens.RPAREN) || !p.expectToken(tokens.LBRACE) {
+	if !p.expectToken(tokens.RPAREN) || !p.expectToken(tokens.LBRACE) {
 		return nil
 	}
 

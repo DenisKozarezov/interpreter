@@ -63,8 +63,7 @@ func (p *Parser) parseBlockStatement() *statements.BlockStatement {
 	p.nextToken()
 
 	for !p.currentTokenIs(tokens.RBRACE) && !p.currentTokenIs(tokens.EOF) {
-		statement := p.parseStatement()
-		if statement != nil {
+		if statement := p.parseStatement(); statement != nil {
 			block.Statements = append(block.Statements, statement)
 		}
 		p.nextToken()
