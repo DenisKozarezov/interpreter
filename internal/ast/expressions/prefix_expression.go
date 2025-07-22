@@ -3,8 +3,8 @@ package expressions
 import (
 	"bytes"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // PrefixExpression представляет собой выражение, состоящее из правого операнда,
@@ -18,8 +18,7 @@ import (
 // и т.п.
 type PrefixExpression struct {
 	Token           tokens.Token
-	Operator        string
-	RightExpression ast.Expression
+	RightExpression Expression
 }
 
 func (s *PrefixExpression) Literal() string {
@@ -29,12 +28,12 @@ func (s *PrefixExpression) Literal() string {
 func (s *PrefixExpression) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("(")
-	buffer.WriteString(s.Operator)
+	buffer.WriteString(s.Token.Literal)
 	buffer.WriteString(s.RightExpression.String())
 	buffer.WriteString(")")
 	return buffer.String()
 }
 
-func (s *PrefixExpression) expressionNode() {
-
+func (s *PrefixExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitPrefix(s)
 }

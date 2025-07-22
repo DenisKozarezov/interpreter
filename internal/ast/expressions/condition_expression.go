@@ -2,8 +2,9 @@ package expressions
 
 import (
 	"bytes"
-	"interpreter/internal/ast"
+
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // ConditionExpression обозначает выражение, содержажее блок выполнения Then и
@@ -21,9 +22,9 @@ import (
 //  5. '{ return y; }' - блок альтернативы Else при ложном условии Condition.
 type ConditionExpression struct {
 	Token     tokens.Token
-	Condition ast.Expression
-	Then      *BlockStatement
-	Else      *BlockStatement
+	Condition Expression
+	Then      statement
+	Else      statement
 }
 
 func (c *ConditionExpression) Literal() string {
@@ -45,4 +46,6 @@ func (c *ConditionExpression) String() string {
 	return buffer.String()
 }
 
-func (c *ConditionExpression) expressionNode() {}
+func (c *ConditionExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitCondition(c)
+}

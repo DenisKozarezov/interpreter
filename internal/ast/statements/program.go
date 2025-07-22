@@ -1,7 +1,9 @@
-package ast
+package statements
 
 import (
 	"bytes"
+
+	"interpreter/internal/object"
 )
 
 type Program struct {
@@ -22,4 +24,8 @@ func (p *Program) String() string {
 		buffer.WriteString(p.Statements[i].String())
 	}
 	return buffer.String()
+}
+
+func (p *Program) Accept(visitor StatementVisitor) object.Object {
+	return visitor.VisitProgram(p)
 }

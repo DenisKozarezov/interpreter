@@ -3,8 +3,8 @@ package expressions
 import (
 	"bytes"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // InfixExpression представляет собой выражение, состоящее из двух операндов - левого
@@ -20,9 +20,8 @@ import (
 // и т.п.
 type InfixExpression struct {
 	Token           tokens.Token
-	Operator        string
-	LeftExpression  ast.Expression
-	RightExpression ast.Expression
+	LeftExpression  Expression
+	RightExpression Expression
 }
 
 func (s *InfixExpression) Literal() string {
@@ -33,12 +32,12 @@ func (s *InfixExpression) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("(")
 	buffer.WriteString(s.LeftExpression.String())
-	buffer.WriteString(" " + s.Operator + " ")
+	buffer.WriteString(" " + s.Token.Literal + " ")
 	buffer.WriteString(s.RightExpression.String())
 	buffer.WriteString(")")
 	return buffer.String()
 }
 
-func (s *InfixExpression) expressionNode() {
-
+func (s *InfixExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitInfix(s)
 }

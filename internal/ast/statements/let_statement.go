@@ -3,15 +3,15 @@ package statements
 import (
 	"bytes"
 
-	"interpreter/internal/ast"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 type LetStatement struct {
 	Token      tokens.Token
-	Identifier *expressions.Identifier
-	Value      ast.Expression
+	Identifier expressions.Expression
+	Value      expressions.Expression
 }
 
 func (s *LetStatement) Literal() string {
@@ -31,6 +31,6 @@ func (s *LetStatement) String() string {
 	return buffer.String()
 }
 
-func (s *LetStatement) statementNode() {
-
+func (s *LetStatement) Accept(_ StatementVisitor) object.Object {
+	return nil
 }

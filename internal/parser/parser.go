@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"interpreter/internal/ast"
+	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
 )
@@ -38,8 +38,8 @@ func (p *Parser) Errors() []error {
 	return p.errors
 }
 
-func (p *Parser) Parse() *ast.Program {
-	program := ast.Program{Statements: make([]ast.Statement, 0)}
+func (p *Parser) Parse() *statements.Program {
+	program := statements.Program{Statements: []statements.Statement{}}
 
 	p.nextToken()
 	p.nextToken()
@@ -54,7 +54,7 @@ func (p *Parser) Parse() *ast.Program {
 	return &program
 }
 
-func (p *Parser) parseStatement() ast.Statement {
+func (p *Parser) parseStatement() statements.Statement {
 	statementFn, isStatement := p.statementsParseFns[p.currentToken.Type]
 	if !isStatement {
 		return p.parseExpressionStatement()
@@ -62,17 +62,18 @@ func (p *Parser) parseStatement() ast.Statement {
 	return statementFn()
 }
 
-func (p *Parser) parseExpressionStatement() ast.Statement {
-	statement := statements.NewStatement(p.currentToken, p.parseExpression(LOWEST))
+func (p *Parser) parseExpressionStatement() statements.Statement {
+	expression := &statements.ExpressionStatement{Token: p.currentToken}
+	expression.Value = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
 		p.nextToken()
 	}
 
-	return statement
+	return expression
 }
 
-func (p *Parser) parseExpression(precedence Precedence) ast.Expression {
+func (p *Parser) parseExpression(precedence Precedence) expressions.Expression {
 	prefix, prefixFound := p.prefixParseFns[p.currentToken.Type]
 	if !prefixFound {
 		p.parseError(fmt.Sprintf("no prefix parse function found for token '%s' [%d]", p.currentToken.Literal, p.currentToken.Type))

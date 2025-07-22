@@ -1,9 +1,10 @@
-package expressions
+package statements
 
 import (
 	"bytes"
-	"interpreter/internal/ast"
+
 	"interpreter/internal/lexer/tokens"
+	"interpreter/internal/object"
 )
 
 // BlockStatement представляет собой блок различных инструкций. Например:
@@ -17,7 +18,7 @@ import (
 //     { let x = 1; return x; }
 type BlockStatement struct {
 	Token      tokens.Token
-	Statements []ast.Statement
+	Statements []Statement
 }
 
 func (s *BlockStatement) Literal() string {
@@ -32,6 +33,6 @@ func (s *BlockStatement) String() string {
 	return buffer.String()
 }
 
-func (s *BlockStatement) statementNode() {
-
+func (s *BlockStatement) Accept(visitor StatementVisitor) object.Object {
+	return visitor.VisitBlockStatement(s)
 }

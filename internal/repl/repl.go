@@ -2,10 +2,12 @@ package repl
 
 import (
 	"fmt"
-	"interpreter/internal/lexer"
-	"interpreter/internal/parser"
 	"io"
 	"log"
+
+	"interpreter/internal/evaluator"
+	"interpreter/internal/lexer"
+	"interpreter/internal/parser"
 )
 
 type REPL struct {
@@ -31,8 +33,9 @@ func (r *REPL) StartParser() {
 		}
 	}
 
-	for i, stmt := range program.Statements {
-		_ = outputString(r.out, "\n[%d]: %s", i, stmt.String())
+	result := evaluator.EvaluateStatement(program)
+	if result != nil {
+		_ = outputString(r.out, "%s\n", result.Inspect())
 	}
 
 	_ = outputString(r.out, "\nParsing completed!")
@@ -55,7 +58,7 @@ func (r *REPL) printParserErrors(errors []error) error {
 }
 
 func outputString(out io.Writer, s string, args ...any) error {
-	if _, err := out.Write([]byte(fmt.Sprintf(s, args...))); err != nil {
+	if _, err := fmt.Fprintf(out, s, args...); err != nil {
 		return fmt.Errorf("failed to put a string in output: %w", err)
 	}
 	return nil
