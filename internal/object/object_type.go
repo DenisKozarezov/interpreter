@@ -3,9 +3,9 @@ package object
 type ObjectType string
 
 const (
-	INTEGER_TYPE ObjectType = "INTEGER_TYPE"
-	BOOLEAN_TYPE ObjectType = "BOOLEAN_TYPE"
+	INTEGER_TYPE ObjectType = "INTEGER"
+	BOOLEAN_TYPE ObjectType = "BOOLEAN"
 	NULL_TYPE    ObjectType = "NULL"
-	RETURN_TYPE  ObjectType = "RETURN_TYPE"
-	ERROR_TYPE   ObjectType = "ERROR_TYPE"
+	RETURN_TYPE  ObjectType = "RETURN"
+	ERROR_TYPE   ObjectType = "ERROR"
 )

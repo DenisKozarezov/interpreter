@@ -17,20 +17,28 @@ type (
 )
 
 func EvaluateExpression(node VisitableExpression) object.Object {
+	if node == nil {
+		return newRuntimeError("AST expression node is nil")
+	}
+
 	var v ASTVisitor
 	return node.Accept(&v)
 }
 
 func EvaluateStatement(node VisitableStatement) object.Object {
+	if node == nil {
+		return newRuntimeError("AST statement node is nil")
+	}
+
 	var v ASTVisitor
 	return node.Accept(&v)
 }
 
-func evalInfixIntegerExpression(left, right object.Object, operator tokens.TokenType) object.Object {
+func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token) object.Object {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 
-	switch operator {
+	switch operator.Type {
 	case tokens.PLUS:
 		return &object.Integer{Value: leftVal + rightVal}
 	case tokens.MINUS:
@@ -48,7 +56,7 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 	case tokens.NOT_EQ:
 		return object.NativeBooleanToObject(leftVal != rightVal)
 	default:
-		return object.NULL
+		return newRuntimeError("unknown operator: %s %s %s", left.Type(), operator.Literal, right.Type())
 	}
 }
 
@@ -57,8 +65,11 @@ func evalProgram(statements []statements.Statement) object.Object {
 	for i := range statements {
 		result = EvaluateStatement(statements[i])
 
-		if returnValue, ok := result.(*object.Return); ok {
-			return returnValue.Value
+		switch obj := result.(type) {
+		case *object.Return:
+			return obj.Value
+		case *object.Error:
+			return obj
 		}
 	}
 	return result
@@ -69,7 +80,7 @@ func evalBlockStatements(statements []statements.Statement) object.Object {
 	for i := range statements {
 		result = EvaluateStatement(statements[i])
 
-		if result != nil && result.Type() == object.RETURN_TYPE {
+		if result != nil && result.Type() == object.RETURN_TYPE || isRuntimeError(result) {
 			return result
 		}
 	}
@@ -91,7 +102,7 @@ func evalBangOperator(right object.Object) object.Object {
 
 func evalMinusOperator(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_TYPE {
-		return object.NULL
+		return newRuntimeError("unknown operator: -%s", right.Type())
 	}
 
 	integer := right.(*object.Integer).Value

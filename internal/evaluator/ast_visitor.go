@@ -27,29 +27,47 @@ func (v *ASTVisitor) VisitBoolean(boolean *expressions.Boolean) object.Object {
 
 func (v *ASTVisitor) VisitPrefix(prefix *expressions.PrefixExpression) object.Object {
 	right := EvaluateExpression(prefix.RightExpression)
+	if isRuntimeError(right) {
+		return right
+	}
+
 	switch prefix.Token.Type {
 	case tokens.BANG:
 		return evalBangOperator(right)
 	case tokens.MINUS:
 		return evalMinusOperator(right)
 	default:
-		return object.NULL
+		return newRuntimeError("unknown operator: %s%s", prefix.Token.Literal, right.Type())
 	}
 }
 
 func (v *ASTVisitor) VisitInfix(infix *expressions.InfixExpression) object.Object {
 	left := EvaluateExpression(infix.LeftExpression)
+	if isRuntimeError(left) {
+		return left
+	}
+
 	right := EvaluateExpression(infix.RightExpression)
+	if isRuntimeError(right) {
+		return right
+	}
+
 	switch {
 	case left.Type() == object.INTEGER_TYPE && right.Type() == object.INTEGER_TYPE:
-		return evalInfixIntegerExpression(left, right, infix.Token.Type)
+		return evalInfixIntegerExpression(left, right, infix.Token)
+	case left.Type() != right.Type():
+		return newRuntimeError("type mismatch: %s %s %s", left.Type(), infix.Token.Literal, right.Type())
 	default:
-		return object.NULL
+		return newRuntimeError("unknown operator: %s %s %s", left.Type(), infix.Token.Literal, right.Type())
 	}
 }
 
 func (v *ASTVisitor) VisitCondition(condition *expressions.ConditionExpression) object.Object {
 	cond := EvaluateExpression(condition.Condition)
+	if isRuntimeError(cond) {
+		return cond
+	}
+
 	if object.ObjectToNativeBoolean(cond) {
 		return EvaluateStatement(condition.Then.(*statements.BlockStatement))
 	} else if condition.Else != nil {
@@ -64,5 +82,9 @@ func (v *ASTVisitor) VisitBlockStatement(block *statements.BlockStatement) objec
 }
 
 func (v *ASTVisitor) VisitReturn(r *statements.ReturnStatement) object.Object {
-	return &object.Return{Value: EvaluateExpression(r.Value)}
+	value := EvaluateExpression(r.Value)
+	if isRuntimeError(value) {
+		return value
+	}
+	return &object.Return{Value: value}
 }

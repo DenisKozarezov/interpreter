@@ -83,7 +83,7 @@ type Error struct {
 }
 
 func (e *Error) Inspect() string {
-	return "ERROR: " + e.Message
+	return "runtime error: " + e.Message
 }
 
 func (e *Error) Type() ObjectType {
