@@ -77,3 +77,15 @@ func (r *Return) Inspect() string {
 func (r *Return) Type() ObjectType {
 	return RETURN_TYPE
 }
+
+type Error struct {
+	Message string
+}
+
+func (e *Error) Inspect() string {
+	return "runtime error: " + e.Message
+}
+
+func (e *Error) Type() ObjectType {
+	return ERROR_TYPE
+}

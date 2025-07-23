@@ -177,3 +177,55 @@ if (10 > 1) {
 		})
 	}
 }
+
+func TestErrorHandling(t *testing.T) {
+	for _, tt := range []struct {
+		source          string
+		expectedMessage string
+	}{
+		{
+			"5 + true;",
+			"type mismatch: INTEGER + BOOLEAN",
+		},
+		{
+			"5 + true; 5;",
+			"type mismatch: INTEGER + BOOLEAN",
+		},
+		{
+			"-true",
+			"unknown operator: -BOOLEAN",
+		},
+		{
+			"true + false;",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"5; true + false; 5",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			"if (10 > 1) { true + false; }",
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+		{
+			`
+if (10 > 1) {
+	if (10 > 1) {
+		return true + false;
+		}
+	return 1;
+} `,
+			"unknown operator: BOOLEAN + BOOLEAN",
+		},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			result, ok := got.(*object.Error)
+			require.True(t, ok, "expected an error object")
+			require.Equal(t, tt.expectedMessage, result.Message, "wrong error message")
+		})
+	}
+}

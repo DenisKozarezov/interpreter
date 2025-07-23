@@ -141,7 +141,7 @@ func (l *Lexer) readSymbol() {
 	l.currentPosition = l.nextPosition
 	l.nextPosition++
 
-	if isNewline(l.currentSymbol) {
+	if l.currentSymbol == newline {
 		l.currentLine++
 		l.lineStartPosition = l.nextPosition
 	}
