@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	errorsLogger, err := os.OpenFile("cmd/errorsLog.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	errorsLogger, err := os.OpenFile("example/errorsLog.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
 	}
@@ -16,7 +16,7 @@ func main() {
 		_ = errorsLogger.Close()
 	}()
 
-	fileReader, err := os.OpenFile("cmd/invalidProgram.txt", os.O_RDONLY, os.ModeDevice)
+	fileReader, err := os.OpenFile("example/invalidProgram.txt", os.O_RDONLY, os.ModeDevice)
 	if err != nil {
 		log.Fatalf("failed to open file: %s", err)
 	}

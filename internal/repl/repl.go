@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 
 	"interpreter/internal/evaluator"
 	"interpreter/internal/lexer"
@@ -21,45 +22,35 @@ func NewREPL(in io.ReaderAt, out io.Writer, errors io.Writer) *REPL {
 }
 
 func (r *REPL) StartParser() {
-	_ = outputString(r.out, "Started to parse an input...\n")
+	r.log(r.out, "Started to parse an input...")
 
 	l := lexer.NewLexer(r.in)
 	p := parser.NewParser(l)
 	program := p.Parse()
 
 	if len(p.Errors()) > 0 {
-		if err := r.printParserErrors(p.Errors()); err != nil {
-			log.Fatalf("failed to print errors: %s", err)
-		}
+		r.printParserErrors(p.Errors())
+		r.log(r.out, "Parser errors found! Stopping the interpreter...")
+		os.Exit(1)
 	}
 
-	result := evaluator.EvaluateStatement(program)
-	if result != nil {
-		_ = outputString(r.out, "%s\n", result.Inspect())
+	if result := evaluator.EvaluateStatement(program); result != nil {
+		r.log(r.out, "%s", result.Inspect())
 	}
 
-	_ = outputString(r.out, "\nParsing completed!")
+	r.log(r.out, "Parsing completed!")
 }
 
-func (r *REPL) printParserErrors(errors []error) error {
-	var err error
-
-	if err = outputString(r.errors, "⛔ Found %d syntax error(s):\n", len(errors)); err != nil {
-		return err
-	}
+func (r *REPL) printParserErrors(errors []error) {
+	r.log(r.errors, "⛔ Found %d syntax error(s):", len(errors))
 
 	for i, e := range errors {
-		if err = outputString(r.errors, "\t%d. %s\n\n", i+1, e.Error()); err != nil {
-			return err
-		}
+		r.log(r.errors, "\t%d. %s\n", i+1, e.Error())
 	}
-
-	return nil
 }
 
-func outputString(out io.Writer, s string, args ...any) error {
-	if _, err := fmt.Fprintf(out, s, args...); err != nil {
-		return fmt.Errorf("failed to put a string in output: %w", err)
+func (r *REPL) log(w io.Writer, s string, args ...any) {
+	if _, err := fmt.Fprintf(w, s+"\n", args...); err != nil {
+		log.Fatal("failed to put a string in output: %w", err)
 	}
-	return nil
 }
