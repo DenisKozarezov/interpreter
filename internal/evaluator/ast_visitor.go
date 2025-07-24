@@ -88,3 +88,13 @@ func (v *ASTVisitor) VisitReturn(r *statements.ReturnStatement) object.Object {
 	}
 	return &object.Return{Value: value}
 }
+
+func (v *ASTVisitor) VisitLetStatement(let *statements.LetStatement) object.Object {
+	value := EvaluateExpression(let.Value)
+	if isRuntimeError(value) {
+		return value
+	}
+
+	// TODO: продумать контекст (environment) в текущем блоке
+	return object.NULL
+}
