@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"fmt"
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"
@@ -83,4 +84,35 @@ func (v *ASTVisitor) VisitIdentifier(identifier *expressions.Identifier) object.
 	}
 
 	return val
+}
+
+func (v *ASTVisitor) VisitFunction(function *expressions.FunctionLiteral) object.Object {
+	args := make([]fmt.Stringer, len(function.Args))
+	for i := 0; i < len(function.Args); i++ {
+		args[i] = function.Args[i]
+	}
+
+	return &object.Function{Args: args, Body: function.Body, Environment: v.env}
+}
+
+func (v *ASTVisitor) VisitCallExpression(call *expressions.CallExpression) object.Object {
+	val := EvaluateExpression(call.Function, v)
+	if isRuntimeError(val) {
+		return val
+	}
+
+	args := evalExpressions(call.Args, v)
+	if len(args) == 1 && isRuntimeError(args[0]) {
+		return args[0]
+	}
+
+	function, ok := val.(*object.Function)
+	if !ok {
+		return newRuntimeError("not a function: %s", val.Type())
+	}
+
+	v.env = extendFunctionEnvironment(function, args)
+	var i any = function.Body
+
+	return applyFunction(i.(statements.Statement), v)
 }

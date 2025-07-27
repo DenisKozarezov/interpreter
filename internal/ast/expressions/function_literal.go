@@ -44,6 +44,6 @@ func (f *FunctionLiteral) String() string {
 	return buffer.String()
 }
 
-func (f *FunctionLiteral) Accept(_ ExpressionVisitor) object.Object {
-	return nil
+func (f *FunctionLiteral) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitFunction(f)
 }

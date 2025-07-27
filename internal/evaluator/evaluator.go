@@ -107,3 +107,36 @@ func evalMinusOperator(right object.Object) object.Object {
 	integer := right.(*object.Integer).Value
 	return &object.Integer{Value: -integer}
 }
+
+func evalExpressions(expressions []expressions.Expression, visitor expressions.ExpressionVisitor) []object.Object {
+	result := make([]object.Object, len(expressions))
+	for i := 0; i < len(expressions); i++ {
+		val := EvaluateExpression(expressions[i], visitor)
+		if isRuntimeError(val) {
+			return []object.Object{val}
+		}
+		result[i] = val
+	}
+	return result
+}
+
+func extendFunctionEnvironment(fn *object.Function, args []object.Object) *object.Environment {
+	enclosedEnv := object.NewEnclosedEnvironment(fn.Environment)
+
+	for i := 0; i < len(fn.Args); i++ {
+		enclosedEnv.Set(fn.Args[i].String(), args[i])
+	}
+
+	return enclosedEnv
+}
+
+func applyFunction(fnBody statements.Statement, visitor statements.StatementVisitor) object.Object {
+	return unwrapReturnValue(EvaluateStatement(fnBody, visitor))
+}
+
+func unwrapReturnValue(obj object.Object) object.Object {
+	if returnValue, ok := obj.(*object.Return); ok {
+		return returnValue
+	}
+	return obj
+}

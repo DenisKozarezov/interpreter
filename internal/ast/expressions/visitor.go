@@ -9,4 +9,6 @@ type ExpressionVisitor interface {
 	VisitInfix(infix *InfixExpression) object.Object
 	VisitCondition(condition *ConditionExpression) object.Object
 	VisitIdentifier(identifier *Identifier) object.Object
+	VisitFunction(function *FunctionLiteral) object.Object
+	VisitCallExpression(call *CallExpression) object.Object
 }

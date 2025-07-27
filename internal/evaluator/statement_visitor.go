@@ -33,6 +33,5 @@ func (v *ASTVisitor) VisitLetStatement(let *statements.LetStatement) object.Obje
 
 	v.env.Set(let.Identifier.Literal(), value)
 
-	// TODO: продумать контекст (environment) в текущем блоке
 	return object.NULL
 }

@@ -1,6 +1,10 @@
 package object
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+)
 
 type Null struct{}
 
@@ -88,4 +92,33 @@ func (e *Error) Inspect() string {
 
 func (e *Error) Type() ObjectType {
 	return ERROR_TYPE
+}
+
+type node interface {
+	fmt.Stringer
+	Literal() string
+}
+
+type Function struct {
+	Args        []fmt.Stringer
+	Body        node
+	Environment *Environment
+}
+
+func (f *Function) Inspect() string {
+	var out bytes.Buffer
+	var params []string
+	for i := range f.Args {
+		params = append(params, f.Args[i].String())
+	}
+	out.WriteString("fn (")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+	return out.String()
+}
+
+func (f *Function) Type() ObjectType {
+	return FUNCTION_TYPE
 }
