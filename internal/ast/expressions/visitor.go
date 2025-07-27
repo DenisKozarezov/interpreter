@@ -8,4 +8,5 @@ type ExpressionVisitor interface {
 	VisitPrefix(prefix *PrefixExpression) object.Object
 	VisitInfix(infix *InfixExpression) object.Object
 	VisitCondition(condition *ConditionExpression) object.Object
+	VisitIdentifier(identifier *Identifier) object.Object
 }

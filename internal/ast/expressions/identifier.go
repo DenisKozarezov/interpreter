@@ -25,8 +25,8 @@ func (i *Identifier) String() string {
 	return i.Value
 }
 
-func (i *Identifier) Accept(_ ExpressionVisitor) object.Object {
-	return nil
+func (i *Identifier) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitIdentifier(i)
 }
 
 func NewIdentifier(token tokens.Token) *Identifier {

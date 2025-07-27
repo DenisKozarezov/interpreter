@@ -7,14 +7,12 @@ import (
 	"interpreter/internal/object"
 )
 
-type ASTVisitor struct{}
-
-func (v *ASTVisitor) VisitProgram(program *statements.Program) object.Object {
-	return evalProgram(program.Statements)
+type ASTVisitor struct {
+	env *object.Environment
 }
 
-func (v *ASTVisitor) VisitExpression(expression *statements.ExpressionStatement) object.Object {
-	return EvaluateExpression(expression.Value)
+func NewASTVisitor() *ASTVisitor {
+	return &ASTVisitor{env: object.NewEnvironment()}
 }
 
 func (v *ASTVisitor) VisitInteger(integer *expressions.IntegerLiteral) object.Object {
@@ -26,7 +24,7 @@ func (v *ASTVisitor) VisitBoolean(boolean *expressions.Boolean) object.Object {
 }
 
 func (v *ASTVisitor) VisitPrefix(prefix *expressions.PrefixExpression) object.Object {
-	right := EvaluateExpression(prefix.RightExpression)
+	right := EvaluateExpression(prefix.RightExpression, v)
 	if isRuntimeError(right) {
 		return right
 	}
@@ -42,12 +40,12 @@ func (v *ASTVisitor) VisitPrefix(prefix *expressions.PrefixExpression) object.Ob
 }
 
 func (v *ASTVisitor) VisitInfix(infix *expressions.InfixExpression) object.Object {
-	left := EvaluateExpression(infix.LeftExpression)
+	left := EvaluateExpression(infix.LeftExpression, v)
 	if isRuntimeError(left) {
 		return left
 	}
 
-	right := EvaluateExpression(infix.RightExpression)
+	right := EvaluateExpression(infix.RightExpression, v)
 	if isRuntimeError(right) {
 		return right
 	}
@@ -63,38 +61,26 @@ func (v *ASTVisitor) VisitInfix(infix *expressions.InfixExpression) object.Objec
 }
 
 func (v *ASTVisitor) VisitCondition(condition *expressions.ConditionExpression) object.Object {
-	cond := EvaluateExpression(condition.Condition)
+	cond := EvaluateExpression(condition.Condition, v)
 	if isRuntimeError(cond) {
 		return cond
 	}
 
 	if object.ObjectToNativeBoolean(cond) {
-		return EvaluateStatement(condition.Then.(*statements.BlockStatement))
+		return EvaluateStatement(condition.Then.(*statements.BlockStatement), v)
 	} else if condition.Else != nil {
-		return EvaluateStatement(condition.Else.(*statements.BlockStatement))
+		return EvaluateStatement(condition.Else.(*statements.BlockStatement), v)
 	} else {
 		return object.NULL
 	}
 }
 
-func (v *ASTVisitor) VisitBlockStatement(block *statements.BlockStatement) object.Object {
-	return evalBlockStatements(block.Statements)
-}
-
-func (v *ASTVisitor) VisitReturn(r *statements.ReturnStatement) object.Object {
-	value := EvaluateExpression(r.Value)
-	if isRuntimeError(value) {
-		return value
-	}
-	return &object.Return{Value: value}
-}
-
-func (v *ASTVisitor) VisitLetStatement(let *statements.LetStatement) object.Object {
-	value := EvaluateExpression(let.Value)
-	if isRuntimeError(value) {
-		return value
+func (v *ASTVisitor) VisitIdentifier(identifier *expressions.Identifier) object.Object {
+	name := identifier.Literal()
+	val, ok := v.env.Get(name)
+	if !ok {
+		return newRuntimeError("identifier not found: %s", name)
 	}
 
-	// TODO: продумать контекст (environment) в текущем блоке
-	return object.NULL
+	return val
 }

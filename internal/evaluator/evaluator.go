@@ -16,22 +16,20 @@ type (
 	VisitableStatement  = IVisitable[statements.StatementVisitor, object.Object]
 )
 
-func EvaluateExpression(node VisitableExpression) object.Object {
+func EvaluateExpression(node VisitableExpression, visitor expressions.ExpressionVisitor) object.Object {
 	if node == nil {
 		return newRuntimeError("AST expression node is nil")
 	}
 
-	var v ASTVisitor
-	return node.Accept(&v)
+	return node.Accept(visitor)
 }
 
-func EvaluateStatement(node VisitableStatement) object.Object {
+func EvaluateStatement(node VisitableStatement, visitor statements.StatementVisitor) object.Object {
 	if node == nil {
 		return newRuntimeError("AST statement node is nil")
 	}
 
-	var v ASTVisitor
-	return node.Accept(&v)
+	return node.Accept(visitor)
 }
 
 func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token) object.Object {
@@ -60,10 +58,11 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 	}
 }
 
-func evalProgram(statements []statements.Statement) object.Object {
+func evalProgram(statements []statements.Statement, visitor statements.StatementVisitor) object.Object {
 	var result object.Object
+
 	for i := range statements {
-		result = EvaluateStatement(statements[i])
+		result = EvaluateStatement(statements[i], visitor)
 
 		switch obj := result.(type) {
 		case *object.Return:
@@ -75,10 +74,10 @@ func evalProgram(statements []statements.Statement) object.Object {
 	return result
 }
 
-func evalBlockStatements(statements []statements.Statement) object.Object {
+func evalBlockStatements(statements []statements.Statement, visitor statements.StatementVisitor) object.Object {
 	var result object.Object
 	for i := range statements {
-		result = EvaluateStatement(statements[i])
+		result = EvaluateStatement(statements[i], visitor)
 
 		if result != nil && result.Type() == object.RETURN_TYPE || isRuntimeError(result) {
 			return result

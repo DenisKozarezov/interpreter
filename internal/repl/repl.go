@@ -34,7 +34,8 @@ func (r *REPL) StartParser() {
 		os.Exit(1)
 	}
 
-	if result := evaluator.EvaluateStatement(program); result != nil {
+	v := evaluator.NewASTVisitor()
+	if result := evaluator.EvaluateStatement(program, v); result != nil {
 		r.log(r.out, "%s", result.Inspect())
 	}
 

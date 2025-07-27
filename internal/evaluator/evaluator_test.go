@@ -46,6 +46,7 @@ func testEval(t *testing.T, source string) object.Object {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
+	v := NewASTVisitor()
 
 	// 2. Act
 	program := p.Parse()
@@ -54,12 +55,12 @@ func testEval(t *testing.T, source string) object.Object {
 	require.Len(t, p.Errors(), 0)
 	require.Greater(t, len(program.Statements), 0)
 
-	return EvaluateStatement(program)
+	return EvaluateStatement(program, v)
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) {
 	result, ok := obj.(*object.Integer)
-	require.True(t, ok, "expected integer object")
+	require.True(t, ok, "expected integer object, got = %T", obj)
 	require.Equal(t, expected, result.Value, "object's value is wrong")
 }
 
@@ -217,6 +218,10 @@ if (10 > 1) {
 } `,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{
+			"foobar",
+			"identifier not found: foobar",
+		},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -226,6 +231,26 @@ if (10 > 1) {
 			result, ok := got.(*object.Error)
 			require.True(t, ok, "expected an error object")
 			require.Equal(t, tt.expectedMessage, result.Message, "wrong error message")
+		})
+	}
+}
+
+func TestLetStatement(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected int64
+	}{
+		{"let a = 5; a;", 5},
+		{"let a = 5 * 5; a;", 25},
+		{"let a = 5; let b = a; b;", 5},
+		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			testIntegerObject(t, got, tt.expected)
 		})
 	}
 }
