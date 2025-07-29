@@ -9,4 +9,5 @@ type StatementVisitor interface {
 	VisitExpression(boolean *ExpressionStatement) object.Object
 	VisitBlockStatement(block *BlockStatement) object.Object
 	VisitReturn(r *ReturnStatement) object.Object
+	VisitLetStatement(let *LetStatement) object.Object
 }

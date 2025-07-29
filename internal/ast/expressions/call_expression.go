@@ -44,6 +44,6 @@ func (c *CallExpression) String() string {
 	return buffer.String()
 }
 
-func (c *CallExpression) Accept(_ ExpressionVisitor) object.Object {
-	return nil
+func (c *CallExpression) Accept(visitor ExpressionVisitor) object.Object {
+	return visitor.VisitCallExpression(c)
 }

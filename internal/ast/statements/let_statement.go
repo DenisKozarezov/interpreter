@@ -31,6 +31,6 @@ func (s *LetStatement) String() string {
 	return buffer.String()
 }
 
-func (s *LetStatement) Accept(_ StatementVisitor) object.Object {
-	return nil
+func (s *LetStatement) Accept(visitor StatementVisitor) object.Object {
+	return visitor.VisitLetStatement(s)
 }

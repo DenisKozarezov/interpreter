@@ -46,6 +46,7 @@ func testEval(t *testing.T, source string) object.Object {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
+	v := NewASTVisitor()
 
 	// 2. Act
 	program := p.Parse()
@@ -54,12 +55,12 @@ func testEval(t *testing.T, source string) object.Object {
 	require.Len(t, p.Errors(), 0)
 	require.Greater(t, len(program.Statements), 0)
 
-	return EvaluateStatement(program)
+	return EvaluateStatement(program, v)
 }
 
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) {
 	result, ok := obj.(*object.Integer)
-	require.True(t, ok, "expected integer object")
+	require.True(t, ok, "expected integer object, got = %T", obj)
 	require.Equal(t, expected, result.Value, "object's value is wrong")
 }
 
@@ -217,6 +218,10 @@ if (10 > 1) {
 } `,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{
+			"foobar",
+			"identifier not found: foobar",
+		},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -228,4 +233,77 @@ if (10 > 1) {
 			require.Equal(t, tt.expectedMessage, result.Message, "wrong error message")
 		})
 	}
+}
+
+func TestLetStatement(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected int64
+	}{
+		{"let a = 5; a;", 5},
+		{"let a = 5 * 5; a;", 25},
+		{"let a = 5; let b = a; b;", 5},
+		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			testIntegerObject(t, got, tt.expected)
+		})
+	}
+}
+
+func TestFunctionObject(t *testing.T) {
+	// 1. Arrange
+	source := "fn(x) { x + 2; };"
+
+	// 2. Act
+	got := testEval(t, source)
+	fn, ok := got.(*object.Function)
+	require.True(t, ok, "expected function, but got=%T", got)
+	require.Len(t, fn.Args, 1, "expected one parameter in function")
+	require.Equal(t, "x", fn.Args[0].String(), "parameter is not x")
+	require.Equal(t, "(x + 2)", fn.Body.String())
+}
+
+func TestFunctionApplication(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected int64
+	}{
+		{"let identity = fn(x) { x; }; identity(5);", 5},
+		{"let identity = fn(x) { return x; }; identity(5);", 5},
+		{"let double = fn(x) { x * 2; }; double(5);", 10},
+		{"let add = fn(x, y) { x + y; }; add(5, 5);", 10},
+		{"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+		{"fn(x) { x; }(5)", 5},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Arrange
+			got := testEval(t, tt.source)
+
+			// 2. Act
+			testIntegerObject(t, got, tt.expected)
+		})
+	}
+}
+
+func TestClosures(t *testing.T) {
+	// 1. Arrange
+	source := `
+let newAdder = fn(x) {
+	fn(y) { x + y };
+};
+
+let addTwo = newAdder(2);
+addTwo(2);
+`
+
+	// 2. Act
+	got := testEval(t, source)
+
+	// 3. Assert
+	testIntegerObject(t, got, 4)
 }
