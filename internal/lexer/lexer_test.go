@@ -130,6 +130,8 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+"foobar"
+"foo bar"
 `
 
 	tests := []struct {
@@ -217,6 +219,9 @@ if (5 < 10) {
 		{tokens.NOT_EQ, "!="},
 		{tokens.INT, "9"},
 		{tokens.SEMICOLON, ";"},
+
+		{tokens.STRING, "foobar"},
+		{tokens.STRING, "foo bar"},
 
 		{tokens.EOF, ""},
 	}

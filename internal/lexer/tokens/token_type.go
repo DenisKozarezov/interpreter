@@ -8,6 +8,7 @@ const (
 
 	// Идентификаторы
 	INT
+	STRING
 	IDENTIFIER
 
 	// Арифметические операторы
@@ -71,11 +72,6 @@ var tokenTypes = map[string]TokenType{
 	"//": COMMENT_LINE,
 	"/*": COMMENT_BEGIN,
 	"*/": COMMENT_END,
-}
-
-func LookupTokenType(literal string) (TokenType, bool) {
-	t, found := tokenTypes[literal]
-	return t, found
 }
 
 var keywords = map[string]TokenType{

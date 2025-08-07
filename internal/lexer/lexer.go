@@ -46,66 +46,93 @@ func (l *Lexer) CurrentPositionAtLine() int64 {
 }
 
 func (l *Lexer) NextToken() tokens.Token {
+	var token tokens.Token
+
 	for {
 		l.skipWhitespace()
 
-		if l.currentSymbol == NULL {
-			return tokens.NewToken(tokens.EOF, "")
-		}
+		currentSym := string(l.currentSymbol)
 
-		literal := string(l.currentSymbol)
-		currentTokenType, found := tokens.LookupTokenType(literal)
-		if !found {
-			return l.parseCustomToken(literal)
-		}
-
-		// Если текущий и следующий токены являются частью одного целого токена,
-		// то объединяем их. Например:
-		//  5 == 5 или 5 != 6
-		//    ^^         ^^
-		unitedLiteral := literal + string(l.peekSymbol())
-		unitedTokenType, found := tokens.LookupTokenType(unitedLiteral)
-		if found {
-			literal = unitedLiteral
-			currentTokenType = unitedTokenType
-
-			switch unitedTokenType {
-			case tokens.COMMENT_LINE:
+		switch l.currentSymbol {
+		case '=':
+			if l.peekSymbol() == '=' {
+				ch := l.currentSymbol
+				l.readSymbol()
+				literal := string(ch) + string(l.currentSymbol)
+				token = tokens.NewToken(tokens.EQ, literal)
+			} else {
+				token = tokens.NewToken(tokens.ASSIGN, currentSym)
+			}
+		case '+':
+			token = tokens.NewToken(tokens.PLUS, currentSym)
+		case '-':
+			token = tokens.NewToken(tokens.MINUS, currentSym)
+		case '!':
+			if l.peekSymbol() == '=' {
+				ch := l.currentSymbol
+				l.readSymbol()
+				literal := string(ch) + string(l.currentSymbol)
+				token = tokens.NewToken(tokens.NOT_EQ, literal)
+			} else {
+				token = tokens.NewToken(tokens.BANG, currentSym)
+			}
+		case '/':
+			if l.peekSymbol() == '/' {
 				l.skipLine()
 				continue
-			case tokens.COMMENT_BEGIN:
+			} else if l.peekSymbol() == '*' {
 				l.skipBlockComment()
 				continue
+			} else {
+				token = tokens.NewToken(tokens.SLASH, currentSym)
 			}
-
+		case '*':
+			token = tokens.NewToken(tokens.ASTERISK, currentSym)
+		case '<':
+			token = tokens.NewToken(tokens.LT, currentSym)
+		case '>':
+			token = tokens.NewToken(tokens.GT, currentSym)
+		case ';':
+			token = tokens.NewToken(tokens.SEMICOLON, currentSym)
+		case ',':
+			token = tokens.NewToken(tokens.COMMA, currentSym)
+		case '{':
+			token = tokens.NewToken(tokens.LBRACE, currentSym)
+		case '}':
+			token = tokens.NewToken(tokens.RBRACE, currentSym)
+		case '(':
+			token = tokens.NewToken(tokens.LPAREN, currentSym)
+		case ')':
+			token = tokens.NewToken(tokens.RPAREN, currentSym)
+		case '[':
+			token = tokens.NewToken(tokens.LBRACKET, currentSym)
+		case ']':
+			token = tokens.NewToken(tokens.RBRACKET, currentSym)
+		case quot:
 			l.readSymbol()
+			token = tokens.NewToken(tokens.STRING, l.readRawString())
+		case NULL:
+			return tokens.NewToken(tokens.EOF, "")
+		default:
+			if isLetter(l.currentSymbol) {
+				literal := l.readLiteral(isLetter)
+				return tokens.NewToken(tokens.LookupIdentifierType(literal), literal)
+			} else if isDigit(l.currentSymbol) {
+				return tokens.NewToken(tokens.INT, l.readLiteral(isDigit))
+			} else {
+				token = tokens.NewToken(tokens.ILLEGAL, currentSym)
+			}
 		}
 
 		l.readSymbol()
-
-		return tokens.NewToken(currentTokenType, literal)
+		return token
 	}
-}
-
-func (l *Lexer) parseCustomToken(literal string) tokens.Token {
-	supportedCustomTokensParseFns := [...]func() (tokens.Token, bool){
-		l.parseWord,
-		l.parseDigit,
-	}
-
-	for i := range supportedCustomTokensParseFns {
-		if token, found := supportedCustomTokensParseFns[i](); found {
-			return token
-		}
-	}
-
-	return tokens.NewToken(tokens.ILLEGAL, literal)
 }
 
 func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
 	var buffer bytes.Buffer
 
-	for fn(l.currentSymbol) {
+	for l.currentSymbol != NULL && fn(l.currentSymbol) {
 		buffer.WriteRune(l.currentSymbol)
 		l.readSymbol()
 	}
@@ -134,6 +161,12 @@ func (l *Lexer) skipBlockComment() {
 		}
 		l.readSymbol()
 	}
+}
+
+func (l *Lexer) readRawString() string {
+	return l.readLiteral(func(symbol Symbol) bool {
+		return symbol != quot
+	})
 }
 
 func (l *Lexer) readSymbol() {
