@@ -116,3 +116,7 @@ func (v *ASTVisitor) VisitCallExpression(call *expressions.CallExpression) objec
 
 	return applyFunction(i.(statements.Statement), v)
 }
+
+func (v *ASTVisitor) VisitString(str *expressions.StringLiteral) object.Object {
+	return &object.String{Value: str.Literal()}
+}

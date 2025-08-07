@@ -9,4 +9,5 @@ const (
 	RETURN_TYPE   ObjectType = "RETURN"
 	ERROR_TYPE    ObjectType = "ERROR"
 	FUNCTION_TYPE ObjectType = "FUNCTION"
+	STRING_TYPE   ObjectType = "STRING"
 )

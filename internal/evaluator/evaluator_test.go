@@ -307,3 +307,16 @@ addTwo(2);
 	// 3. Assert
 	testIntegerObject(t, got, 4)
 }
+
+func TestEvaluateStringLiterals(t *testing.T) {
+	// 1. Arrange
+	source := `"hello world"`
+
+	// 2. Act
+	got := testEval(t, source)
+
+	// 3. Assert
+	str, ok := got.(*object.String)
+	require.True(t, ok, "expected a string")
+	require.Equal(t, "hello world", str.Value, "expected literal 'hello world'")
+}
