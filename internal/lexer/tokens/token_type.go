@@ -48,32 +48,6 @@ const (
 	RETURN
 )
 
-var tokenTypes = map[string]TokenType{
-	"=": ASSIGN,
-	"+": PLUS,
-	"-": MINUS,
-	"!": BANG,
-	"*": ASTERISK,
-	"/": SLASH,
-	"<": LT,
-	">": GT,
-
-	"==": EQ,
-	"!=": NOT_EQ,
-
-	",":  COMMA,
-	";":  SEMICOLON,
-	"(":  LPAREN,
-	")":  RPAREN,
-	"{":  LBRACE,
-	"}":  RBRACE,
-	"[":  LBRACKET,
-	"]":  RBRACKET,
-	"//": COMMENT_LINE,
-	"/*": COMMENT_BEGIN,
-	"*/": COMMENT_END,
-}
-
 var keywords = map[string]TokenType{
 	"fn":     FUNCTION,
 	"let":    LET,

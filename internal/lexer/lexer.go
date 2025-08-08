@@ -52,50 +52,7 @@ func (l *Lexer) NextToken() tokens.Token {
 		l.skipWhitespace()
 
 		currentSym := string(l.currentSymbol)
-
 		switch l.currentSymbol {
-		case '=':
-			if l.peekSymbol() == '=' {
-				ch := l.currentSymbol
-				l.readSymbol()
-				literal := string(ch) + string(l.currentSymbol)
-				token = tokens.NewToken(tokens.EQ, literal)
-			} else {
-				token = tokens.NewToken(tokens.ASSIGN, currentSym)
-			}
-		case '+':
-			token = tokens.NewToken(tokens.PLUS, currentSym)
-		case '-':
-			token = tokens.NewToken(tokens.MINUS, currentSym)
-		case '!':
-			if l.peekSymbol() == '=' {
-				ch := l.currentSymbol
-				l.readSymbol()
-				literal := string(ch) + string(l.currentSymbol)
-				token = tokens.NewToken(tokens.NOT_EQ, literal)
-			} else {
-				token = tokens.NewToken(tokens.BANG, currentSym)
-			}
-		case '/':
-			if l.peekSymbol() == '/' {
-				l.skipLine()
-				continue
-			} else if l.peekSymbol() == '*' {
-				l.skipBlockComment()
-				continue
-			} else {
-				token = tokens.NewToken(tokens.SLASH, currentSym)
-			}
-		case '*':
-			token = tokens.NewToken(tokens.ASTERISK, currentSym)
-		case '<':
-			token = tokens.NewToken(tokens.LT, currentSym)
-		case '>':
-			token = tokens.NewToken(tokens.GT, currentSym)
-		case ';':
-			token = tokens.NewToken(tokens.SEMICOLON, currentSym)
-		case ',':
-			token = tokens.NewToken(tokens.COMMA, currentSym)
 		case '{':
 			token = tokens.NewToken(tokens.LBRACE, currentSym)
 		case '}':
@@ -108,11 +65,44 @@ func (l *Lexer) NextToken() tokens.Token {
 			token = tokens.NewToken(tokens.LBRACKET, currentSym)
 		case ']':
 			token = tokens.NewToken(tokens.RBRACKET, currentSym)
+
+		case '=':
+			token = l.twoCharToken('=', tokens.EQ, tokens.ASSIGN)
+		case '+':
+			token = tokens.NewToken(tokens.PLUS, currentSym)
+		case '-':
+			token = tokens.NewToken(tokens.MINUS, currentSym)
+		case '!':
+			token = l.twoCharToken('=', tokens.NOT_EQ, tokens.BANG)
+
+		case '/':
+			if l.peekSymbol() == '/' {
+				l.skipLine()
+				continue
+			} else if l.peekSymbol() == '*' {
+				l.skipBlockComment()
+				continue
+			} else {
+				token = tokens.NewToken(tokens.SLASH, currentSym)
+			}
+
+		case '*':
+			token = tokens.NewToken(tokens.ASTERISK, currentSym)
+		case '<':
+			token = tokens.NewToken(tokens.LT, currentSym)
+		case '>':
+			token = tokens.NewToken(tokens.GT, currentSym)
+
+		case ';':
+			token = tokens.NewToken(tokens.SEMICOLON, currentSym)
+		case ',':
+			token = tokens.NewToken(tokens.COMMA, currentSym)
 		case quot:
 			l.readSymbol()
-			token = tokens.NewToken(tokens.STRING, l.readRawString())
+			token = tokens.NewToken(tokens.STRING, l.readQuotedString())
 		case NULL:
 			return tokens.NewToken(tokens.EOF, "")
+
 		default:
 			if isLetter(l.currentSymbol) {
 				literal := l.readLiteral(isLetter)
@@ -126,6 +116,17 @@ func (l *Lexer) NextToken() tokens.Token {
 
 		l.readSymbol()
 		return token
+	}
+}
+
+func (l *Lexer) twoCharToken(sym Symbol, twoCharToken tokens.TokenType, oneCharToken tokens.TokenType) tokens.Token {
+	if l.peekSymbol() == sym {
+		ch := l.currentSymbol
+		l.readSymbol()
+		literal := string(ch) + string(l.currentSymbol)
+		return tokens.NewToken(twoCharToken, literal)
+	} else {
+		return tokens.NewToken(oneCharToken, string(l.currentSymbol))
 	}
 }
 
@@ -163,7 +164,7 @@ func (l *Lexer) skipBlockComment() {
 	}
 }
 
-func (l *Lexer) readRawString() string {
+func (l *Lexer) readQuotedString() string {
 	return l.readLiteral(func(symbol Symbol) bool {
 		return symbol != quot
 	})
