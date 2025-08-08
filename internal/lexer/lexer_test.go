@@ -307,3 +307,46 @@ comment
 		})
 	}
 }
+
+func TestNewLine(t *testing.T) {
+	for _, tt := range []struct {
+		name         string
+		source       string
+		expectedLine int64
+	}{
+		{
+			name:         "empty source - no lines",
+			source:       ``,
+			expectedLine: 1,
+		},
+		{
+			name: "2 lines, but the first one is commented",
+			source: `// some comment
+let x = 2;`,
+			expectedLine: 2,
+		},
+		{
+			name: "many commented lines",
+			source: `// some comment
+// some comment
+// some comment`,
+			expectedLine: 3,
+		},
+		{
+			name:         "first line + 3 newline symbols",
+			source:       "\n\n\n",
+			expectedLine: 4,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			// 1. Arrange
+			l := NewLexer(strings.NewReader(tt.source))
+
+			// 2. Act
+			_ = l.NextToken()
+
+			// 3. Assert
+			require.Equal(t, tt.expectedLine, l.currentLine)
+		})
+	}
+}
