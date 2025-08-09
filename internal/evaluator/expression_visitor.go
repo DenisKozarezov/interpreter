@@ -54,6 +54,8 @@ func (v *ASTVisitor) VisitInfix(infix *expressions.InfixExpression) object.Objec
 	switch {
 	case left.Type() == object.INTEGER_TYPE && right.Type() == object.INTEGER_TYPE:
 		return evalInfixIntegerExpression(left, right, infix.Token)
+	case left.Type() == object.STRING_TYPE && right.Type() == object.STRING_TYPE:
+		return evalInfixStringExpression(left, right, infix.Token)
 	case left.Type() != right.Type():
 		return newRuntimeError("type mismatch: %s %s %s", left.Type(), infix.Token.Literal, right.Type())
 	default:

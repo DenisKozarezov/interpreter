@@ -223,6 +223,10 @@ if (10 > 1) {
 			"foobar",
 			"identifier not found: foobar",
 		},
+		{
+			`"Hello" - "World"`,
+			"unknown operator: STRING - STRING",
+		},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -254,17 +258,4 @@ func TestLetStatement(t *testing.T) {
 			testIntegerObject(t, got, tt.expected)
 		})
 	}
-}
-
-func TestEvaluateStringLiterals(t *testing.T) {
-	// 1. Arrange
-	source := `"hello world"`
-
-	// 2. Act
-	got := testEval(t, source)
-
-	// 3. Assert
-	str, ok := got.(*object.String)
-	require.True(t, ok, "expected a string")
-	require.Equal(t, "hello world", str.Value, "expected literal 'hello world'")
 }

@@ -99,7 +99,7 @@ func (l *Lexer) NextToken() tokens.Token {
 			token = tokens.NewToken(tokens.COMMA, currentSym)
 		case quot:
 			l.readSymbol()
-			token = tokens.NewToken(tokens.STRING, l.readQuotedString())
+			token = tokens.NewToken(tokens.STRING, l.readStringLiteral())
 		case NULL:
 			return tokens.NewToken(tokens.EOF, "")
 
@@ -119,8 +119,8 @@ func (l *Lexer) NextToken() tokens.Token {
 	}
 }
 
-func (l *Lexer) twoCharToken(sym Symbol, twoCharToken tokens.TokenType, oneCharToken tokens.TokenType) tokens.Token {
-	if l.peekSymbol() == sym {
+func (l *Lexer) twoCharToken(peekSym Symbol, twoCharToken tokens.TokenType, oneCharToken tokens.TokenType) tokens.Token {
+	if l.peekSymbol() == peekSym {
 		ch := l.currentSymbol
 		l.readSymbol()
 		literal := string(ch) + string(l.currentSymbol)
@@ -164,7 +164,7 @@ func (l *Lexer) skipBlockComment() {
 	}
 }
 
-func (l *Lexer) readQuotedString() string {
+func (l *Lexer) readStringLiteral() string {
 	return l.readLiteral(func(symbol Symbol) bool {
 		return symbol != quot
 	})

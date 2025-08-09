@@ -22,7 +22,7 @@ func TestFunctionObject(t *testing.T) {
 	require.Equal(t, "(x + 2)", fn.Body.String())
 }
 
-func TestFunctionApplication(t *testing.T) {
+func TestFunctionEvaluation(t *testing.T) {
 	for _, tt := range []struct {
 		source   string
 		expected int64

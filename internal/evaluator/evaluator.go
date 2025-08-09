@@ -58,6 +58,18 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 	}
 }
 
+func evalInfixStringExpression(left, right object.Object, operator tokens.Token) object.Object {
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+
+	switch operator.Type {
+	case tokens.PLUS:
+		return &object.String{Value: leftVal + rightVal}
+	default:
+		return newRuntimeError("unknown operator: %s %s %s", left.Type(), operator.Literal, right.Type())
+	}
+}
+
 func evalProgram(statements []statements.Statement, visitor statements.StatementVisitor) object.Object {
 	var result object.Object
 
