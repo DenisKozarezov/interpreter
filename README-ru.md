@@ -1,7 +1,4 @@
-<style>
-  .center { text-align: center; }
-</style>
-<div class="center">
+<div align="center">
 
   [![en](https://img.shields.io/badge/lang-en-green.svg)](https://github.com/DenisKozarezov/interpreter/blob/master/README.md)
   [![ru](https://img.shields.io/badge/lang-ru-red.svg)](https://github.com/DenisKozarezov/interpreter/blob/master/README-ru.md)
