@@ -134,3 +134,17 @@ func (s *String) Inspect() string {
 func (s *String) Type() ObjectType {
 	return STRING_TYPE
 }
+
+type BuiltinFunction = func(...Object) Object
+
+type BuiltIn struct {
+	Function BuiltinFunction
+}
+
+func (b *BuiltIn) Inspect() string {
+	return "built-in function"
+}
+
+func (b *BuiltIn) Type() ObjectType {
+	return BUILTIN_TYPE
+}
