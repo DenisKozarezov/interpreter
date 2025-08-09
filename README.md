@@ -16,8 +16,6 @@
 > here (the so-called **guest language**) is not a real programming language. The goals of the project are
 > to study the topic of text recognition and its subsequent lexing, parsing and execution of an abstract
 > syntax tree (AST).
->
-> Constructive criticism is welcome in the Issues and Discussions sections.
 
 > [!NOTE]
 > 📚 See the wiki **[documentation]()**
