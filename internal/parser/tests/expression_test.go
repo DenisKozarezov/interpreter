@@ -153,3 +153,16 @@ func testBooleanLiteral(t *testing.T, exp expressions.Expression, expected bool)
 	require.Equal(t, expected, boolean.Value)
 	require.Equal(t, fmt.Sprintf("%t", expected), boolean.Literal())
 }
+
+func TestStringLiteralExpression(t *testing.T) {
+	// 1. Arrange
+	source := `"hello world"`
+
+	// 2. Act
+	statement := parseProgramAndCheckExpression(t, source)
+
+	// 3. Assert
+	str, ok := statement.Value.(*expressions.StringLiteral)
+	require.True(t, ok, "expected a string")
+	require.Equal(t, "hello world", str.Literal(), "expected literal 'hello world'")
+}

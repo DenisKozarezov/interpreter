@@ -11,4 +11,5 @@ type ExpressionVisitor interface {
 	VisitIdentifier(identifier *Identifier) object.Object
 	VisitFunction(function *FunctionLiteral) object.Object
 	VisitCallExpression(call *CallExpression) object.Object
+	VisitString(str *StringLiteral) object.Object
 }

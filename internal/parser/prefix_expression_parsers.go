@@ -23,6 +23,7 @@ func (p *Parser) initPrefixParsers() {
 		tokens.LPAREN:     p.parseGroupedExpression,
 		tokens.IF:         p.parseConditionExpression,
 		tokens.FUNCTION:   p.parseFunction,
+		tokens.STRING:     p.parseStringLiteral,
 	}
 }
 
@@ -167,4 +168,8 @@ func (p *Parser) parseCallArguments() []expressions.Expression {
 	}
 
 	return args
+}
+
+func (p *Parser) parseStringLiteral() expressions.Expression {
+	return &expressions.StringLiteral{Token: p.currentToken}
 }
