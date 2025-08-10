@@ -259,3 +259,90 @@ func TestLetStatement(t *testing.T) {
 		})
 	}
 }
+
+func TestEvalArrayLiteral(t *testing.T) {
+	// 1. Arrange
+	source := "[1, 2 * 2, 3 + 3]"
+
+	// 2. Act
+	got := testEval(t, source)
+
+	// 3. Assert
+	array, ok := got.(*object.Array)
+	require.True(t, ok, "expected an array")
+	require.Len(t, array.Items, 3, "expected 3 elements in array")
+	testIntegerObject(t, array.Items[0], 1)
+	testIntegerObject(t, array.Items[1], 4)
+	testIntegerObject(t, array.Items[2], 6)
+}
+
+func TestEvalArrayIndex(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected any
+	}{
+		{
+			"[1, 2, 3][0]",
+			1,
+		},
+		{
+			"[1, 2, 3][1]",
+			2,
+		},
+		{
+			"[1, 2, 3][2]",
+			3,
+		},
+		{
+			"let i = 0; [1][i];",
+			1,
+		},
+		{
+			"[1, 2, 3][1 + 1];",
+			3,
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[2];",
+			3,
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+			6,
+		},
+		{
+			"let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
+			2,
+		},
+		{
+			"let f = fn(i) { return i + 1; }; let myArray = [1, 2, 3]; myArray[f(0)]",
+			2,
+		},
+		{
+			"let myArray = [1, 2, 3]; myArray[fn(i) { i + 2; }(0)]",
+			3,
+		},
+		{
+			"[1, 2, 3][3]",
+			"out of bounds: [1, 2, 3][3]",
+		},
+		{
+			"[1, 2, 3][-1]",
+			"out of bounds: [1, 2, 3][-1]",
+		},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				err, ok := got.(*object.Error)
+				require.True(t, ok, "expected an error")
+				require.Equal(t, tt.expected.(string), err.Message)
+			}
+		})
+	}
+}

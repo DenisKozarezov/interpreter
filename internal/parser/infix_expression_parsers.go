@@ -23,8 +23,8 @@ type (
 //	(a + (b * c))
 type Precedence = int8
 
-// Здесь представлены ранги от самого младшего (LOWEST) до самого старшего (CALL).
-// LOWEST -> EQUALS -> LESSGREATER -> SUM -> PRODUCT -> PREFIX -> CALL
+// Здесь представлены ранги от самого младшего (LOWEST) до самого старшего (INDEX).
+// LOWEST -> EQUALS -> LESSGREATER -> SUM -> PRODUCT -> PREFIX -> CALL -> INDEX
 const (
 	LOWEST      Precedence = iota + 1
 	EQUALS                 // ==
@@ -33,6 +33,7 @@ const (
 	PRODUCT                // *
 	PREFIX                 // -X or !X
 	CALL                   // myFunction(X)
+	INDEX
 )
 
 var precedences = map[tokens.TokenType]Precedence{
@@ -45,6 +46,7 @@ var precedences = map[tokens.TokenType]Precedence{
 	tokens.SLASH:    PRODUCT,     // a / b;
 	tokens.ASTERISK: PRODUCT,     // a * b;
 	tokens.LPAREN:   CALL,        // myFunction(arg1, arg2, ...)
+	tokens.LBRACKET: INDEX,       // myArray[1]
 }
 
 func (p *Parser) initInfixParsers() {
@@ -58,6 +60,7 @@ func (p *Parser) initInfixParsers() {
 		tokens.LT:       p.parseInfixExpression,
 		tokens.GT:       p.parseInfixExpression,
 		tokens.LPAREN:   p.parseCallExpression,
+		tokens.LBRACKET: p.parseIndexExpression,
 	}
 }
 
@@ -70,6 +73,22 @@ func (p *Parser) parseInfixExpression(leftExpression expressions.Expression) exp
 	precedence := p.currentPrecedence()
 	p.nextToken()
 	expression.RightExpression = p.parseExpression(precedence)
+	return expression
+}
+
+func (p *Parser) parseIndexExpression(left expressions.Expression) expressions.Expression {
+	expression := &expressions.IndexExpression{
+		Token:          p.currentToken,
+		LeftExpression: left,
+	}
+
+	p.nextToken()
+
+	expression.Index = p.parseExpression(LOWEST)
+	if !p.expectToken(tokens.RBRACKET) {
+		return nil
+	}
+
 	return expression
 }
 
