@@ -10,5 +10,6 @@ const (
 	ERROR_TYPE    ObjectType = "ERROR"
 	FUNCTION_TYPE ObjectType = "FUNCTION"
 	STRING_TYPE   ObjectType = "STRING"
+	ARRAY_TYPE    ObjectType = "ARRAY"
 	BUILTIN_TYPE  ObjectType = "BUILTIN"
 )

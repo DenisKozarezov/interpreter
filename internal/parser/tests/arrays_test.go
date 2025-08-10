@@ -26,3 +26,19 @@ func TestArrayParsing(t *testing.T) {
 	testInfixExpression(t, array.Items[1], 2, tokens.ASTERISK, 2)
 	testInfixExpression(t, array.Items[2], 3, tokens.PLUS, 3)
 }
+
+func TestArrayIndexParsing(t *testing.T) {
+	// 1. Arrange
+	source := "myArray[1 + 1]"
+
+	// 2. Act
+	statement := parseProgramAndCheck(t, source)
+
+	// 3. Assert
+	exp, ok := statement.(*statements.ExpressionStatement)
+	require.Truef(t, ok, "expected an expression, got = %T", exp)
+	index, ok := exp.Value.(*expressions.IndexExpression)
+	require.Truef(t, ok, "expected an index, got = %T", index)
+	testIdentifier(t, index.LeftExpression, "myArray")
+	testInfixExpression(t, index.Index, 1, tokens.PLUS, 1)
+}
