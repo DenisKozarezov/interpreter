@@ -80,12 +80,15 @@ func (v *ASTVisitor) VisitCondition(condition *expressions.ConditionExpression) 
 
 func (v *ASTVisitor) VisitIdentifier(identifier *expressions.Identifier) object.Object {
 	name := identifier.Literal()
-	val, ok := v.env.Get(name)
-	if !ok {
-		return newRuntimeError("identifier not found: %s", name)
+	if val, ok := v.env.Get(name); ok {
+		return val
 	}
 
-	return val
+	if builtin, ok := builtins[name]; ok {
+		return builtin
+	}
+
+	return newRuntimeError("identifier not found: %s", name)
 }
 
 func (v *ASTVisitor) VisitFunction(function *expressions.FunctionLiteral) object.Object {
@@ -108,17 +111,52 @@ func (v *ASTVisitor) VisitCallExpression(call *expressions.CallExpression) objec
 		return args[0]
 	}
 
-	function, ok := val.(*object.Function)
-	if !ok {
+	switch fn := val.(type) {
+	case *object.Function:
+		v.env = extendFunctionEnvironment(fn, args)
+		return unwrapReturnValue(EvaluateStatement(fn.Body.(statements.Statement), v))
+
+	case *object.BuiltIn:
+		return fn.Function(args...)
+
+	default:
 		return newRuntimeError("not a function: %s", val.Type())
 	}
-
-	v.env = extendFunctionEnvironment(function, args)
-	var i any = function.Body
-
-	return applyFunction(i.(statements.Statement), v)
 }
 
 func (v *ASTVisitor) VisitString(str *expressions.StringLiteral) object.Object {
 	return &object.String{Value: str.Literal()}
+}
+
+func (v *ASTVisitor) VisitArray(array *expressions.ArrayLiteral) object.Object {
+	items := evalExpressions(array.Items, v)
+	if len(items) == 1 && isRuntimeError(items[0]) {
+		return items[0]
+	}
+	return &object.Array{Items: items}
+}
+
+func (v *ASTVisitor) VisitIndex(index *expressions.IndexExpression) object.Object {
+	leftExpression := EvaluateExpression(index.LeftExpression, v)
+	if isRuntimeError(leftExpression) {
+		return leftExpression
+	}
+
+	indexExpression := EvaluateExpression(index.Index, v)
+	if isRuntimeError(indexExpression) {
+		return indexExpression
+	}
+
+	if leftExpression.Type() != object.ARRAY_TYPE && indexExpression.Type() != object.INTEGER_TYPE {
+		return newRuntimeError("index operator not supported: %s", leftExpression.Type())
+	}
+
+	array := leftExpression.(*object.Array)
+	idx := indexExpression.(*object.Integer)
+
+	if idx.Value >= 0 && idx.Value < int64(len(array.Items)) {
+		return array.Items[idx.Value]
+	}
+
+	return newRuntimeError("out of bounds: %s[%s]", array.Inspect(), idx.Inspect())
 }

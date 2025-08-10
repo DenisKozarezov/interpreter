@@ -12,4 +12,6 @@ type ExpressionVisitor interface {
 	VisitFunction(function *FunctionLiteral) object.Object
 	VisitCallExpression(call *CallExpression) object.Object
 	VisitString(str *StringLiteral) object.Object
+	VisitArray(array *ArrayLiteral) object.Object
+	VisitIndex(index *IndexExpression) object.Object
 }

@@ -24,6 +24,7 @@ func (p *Parser) initPrefixParsers() {
 		tokens.IF:         p.parseConditionExpression,
 		tokens.FUNCTION:   p.parseFunction,
 		tokens.STRING:     p.parseStringLiteral,
+		tokens.LBRACKET:   p.parseArrayLiteral,
 	}
 }
 
@@ -142,14 +143,14 @@ func (p *Parser) parseFunctionArguments() []*expressions.Identifier {
 
 func (p *Parser) parseCallExpression(function expressions.Expression) expressions.Expression {
 	exp := &expressions.CallExpression{Token: p.currentToken, Function: function}
-	exp.Args = p.parseCallArguments()
+	exp.Args = p.parseListArguments(tokens.RPAREN)
 	return exp
 }
 
-func (p *Parser) parseCallArguments() []expressions.Expression {
+func (p *Parser) parseListArguments(endSymbol tokens.TokenType) []expressions.Expression {
 	var args []expressions.Expression
 
-	if p.peekTokenIs(tokens.RPAREN) {
+	if p.peekTokenIs(endSymbol) {
 		p.nextToken()
 		return args
 	}
@@ -163,7 +164,7 @@ func (p *Parser) parseCallArguments() []expressions.Expression {
 		args = append(args, p.parseExpression(LOWEST))
 	}
 
-	if !p.expectToken(tokens.RPAREN) {
+	if !p.expectToken(endSymbol) {
 		return nil
 	}
 
@@ -172,4 +173,10 @@ func (p *Parser) parseCallArguments() []expressions.Expression {
 
 func (p *Parser) parseStringLiteral() expressions.Expression {
 	return &expressions.StringLiteral{Token: p.currentToken}
+}
+
+func (p *Parser) parseArrayLiteral() expressions.Expression {
+	array := &expressions.ArrayLiteral{Token: p.currentToken}
+	array.Items = p.parseListArguments(tokens.RBRACKET)
+	return array
 }
