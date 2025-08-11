@@ -1,29 +1,16 @@
 package main
 
 import (
-	"log"
+	"interpreter/cli"
 	"os"
-
-	"interpreter/internal/repl"
 )
 
+func init() {
+	cli.Init()
+}
+
 func main() {
-	errorsLogger, err := os.OpenFile("example/errorsLog.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	if err != nil {
-		log.Fatalf("failed to open file: %s", err)
+	if err := cli.Execute(); err != nil {
+		os.Exit(1)
 	}
-	defer func() {
-		_ = errorsLogger.Close()
-	}()
-
-	fileReader, err := os.OpenFile("example/invalidProgram.txt", os.O_RDONLY, os.ModeDevice)
-	if err != nil {
-		log.Fatalf("failed to open file: %s", err)
-	}
-	defer func() {
-		_ = fileReader.Close()
-	}()
-
-	r := repl.NewREPL(fileReader, log.Writer(), errorsLogger)
-	r.StartParser()
 }
