@@ -3,7 +3,6 @@ package repl
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"interpreter/internal/evaluator"
@@ -12,46 +11,48 @@ import (
 )
 
 type REPL struct {
-	in     io.ReaderAt
-	out    io.Writer
-	errors io.Writer
+	stdIn  io.ReaderAt
+	stdOut io.Writer
+	stdErr io.Writer
 }
 
-func NewREPL(in io.ReaderAt, out io.Writer, errors io.Writer) *REPL {
-	return &REPL{in: in, out: out, errors: errors}
+func NewREPL(stdIn io.ReaderAt, stdOut io.Writer, stdErr io.Writer) *REPL {
+	return &REPL{stdIn: stdIn, stdOut: stdOut, stdErr: stdErr}
 }
 
 func (r *REPL) StartParser() {
-	r.log(r.out, "Started to parse an input...")
+	log(r.stdOut, "Started to parse an input...")
 
-	l := lexer.NewLexer(r.in)
+	l := lexer.NewLexer(r.stdIn)
 	p := parser.NewParser(l)
 	program := p.Parse()
 
 	if len(p.Errors()) > 0 {
 		r.printParserErrors(p.Errors())
-		r.log(r.out, "Parser errors found! Stopping the interpreter...")
+		log(r.stdOut, "Parser error found! Stopping the interpreter...")
 		os.Exit(1)
 	}
 
 	v := evaluator.NewASTVisitor()
 	if result := evaluator.EvaluateStatement(program, v); result != nil {
-		r.log(r.out, "%s", result.Inspect())
+		log(r.stdOut, "%s", result.Inspect())
 	}
 
-	r.log(r.out, "Parsing completed!")
+	log(r.stdOut, "Parsing completed!")
 }
 
 func (r *REPL) printParserErrors(errors []error) {
-	r.log(r.errors, "⛔ Found %d syntax error(s):", len(errors))
+	log(r.stdErr, "⛔ Found %d syntax error(s):", len(errors))
 
 	for i, e := range errors {
-		r.log(r.errors, "\t%d. %s\n", i+1, e.Error())
+		logf(r.stdErr, "\t%d. %s\n", i+1, e.Error())
 	}
 }
 
-func (r *REPL) log(w io.Writer, s string, args ...any) {
-	if _, err := fmt.Fprintf(w, s+"\n", args...); err != nil {
-		log.Fatal("failed to put a string in output: %w", err)
-	}
+func log(w io.Writer, s string, args ...any) {
+	logf(w, s+"\n", args...)
+}
+
+func logf(w io.Writer, s string, args ...any) {
+	_, _ = fmt.Fprintf(w, s, args...)
 }
