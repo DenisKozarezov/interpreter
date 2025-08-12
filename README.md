@@ -20,4 +20,58 @@
 > [!NOTE]
 > 📚 See the wiki **[documentation]()**
 
+## Installation
+
+### Install and Set Up `ipret` on Linux <img src="https://logo.svgcdn.com/d/linux-original.png" width=25 height=25>
+
+#### Install `ipret` binary via wget from *GitHub*
+
+1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
+2. Download the binary file for the Linux platform using the `wget` command for the required architecture:
+```shell
+wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64
+```
+3. Move the downloaded file to the current user's executable directory:
+```shell
+sudo mv ./ipret /usr/local/bin
+```
+4. Test to ensure the version of `ipret` is the same as downloaded:
+```shell
+ipret --version
+```
+
+### Install and Set Up `ipret` on Windows <img src="https://logo.svgcdn.com/l/microsoft-windows-icon.png" width=25 height=25>
+
+#### Install `ipret` binary via direct download from *GitHub*
+
+1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
+2. Download the binary file for the Windows platform for the required architecture:
+- `ipret-windows-x64.exe`
+- `ipret-windows-x86_64.exe`
+
+3. Move the downloaded file to the current user's executable directory:
+```shell
+sudo mv ./ipret /usr/local/bin
+```
+4. Test to ensure the version of `ipret` is the same as downloaded:
+```shell
+ipret --version
+```
+
 ## Usage
+
+The `--help` (`-h`) command is used to display a prompt:
+```shell
+# Using --help in the root command
+ipret --help
+
+# Using --help in the interpreter run command
+ipret run --help
+
+# General form of the --help command
+ipret <comand> <subcommand> --help
+```
+
+```shell
+ipret run -f ./someFile.txt
+```

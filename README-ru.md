@@ -23,7 +23,7 @@
 
 ### Установка `ipret` в Linux <img src="https://logo.svgcdn.com/d/linux-original.png" width=25 height=25>
 
-#### Скачивание готового бинарного файла `ipret` в разделе Releases с *GitHub*
+#### Скачивание готового бинарного файла `ipret` через wget с *GitHub*
 
 1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете последнюю версию утилиты `ipret`.
 2. Скачайте бинарный файл для платформы Linux с помощью команды `wget` для требуемой архитектуры:
@@ -41,6 +41,22 @@ ipret --version
 
 ### Установка `ipret` в Windows <img src="https://logo.svgcdn.com/l/microsoft-windows-icon.png" width=25 height=25>
 
+#### Скачивание готового бинарного файла `ipret` напрямую с *GitHub*
+
+1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете последнюю версию утилиты `ipret`.
+2. Скачайте бинарный файл для платформы Windows для требуемой архитектуры:
+- `ipret-windows-x64.exe`
+- `ipret-windows-x86_64.exe`
+
+3. Перенесите скачанный файл в исполняемую директорию текущего пользователя:
+```shell
+sudo mv ./ipret /usr/local/bin
+```
+4. Проверьте работоспособность утилиты `ipret` с помощью команды:
+```shell
+ipret --version
+```
+
 ## Применение
 
 Для вывода подсказки применяется команда `--help` (`-h`):
@@ -51,7 +67,7 @@ ipret --help
 # Использование --help в команде запуска интерпрератора
 ipret run --help
 
-# Общая вид команды --help
+# Общий вид команды --help
 ipret <comand> <subcommand> --help
 ```
 
