@@ -6,8 +6,6 @@
   [![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/DenisKozarezov/interpreter.svg)](https://github.com/DenisKozarezov)
 
   <h1>Интерпретатор скриптового языка программирования</h1>
-  <h2>ipret</h2>
-
 </div>
 
 ## Описание
