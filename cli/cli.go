@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -24,11 +25,6 @@ Complete documentation available at https://github.com/DenisKozarezov/interprete
 ipret run --filename ./someFile.txt --bench
 `,
 	Args: cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		if showVersion, _ := cmd.Flags().GetBool("version"); showVersion {
-
-		}
-	},
 }
 
 func Execute() error {
@@ -46,8 +42,20 @@ func Execute() error {
 }
 
 func Init() {
-	rootCmd.Version = fmt.Sprintf("%s (Build Date: %s)\n", version, buildDate)
-	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf "%s " .}}{{end}}{{printf "version: %s" .Version}}`)
+	rootCmd.Version = version
+
+	// Register custom template functions
+	cobra.AddTemplateFunc("BuildDate", func() string { return buildDate })
+	cobra.AddTemplateFunc("GOOS", func() string { return runtime.GOOS })
+	cobra.AddTemplateFunc("GOARCH", func() string { return runtime.GOARCH })
+	cobra.AddTemplateFunc("GoVersion", func() string { return runtime.Version() })
+
+	// Set the version template
+	rootCmd.SetVersionTemplate(`Version:    {{.Version}}
+Built:      {{BuildDate}}
+Platform:   {{GOOS}}/{{GOARCH}}
+Go Version: {{GoVersion}}
+`)
 
 	rootCmd.AddCommand(newRunCommand())
 }

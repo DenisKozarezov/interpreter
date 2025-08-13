@@ -14,9 +14,14 @@ import (
 func newRunCommand() *cobra.Command {
 	var runCmd = &cobra.Command{
 		Use:   "run",
-		Short: "Starts to interpret source code.",
-		Long:  "Starts to interpret source code specified in --filename (-f) flag.",
-		Args:  cobra.NoArgs,
+		Short: "Execute a source code file",
+		Long: `Execute and interpret the specified source code file.
+
+The command requires a valid source file path provided via --filename flag.
+Execution results will be displayed in the console output.`,
+		Example: `ipret run -f script.irt
+ipret run --filename=script.irt --bench`,
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			filename, _ := cmd.Flags().GetString("filename")
 			if strings.TrimSpace(filename) == "" {
@@ -42,10 +47,10 @@ func newRunCommand() *cobra.Command {
 		},
 	}
 
-	runCmd.Flags().StringP("filename", "f", "", "Path to the source file.")
+	runCmd.Flags().StringP("filename", "f", "", "Path to source file to execute (required)")
 	_ = runCmd.MarkFlagRequired("filename")
-	runCmd.Flags().Bool("bench", true, "Turns on a benchmark and shows total time after execution.")
-	runCmd.Flags().Bool("benchmem", true, "Turns on a benchmark and shows both total time and memory consumption after execution.")
+	runCmd.Flags().Bool("bench", false, "Enable execution time benchmarking\n(shows total duration after completion)")
+	runCmd.Flags().Bool("benchmem", false, "Enable detailed benchmarking\n(shows both execution time and memory allocation statistics)")
 	runCmd.MarkFlagsMutuallyExclusive("bench", "benchmem")
 
 	return runCmd
