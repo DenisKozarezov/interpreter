@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	version   = "dev"
+	buildDate = "unknown"
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "ipret",
 	Short: "Lightweight scripting language interpreter",
@@ -15,10 +20,15 @@ var rootCmd = &cobra.Command{
 custom scripting language with REPL support.
 
 Complete documentation available at https://github.com/DenisKozarezov/interpreter`,
-	Example: `ipret run -f ./someFile.txt
-ipret run --filename ./someFile.txt --bench	
+	Example: `ipret --version
+ipret run --filename ./someFile.txt --bench
 `,
 	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		if showVersion, _ := cmd.Flags().GetBool("version"); showVersion {
+
+		}
+	},
 }
 
 func Execute() error {
@@ -36,5 +46,8 @@ func Execute() error {
 }
 
 func Init() {
+	rootCmd.Version = fmt.Sprintf("%s (Build Date: %s)\n", version, buildDate)
+	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf "%s " .}}{{end}}{{printf "version: %s" .Version}}`)
+
 	rootCmd.AddCommand(newRunCommand())
 }
