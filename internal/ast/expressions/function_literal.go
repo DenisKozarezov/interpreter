@@ -8,15 +8,15 @@ import (
 	"interpreter/internal/object"
 )
 
-// FunctionLiteral выражение, которое определяет функцию со списком аргументов Args и блоком
-// инструкций Body. Например:
+// FunctionLiteral is an expression that defines a function with an argument list Args
+// and a block of instructions Body. For example:
 //
 //	fn(x, y) { return x + y; }
 //
-// где:
-//  1. 'fn' - ключевое слово;
-//  2. 'x, y' - аргументы функции;
-//  3. '{ return x + y; }' - блок выполнения, состоящий из одной единственной инструкции statements.ReturnStatement.
+// Where:
+// 1. 'fn' is the keyword.
+// 2. 'x, y' are the function arguments.
+// 3. '{ return x + y; }' is a block (body) of instructions.
 type FunctionLiteral struct {
 	Token tokens.Token
 	Args  []*Identifier

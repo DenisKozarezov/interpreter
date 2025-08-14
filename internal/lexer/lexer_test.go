@@ -320,7 +320,7 @@ func TestNewLine(t *testing.T) {
 	for _, tt := range []struct {
 		name         string
 		source       string
-		expectedLine int64
+		expectedLine int16
 	}{
 		{
 			name:         "empty source - no lines",

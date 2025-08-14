@@ -19,7 +19,7 @@ type Lexer struct {
 	reader Reader
 
 	currentSymbol     Symbol
-	currentLine       int64
+	currentLine       int16
 	currentPosition   int64
 	nextPosition      int64
 	lineStartPosition int64
@@ -37,7 +37,7 @@ func NewLexer(reader Reader) *Lexer {
 	return l
 }
 
-func (l *Lexer) CurrentLine() int64 {
+func (l *Lexer) CurrentLine() int16 {
 	return l.currentLine
 }
 

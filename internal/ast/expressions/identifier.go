@@ -5,8 +5,11 @@ import (
 	"interpreter/internal/object"
 )
 
-// Identifier представляет собой выражение, которое образует строковый идентификатор.
-// Это может быть как идентификатор переменной, так и идентификатор функции и т.п. Например:
+// Identifier is an expression that forms a string literal associated to some data
+// in heap or stack. It can be a variable identifier, a function identifier, whatever...
+// You should always remember: identifiers do not hold a value. Only names.
+//
+// For example:
 //
 //	let x = 5;
 //	    ^

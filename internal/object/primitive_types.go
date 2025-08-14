@@ -6,6 +6,20 @@ import (
 	"strings"
 )
 
+// Below are defined the so-called `singleton values`.
+//
+// These are objects that are vitally important in order to avoid allocating the same
+// type of entity with the same value every time. For example, there is a boolean
+// variable that can only have two values: true and false. So we don't really need to
+// constantly allocate the same object from heap during the runtime phase. Thus, for
+// optimization purposes, it is better to point to pre-allocated objects that have
+// already been created with the value of true/false, etc...
+var (
+	TRUE  = &Boolean{Value: true}
+	FALSE = &Boolean{Value: false}
+	NULL  = &Null{}
+)
+
 type Null struct{}
 
 func (i *Null) Inspect() string {
@@ -27,18 +41,6 @@ func (i *Integer) Inspect() string {
 func (i *Integer) Type() ObjectType {
 	return INTEGER_TYPE
 }
-
-// Ниже представлены так называемые значения-синглтоны (singleton values).
-// Это объекты, которые необходимы для того, чтобы не аллоцировать каждый раз
-// однотипные сущности с одним и тем же значением. Например, есть булева переменная,
-// которая может иметь только два значения: true и false.
-//
-// В целях оптимизации лучше указывать на уже заранее созданные объекты со значением true/false.
-var (
-	TRUE  = &Boolean{Value: true}
-	FALSE = &Boolean{Value: false}
-	NULL  = &Null{}
-)
 
 type Boolean struct {
 	Value bool
