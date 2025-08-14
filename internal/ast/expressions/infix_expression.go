@@ -7,9 +7,8 @@ import (
 	"interpreter/internal/object"
 )
 
-// InfixExpression представляет собой выражение, состоящее из двух операндов - левого
-// и правого, а также оператора между ними. Классическими примерами такого выражения
-// являются следующие виды конструкций:
+// InfixExpression is an expression consisting of two operands, the left one and the right one,
+// and an operator between them. Typical examples below:
 //
 //	a + b;
 //	a - b;
@@ -17,7 +16,7 @@ import (
 //	a == b;
 //	a != b;
 //
-// и т.п.
+// etc.
 type InfixExpression struct {
 	Token           tokens.Token
 	LeftExpression  Expression

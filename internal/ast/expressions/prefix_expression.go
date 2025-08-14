@@ -7,15 +7,14 @@ import (
 	"interpreter/internal/object"
 )
 
-// PrefixExpression представляет собой выражение, состоящее из правого операнда,
-// а также оператора перед ним. Классическими примерами такого выражения являются
-// следующие виды конструкций:
+// PrefixExpression is an expression consisting of a right operand,
+// as well as an operator in front of it. Typical examples:
 //
-//	!a;
-//	-a;
-//	--a;
+// !a;
+// -a;
+// --a;
 //
-// и т.п.
+// etc.
 type PrefixExpression struct {
 	Token           tokens.Token
 	RightExpression Expression

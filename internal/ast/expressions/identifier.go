@@ -6,7 +6,7 @@ import (
 )
 
 // Identifier is an expression that forms a string literal associated to some data
-// in heap or stack. It can be a variable identifier, a function identifier, whatever...
+// in heap or stack. It may be a variable identifier, a function identifier, whatever...
 // You should always remember: identifiers do not hold a value. Only names.
 //
 // For example:

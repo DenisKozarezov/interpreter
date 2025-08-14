@@ -5,18 +5,21 @@ import (
 	"interpreter/internal/object"
 )
 
-// IntegerLiteral представляет собой выражение, которое производит на свет некую
-// целочисленную константу. Например:
+// IntegerLiteral is an expression that produces a certain integer constant.
+// Consider this as a 'primitive' type for the interpreted scripting language.
+// There are so many cases, when objects like integers can be produced in other
+// operations as shown below:
 //
 //	5;
-//	^
-//
-// Важно понимать, что само по себе число 5 является лишь РЕЗУЛЬТАТОМ выражения, а
-// не самим выражением. Это необходимо, чтобы были валидны следующие конструкции:
-//
 //	let y = 5;
+//		    ^
 //	if 5 == 5 {
-//	   ^    ^
+//	   ^   ^
+//	if f(x) == f(y) {
+//	    ^       ^
+//
+// As you can see: let instructions, functions, literals - almost every expression
+// can return an object, storing an integer constant inside.
 type IntegerLiteral struct {
 	Token tokens.Token
 	Value int64

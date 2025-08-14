@@ -6,12 +6,12 @@ const (
 	ILLEGAL TokenType = iota
 	EOF
 
-	// Идентификаторы
+	// Identifiers
 	INT
 	STRING
 	IDENTIFIER
 
-	// Арифметические операторы
+	// Arithmetic operators
 	ASSIGN
 	PLUS
 	MINUS
@@ -24,7 +24,7 @@ const (
 	EQ
 	NOT_EQ
 
-	// Разделители
+	// Separators
 	COMMA
 	SEMICOLON
 
@@ -34,11 +34,8 @@ const (
 	RBRACE
 	LBRACKET
 	RBRACKET
-	COMMENT_LINE
-	COMMENT_BEGIN
-	COMMENT_END
 
-	// Ключевые слова
+	// Keywords
 	FUNCTION
 	LET
 	TRUE
