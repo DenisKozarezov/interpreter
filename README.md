@@ -44,7 +44,7 @@ ipret --version
 #### Install `ipret` binary via direct download from *GitHub*
 
 1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the needed version of the `ipret` utility.
-2. Download the binary file for the Windows platform for the required architecture:
+2. Download the zip archive for the Windows platform for the required architecture:
 - `ipret-windows-amd64.zip`
 - `ipret-windows-386.zip`
 3. Unzip the zip archive using any available archiver.
