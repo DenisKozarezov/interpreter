@@ -27,13 +27,13 @@
 #### Install `ipret` binary via wget from *GitHub*
 
 1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
-2. Download the binary file for the Linux platform using the `wget` command for the required architecture:
+2. Download the Linux platform archive using the `wget` command for the required architecture:
 ```shell
-wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64
+wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64.tar.gz
 ```
-3. Move the downloaded file to the current user's executable directory:
+3. Unpack the archive and move the downloaded binary file to the current user's executable directory:
 ```shell
-sudo mv ./ipret /usr/local/bin
+tar -xvzf ipret-linux-amd64.tar.gz -C /usr/local/bin
 ```
 4. Test to ensure the version of `ipret` is the same as downloaded:
 ```shell
@@ -46,8 +46,8 @@ ipret --version
 
 1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
 2. Download the binary file for the Windows platform for the required architecture:
-- `ipret-windows-x64.exe`
-- `ipret-windows-x86_64.exe`
+- `ipret-windows-amd64.zip`
+- `ipret-windows-386.zip`
 
 3. Move the downloaded file to the current user's executable directory:
 ```shell
