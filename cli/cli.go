@@ -4,8 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/spf13/cobra"
+)
+
+var (
+	version   = "dev"
+	buildDate = "unknown"
 )
 
 var rootCmd = &cobra.Command{
@@ -15,8 +21,8 @@ var rootCmd = &cobra.Command{
 custom scripting language with REPL support.
 
 Complete documentation available at https://github.com/DenisKozarezov/interpreter`,
-	Example: `ipret run -f ./someFile.txt
-ipret run --filename ./someFile.txt --bench	
+	Example: `ipret --version
+ipret run --filename ./someFile.txt --bench
 `,
 	Args: cobra.MinimumNArgs(1),
 }
@@ -36,5 +42,16 @@ func Execute() error {
 }
 
 func Init() {
+	rootCmd.Version = version
+	cobra.AddTemplateFunc("BuildDate", func() string { return buildDate })
+	cobra.AddTemplateFunc("GOOS", func() string { return runtime.GOOS })
+	cobra.AddTemplateFunc("GOARCH", func() string { return runtime.GOARCH })
+	cobra.AddTemplateFunc("GoVersion", func() string { return runtime.Version() })
+	rootCmd.SetVersionTemplate(`Version:    {{.Version}}
+Built:      {{BuildDate}}
+Platform:   {{GOOS}}/{{GOARCH}}
+Go Version: {{GoVersion}}
+`)
+
 	rootCmd.AddCommand(newRunCommand())
 }

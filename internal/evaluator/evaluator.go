@@ -47,8 +47,12 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 		return &object.Integer{Value: leftVal / rightVal}
 	case tokens.LT:
 		return object.NativeBooleanToObject(leftVal < rightVal)
+	case tokens.LT_EQ:
+		return object.NativeBooleanToObject(leftVal <= rightVal)
 	case tokens.GT:
 		return object.NativeBooleanToObject(leftVal > rightVal)
+	case tokens.GT_EQ:
+		return object.NativeBooleanToObject(leftVal >= rightVal)
 	case tokens.EQ:
 		return object.NativeBooleanToObject(leftVal == rightVal)
 	case tokens.NOT_EQ:
@@ -65,6 +69,24 @@ func evalInfixStringExpression(left, right object.Object, operator tokens.Token)
 	switch operator.Type {
 	case tokens.PLUS:
 		return &object.String{Value: leftVal + rightVal}
+	default:
+		return newRuntimeError("unknown operator: %s %s %s", left.Type(), operator.Literal, right.Type())
+	}
+}
+
+func evalInfixBooleanExpression(left, right object.Object, operator tokens.Token) object.Object {
+	leftVal := left.(*object.Boolean).Value
+	rightVal := right.(*object.Boolean).Value
+
+	switch operator.Type {
+	case tokens.OR:
+		return &object.Boolean{Value: leftVal || rightVal}
+	case tokens.AND:
+		return &object.Boolean{Value: leftVal && rightVal}
+	case tokens.NOT_EQ:
+		return &object.Boolean{Value: leftVal != rightVal}
+	case tokens.EQ:
+		return &object.Boolean{Value: leftVal == rightVal}
 	default:
 		return newRuntimeError("unknown operator: %s %s %s", left.Type(), operator.Literal, right.Type())
 	}

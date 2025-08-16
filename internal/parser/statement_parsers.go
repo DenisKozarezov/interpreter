@@ -17,7 +17,6 @@ func (p *Parser) initStatementParsers() {
 	}
 }
 
-// parseLetStatement парсит конструкцию let.
 func (p *Parser) parseLetStatement() statements.Statement {
 	statement := statements.LetStatement{Token: p.currentToken}
 
@@ -41,7 +40,6 @@ func (p *Parser) parseLetStatement() statements.Statement {
 	return &statement
 }
 
-// parseReturnStatement парсит конструкцию return.
 func (p *Parser) parseReturnStatement() statements.Statement {
 	statement := statements.ReturnStatement{Token: p.currentToken}
 

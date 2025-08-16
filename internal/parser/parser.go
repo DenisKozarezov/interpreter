@@ -10,7 +10,7 @@ import (
 
 type lexer interface {
 	NextToken() tokens.Token
-	CurrentLine() int64
+	CurrentLine() int16
 	CurrentPositionAtLine() int64
 }
 

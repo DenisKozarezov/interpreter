@@ -8,17 +8,17 @@ import (
 	"interpreter/internal/object"
 )
 
-// CallExpression представляет собой выражение, которое обозначает вызов функции и содержит
-// список аргументов для вызова. Является infix-оператором, поскольку находится между идентификатором
-// функции и идентификатором аргумента:
+// CallExpression is an expression that denotes a function call and contains
+// a list of arguments for the call. It is an infix operator because it is
+// located between the function identifier and the argument identifier:
 //
 //	myFunc(x, y);
 //	      ^
 //
-// где:
-//  1. 'myFunc' - идентификатор (см. Identifier) функции Function;
-//  2. '(' - оператор вызова функции;
-//  3. 'x, y' - идентификаторы аргументов функции.
+// Where:
+//  1. 'myFunc' is the identifier (see Identifier) of the function.
+//  2. '(' is the function call operator.
+//  3. 'x, y' are the argument identifiers of the function.
 type CallExpression struct {
 	Token    tokens.Token
 	Function Expression

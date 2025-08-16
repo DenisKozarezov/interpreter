@@ -6,25 +6,31 @@ const (
 	ILLEGAL TokenType = iota
 	EOF
 
-	// Идентификаторы
+	// Identifiers
 	INT
 	STRING
 	IDENTIFIER
 
-	// Арифметические операторы
+	// Arithmetic operators
 	ASSIGN
 	PLUS
 	MINUS
 	BANG
 	ASTERISK
 	SLASH
+	AMPERSAND
+	PIPE
 
 	LT
+	LT_EQ
 	GT
+	GT_EQ
 	EQ
 	NOT_EQ
+	AND
+	OR
 
-	// Разделители
+	// Separators
 	COMMA
 	SEMICOLON
 
@@ -34,11 +40,8 @@ const (
 	RBRACE
 	LBRACKET
 	RBRACKET
-	COMMENT_LINE
-	COMMENT_BEGIN
-	COMMENT_END
 
-	// Ключевые слова
+	// Keywords
 	FUNCTION
 	LET
 	TRUE

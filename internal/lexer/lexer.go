@@ -19,7 +19,7 @@ type Lexer struct {
 	reader Reader
 
 	currentSymbol     Symbol
-	currentLine       int64
+	currentLine       int16
 	currentPosition   int64
 	nextPosition      int64
 	lineStartPosition int64
@@ -37,7 +37,7 @@ func NewLexer(reader Reader) *Lexer {
 	return l
 }
 
-func (l *Lexer) CurrentLine() int64 {
+func (l *Lexer) CurrentLine() int16 {
 	return l.currentLine
 }
 
@@ -89,9 +89,13 @@ func (l *Lexer) NextToken() tokens.Token {
 		case '*':
 			token = tokens.NewToken(tokens.ASTERISK, currentSym)
 		case '<':
-			token = tokens.NewToken(tokens.LT, currentSym)
+			token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
 		case '>':
-			token = tokens.NewToken(tokens.GT, currentSym)
+			token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+		case '&':
+			token = l.twoCharToken('&', tokens.AND, tokens.AMPERSAND)
+		case '|':
+			token = l.twoCharToken('|', tokens.OR, tokens.PIPE)
 
 		case ';':
 			token = tokens.NewToken(tokens.SEMICOLON, currentSym)

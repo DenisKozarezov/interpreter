@@ -5,8 +5,8 @@ import (
 	"interpreter/internal/object"
 )
 
-// Boolean выражение, возвращающее булевую константу: true либо false. Примеры,
-// где может применяться булевая константа:
+// Boolean expression that returns a boolean constant: true or false.
+// Examples of where a boolean constant can be used below:
 //
 //	true;
 //	false;

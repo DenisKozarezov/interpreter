@@ -1,0 +1,18 @@
+/*
+  This example shows multiple features of interpreter: functions, arrays, indexing and condition flow.
+  Let's start with something simple. First, we need to define index function and then create an array
+  with items of different types.
+*/
+
+let idx = fn(i) { i + 2 };
+
+// We create an array with different types
+let arr = ["123", 123, -123, true];
+let item = arr[idx(0)] // we should get arr[2] - it's the element with value `-123`
+
+// if so, we'll see `true` in result
+if (item == -123) {
+    return true;
+} else {
+    return false;
+}

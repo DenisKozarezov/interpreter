@@ -9,21 +9,21 @@ type (
 	infixParserFn = func(expression expressions.Expression) expressions.Expression
 )
 
-// Precedence означает порядок (ранг) оператора согласно арифметическим, семантическим
-// правилам языка программирования. Чем выше ранг, тем выше порядок выполнения, а, следовательно,
-// приоритет выражения. Например, выражение (a + b + c) слева-направо можно представить
-// как:
+// Precedence means the order (rank) of an operator according to the arithmetic and
+// semantic rules of the programming language. The higher the rank, the higher the
+// execution order, and therefore the priority of the expression. For example, the
+// expression (a + b + c) can be represented from left to right as shown below:
 //
 //	((a + b) + c)
 //
-// Потому что в выражении оба оператора `+` имеют равнозначные ранги (SUM), а следовательно выполняются
-// последовательно. Выражение (a + b * c) содержит различные по рангу операторы, среди которых имеется
-// оператор `*` (PRODUCT). Таким образом, получаем:
+// This is because both operators `+` have the same rank (SUM), and therefore they
+// are executed sequentially. The expression (a + b * c) contains operators of different
+// ranks, including the `*` (PRODUCT) operator. Therefore, we have:
 //
 //	(a + (b * c))
 type Precedence = int8
 
-// Здесь представлены ранги от самого младшего (LOWEST) до самого старшего (INDEX).
+// Ranks are presented here from the lowest (LOWEST) to the highest (INDEX).
 // LOWEST -> EQUALS -> LESSGREATER -> SUM -> PRODUCT -> PREFIX -> CALL -> INDEX
 const (
 	LOWEST      Precedence = iota + 1
@@ -33,20 +33,24 @@ const (
 	PRODUCT                // *
 	PREFIX                 // -X or !X
 	CALL                   // myFunction(X)
-	INDEX
+	INDEX                  // myArray[X]
 )
 
 var precedences = map[tokens.TokenType]Precedence{
+	tokens.OR:       EQUALS,      // a || b
 	tokens.EQ:       EQUALS,      // a == b;
 	tokens.NOT_EQ:   EQUALS,      // a != b;
 	tokens.LT:       LESSGREATER, // a < b;
 	tokens.GT:       LESSGREATER, // a > b;
+	tokens.LT_EQ:    LESSGREATER, // a <= b;
+	tokens.GT_EQ:    LESSGREATER, // a >= b;
+	tokens.AND:      LESSGREATER, // a && b
 	tokens.PLUS:     SUM,         // a + b
 	tokens.MINUS:    SUM,         // a - b;
 	tokens.SLASH:    PRODUCT,     // a / b;
 	tokens.ASTERISK: PRODUCT,     // a * b;
 	tokens.LPAREN:   CALL,        // myFunction(arg1, arg2, ...)
-	tokens.LBRACKET: INDEX,       // myArray[1]
+	tokens.LBRACKET: INDEX,       // myArray[X]
 }
 
 func (p *Parser) initInfixParsers() {
@@ -59,6 +63,10 @@ func (p *Parser) initInfixParsers() {
 		tokens.NOT_EQ:   p.parseInfixExpression,
 		tokens.LT:       p.parseInfixExpression,
 		tokens.GT:       p.parseInfixExpression,
+		tokens.LT_EQ:    p.parseInfixExpression,
+		tokens.GT_EQ:    p.parseInfixExpression,
+		tokens.OR:       p.parseInfixExpression,
+		tokens.AND:      p.parseInfixExpression,
 		tokens.LPAREN:   p.parseCallExpression,
 		tokens.LBRACKET: p.parseIndexExpression,
 	}

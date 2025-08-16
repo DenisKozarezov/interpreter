@@ -5,7 +5,7 @@ import (
 )
 
 type ParseError struct {
-	currentLine      int64
+	currentLine      int16
 	currentPosAtLine int64
 	err              string
 }

@@ -7,19 +7,19 @@ import (
 	"interpreter/internal/object"
 )
 
-// ConditionExpression обозначает выражение, содержажее блок выполнения Then и
-// блок альтернативы Else, а также условие Condition для выбора между ними. Если условие
-// истинно, то срабатывает блок Then, в противном случае выполняться будет фрагмент кода
-// в блоке Else (если он присутствует).
+// ConditionExpression represents an expression that contains a Then block and
+// an Else block, as well as a Condition to choose between them. If the condition
+// is true, then the Then block is triggered, otherwise the code in the Else block
+// (if present) will be executed.
 //
 //	if (x > y) { return x; } else { return y; }
 //
-// где:
-//  1. 'if' - ключевое слово;
-//  2. '(x > y)' - infix-выражение, возвращающее истину либо ложь;
-//  3. '{ return x; }' - блок выполнения Then при истинности условия Condition;
-//  4. 'else' - ключевое слово блока альтернативы;
-//  5. '{ return y; }' - блок альтернативы Else при ложном условии Condition.
+// Where:
+//  1. 'if' is the keyword.
+//  2. '(x > y)' is an infix expression that returns true or false.
+//  3. '{ return x; }' defined in the Then execution block if Condition is true.
+//  4. 'else' is the keyword of the alternative block.
+//  5. '{ return y; }' is an alternative Else block with a false Condition.
 type ConditionExpression struct {
 	Token     tokens.Token
 	Condition Expression

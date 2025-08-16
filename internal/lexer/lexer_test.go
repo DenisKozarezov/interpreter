@@ -130,9 +130,18 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+10 <= 10;
+10 >= 10;
+
 "foobar"
 "foo bar"
 [1, 2];
+
+true && true;
+true & true;
+
+true || true;
+true | true;
 `
 
 	tests := []struct {
@@ -221,6 +230,16 @@ if (5 < 10) {
 		{tokens.INT, "9"},
 		{tokens.SEMICOLON, ";"},
 
+		{tokens.INT, "10"},
+		{tokens.LT_EQ, "<="},
+		{tokens.INT, "10"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.INT, "10"},
+		{tokens.GT_EQ, ">="},
+		{tokens.INT, "10"},
+		{tokens.SEMICOLON, ";"},
+
 		{tokens.STRING, "foobar"},
 		{tokens.STRING, "foo bar"},
 
@@ -229,6 +248,26 @@ if (5 < 10) {
 		{tokens.COMMA, ","},
 		{tokens.INT, "2"},
 		{tokens.RBRACKET, "]"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.TRUE, "true"},
+		{tokens.AND, "&&"},
+		{tokens.TRUE, "true"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.TRUE, "true"},
+		{tokens.AMPERSAND, "&"},
+		{tokens.TRUE, "true"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.TRUE, "true"},
+		{tokens.OR, "||"},
+		{tokens.TRUE, "true"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.TRUE, "true"},
+		{tokens.PIPE, "|"},
+		{tokens.TRUE, "true"},
 		{tokens.SEMICOLON, ";"},
 
 		{tokens.EOF, ""},
@@ -320,7 +359,7 @@ func TestNewLine(t *testing.T) {
 	for _, tt := range []struct {
 		name         string
 		source       string
-		expectedLine int64
+		expectedLine int16
 	}{
 		{
 			name:         "empty source - no lines",
