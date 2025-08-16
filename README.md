@@ -26,7 +26,7 @@
 1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the needed version of the `ipret` utility.
 2. Download the Linux platform archive using the `wget` command for the required architecture:
 ```shell
-wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64.tar.gz
+wget https://github.com/DenisKozarezov/interpreter/releases/download/<version>/ipret-linux-arm64.tar.gz
 ```
 3. Unpack the archive and move the downloaded binary file to the current user's executable directory:
 ```shell
