@@ -13,7 +13,7 @@
 > [!WARNING]
 > Данный репозиторий является пет-проектом и преследует исключительно академический интерес. Разрабатываемый 
 > язык программирования (т.н. **guest language**) не является существующим языком. Целями проекта выступают
-> изучение темы распознавания текста и его последующие лексинг, парсинг и выполнение абстрактного 
+> изучение темы распознавания исходного кода и его последующие лексинг, парсинг и выполнение абстрактного 
 > синтаксического дерева (AST).
 
 > [!NOTE]
@@ -25,14 +25,16 @@
 
 #### Скачивание готового бинарного файла `ipret` через wget с *GitHub*
 
-1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете последнюю версию утилиты `ipret`.
+1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете нужную версию утилиты `ipret`.
 2. Скачайте архив для платформы Linux с помощью команды `wget` для требуемой архитектуры:
 ```shell
 wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64.tar.gz
 ```
 3. Распакуйте архив и перенесите скачанный бинарный файл в исполняемую директорию текущего пользователя:
 ```shell
-tar -xvzf ipret-linux-amd64.tar.gz -C /usr/local/bin
+mkdir ipret-temp && tar -xvzf ipret-linux-amd64.tar.gz -C ipret-temp
+sudo mv ipret-temp/ipret /usr/local/bin
+sudo rm -rf ipret-temp
 ```
 4. Проверьте работоспособность утилиты `ipret` с помощью команды:
 ```shell
@@ -43,18 +45,14 @@ ipret --version
 
 #### Скачивание готового бинарного файла `ipret` напрямую с *GitHub*
 
-1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете последнюю версию утилиты `ipret`.
+1. Откройте раздел [Releases](https://github.com/DenisKozarezov/interpreter/releases) и выберете нужную версию утилиты `ipret`.
 2. Скачайте архив для платформы Windows для требуемой архитектуры:
 - `ipret-windows-amd64.zip`
 - `ipret-windows-386.zip`
-
-3. Перенесите скачанный файл в исполняемую директорию текущего пользователя:
-```shell
-sudo mv ./ipret /usr/local/bin
-```
+3. Распакуйте zip-архив при помощи любого доступного архиватора.
 4. Проверьте работоспособность утилиты `ipret` с помощью команды:
 ```shell
-ipret --version
+ipret.exe --version
 ```
 
 ## Применение
@@ -73,4 +71,5 @@ ipret <comand> <subcommand> --help
 
 ```shell
 ipret run -f ./someFile.txt
+ipret run --filename=someFile.irt --bench
 ```

@@ -14,7 +14,7 @@
 > [!WARNING]
 > This repository is a pet project and is purely for academic interest. The scripting language being developed
 > here (the so-called **guest language**) is not a real programming language. The goals of the project are
-> to study the topic of text recognition and its subsequent lexing, parsing and execution of an abstract
+> to study the topic of source program recognition and its subsequent lexing, parsing and execution of an abstract
 > syntax tree (AST).
 
 > [!NOTE]
@@ -26,14 +26,16 @@
 
 #### Install `ipret` binary via wget from *GitHub*
 
-1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
+1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the needed version of the `ipret` utility.
 2. Download the Linux platform archive using the `wget` command for the required architecture:
 ```shell
 wget https://github.com/DenisKozarezov/interpreter/releases/latest/ipret-linux-arm64.tar.gz
 ```
 3. Unpack the archive and move the downloaded binary file to the current user's executable directory:
 ```shell
-tar -xvzf ipret-linux-amd64.tar.gz -C /usr/local/bin
+mkdir ipret-temp && tar -xvzf ipret-linux-amd64.tar.gz -C ipret-temp
+sudo mv ipret-temp/ipret /usr/local/bin
+sudo rm -rf ipret-temp
 ```
 4. Test to ensure the version of `ipret` is the same as downloaded:
 ```shell
@@ -44,15 +46,11 @@ ipret --version
 
 #### Install `ipret` binary via direct download from *GitHub*
 
-1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the latest version of the `ipret` utility.
+1. Open the [Releases](https://github.com/DenisKozarezov/interpreter/releases) section and select the needed version of the `ipret` utility.
 2. Download the binary file for the Windows platform for the required architecture:
 - `ipret-windows-amd64.zip`
 - `ipret-windows-386.zip`
-
-3. Move the downloaded file to the current user's executable directory:
-```shell
-sudo mv ./ipret /usr/local/bin
-```
+3. Unzip the zip archive using any available archiver.
 4. Test to ensure the version of `ipret` is the same as downloaded:
 ```shell
 ipret --version
@@ -74,4 +72,5 @@ ipret <comand> <subcommand> --help
 
 ```shell
 ipret run -f ./someFile.txt
+ipret run --filename=someFile.irt --bench
 ```
