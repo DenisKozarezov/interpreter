@@ -43,14 +43,10 @@ func Execute() error {
 
 func Init() {
 	rootCmd.Version = version
-
-	// Register custom template functions
 	cobra.AddTemplateFunc("BuildDate", func() string { return buildDate })
 	cobra.AddTemplateFunc("GOOS", func() string { return runtime.GOOS })
 	cobra.AddTemplateFunc("GOARCH", func() string { return runtime.GOARCH })
 	cobra.AddTemplateFunc("GoVersion", func() string { return runtime.Version() })
-
-	// Set the version template
 	rootCmd.SetVersionTemplate(`Version:    {{.Version}}
 Built:      {{BuildDate}}
 Platform:   {{GOOS}}/{{GOARCH}}

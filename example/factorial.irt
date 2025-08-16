@@ -1,0 +1,8 @@
+// Define factorial function
+let fact = fn(n) {
+    if (n <= 1) { return 1; }
+    return n * fact(n-1)
+};
+
+// Evaluate factorial function
+fact(5);

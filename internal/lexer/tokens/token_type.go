@@ -18,11 +18,17 @@ const (
 	BANG
 	ASTERISK
 	SLASH
+	AMPERSAND
+	PIPE
 
 	LT
+	LT_EQ
 	GT
+	GT_EQ
 	EQ
 	NOT_EQ
+	AND
+	OR
 
 	// Separators
 	COMMA

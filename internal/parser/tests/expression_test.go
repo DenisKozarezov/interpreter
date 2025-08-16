@@ -74,9 +74,11 @@ func TestInfixExpression(t *testing.T) {
 		{"5 < 5;", 5, tokens.LT, 5},
 		{"5 == 5;", 5, tokens.EQ, 5},
 		{"5 != 5;", 5, tokens.NOT_EQ, 5},
-		{"true == true", true, tokens.EQ, true},
-		{"true != false", true, tokens.NOT_EQ, false},
-		{"false == false", false, tokens.EQ, false},
+		{"true == true;", true, tokens.EQ, true},
+		{"true != false;", true, tokens.NOT_EQ, false},
+		{"false == false;", false, tokens.EQ, false},
+		{"true || false;", true, tokens.OR, false},
+		{"false && false;", false, tokens.AND, false},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act

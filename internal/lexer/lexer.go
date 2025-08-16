@@ -89,9 +89,13 @@ func (l *Lexer) NextToken() tokens.Token {
 		case '*':
 			token = tokens.NewToken(tokens.ASTERISK, currentSym)
 		case '<':
-			token = tokens.NewToken(tokens.LT, currentSym)
+			token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
 		case '>':
-			token = tokens.NewToken(tokens.GT, currentSym)
+			token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+		case '&':
+			token = l.twoCharToken('&', tokens.AND, tokens.AMPERSAND)
+		case '|':
+			token = l.twoCharToken('|', tokens.OR, tokens.PIPE)
 
 		case ';':
 			token = tokens.NewToken(tokens.SEMICOLON, currentSym)

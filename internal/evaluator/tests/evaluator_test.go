@@ -74,12 +74,22 @@ func TestEvalBoolean(t *testing.T) {
 		{"false", false},
 		{"1 < 2", true},
 		{"1 > 2", false},
+		{"1 <= 2", true},
+		{"1 >= 2", false},
 		{"1 < 1", false},
 		{"1 > 1", false},
 		{"1 == 1", true},
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
+		{"true && true", true},
+		{"true && false", false},
+		{"true || true", true},
+		{"true || false", true},
+		{"true == true", true},
+		{"true == false", false},
+		{"true != true", false},
+		{"true != false", true},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
