@@ -9,10 +9,10 @@
    - Arithmetic operators: `+ - * /`
    - Comparison operators: `== != < > <= >=`
    - Logical operators: `&& || !`
-   - Operators precedences: `a + b * c`, `(a + b) * c`, `a + (b * c)`, etc...
+   - Operators precedence: `a + b * c`, `(a + b) * c`, `a + (b * c)`, etc...
 - **Type System**:
-   - Primitive types: `int`, `bool`, `string`
-   - Functions: `fn`, closures
+   - Primitive types: integers, booleans, strings
+   - Functions (`fn`) and closures
 - **Control Flow**:
    - Conditionals: `if/else` statements
    - Code blocks with `{ }`
@@ -20,12 +20,13 @@
 - **Statements**
    - `let`
 - **Built-In Functions**
-   - Function `len` for arrays, strings.
+   - Function `len` for arrays and strings
 
 ### 🛠️ Core Features
-- Added REPL mode for interactive execution
 - Implemented basic lexer and parser
-- Source line and symbol position tracking for error handling
+- Implemented basic AST evaluation
+- Implemented errors handling
+- Source line and symbol position tracking for errors output
 
 ### 📝 Example Code
 ```ipret
