@@ -17,9 +17,6 @@
 > to study the topic of source program recognition and its subsequent lexing, parsing and execution of an abstract
 > syntax tree (AST).
 
-> [!NOTE]
-> 📚 See the wiki **[documentation]()**
-
 ## Installation
 
 ### Install and Set Up `ipret` on Linux <img src="https://logo.svgcdn.com/d/linux-original.png" width=25 height=25>
@@ -53,7 +50,7 @@ ipret --version
 3. Unzip the zip archive using any available archiver.
 4. Test to ensure the version of `ipret` is the same as downloaded:
 ```shell
-ipret --version
+ipret.exe --version
 ```
 
 ## Usage
@@ -71,6 +68,9 @@ ipret <comand> <subcommand> --help
 ```
 
 ```shell
+# Evaluate a text file with short flag
 ipret run -f ./someFile.txt
+
+# Evaluate a text file with long flag and benchmark
 ipret run --filename=someFile.irt --bench
 ```
