@@ -45,6 +45,8 @@ var precedences = map[tokens.TokenType]Precedence{
 	tokens.LT_EQ:    LESSGREATER, // a <= b;
 	tokens.GT_EQ:    LESSGREATER, // a >= b;
 	tokens.AND:      LESSGREATER, // a && b
+	tokens.L_SHIFT:  LESSGREATER, // a << b
+	tokens.R_SHIFT:  LESSGREATER, // a >> b
 	tokens.PLUS:     SUM,         // a + b
 	tokens.MINUS:    SUM,         // a - b;
 	tokens.SLASH:    PRODUCT,     // a / b;
@@ -67,8 +69,10 @@ func (p *Parser) initInfixParsers() {
 		tokens.GT_EQ:    p.parseInfixExpression,
 		tokens.OR:       p.parseInfixExpression,
 		tokens.AND:      p.parseInfixExpression,
-		tokens.LPAREN:   p.parseCallExpression,
+		tokens.L_SHIFT:  p.parseInfixExpression,
+		tokens.R_SHIFT:  p.parseInfixExpression,
 		tokens.LBRACKET: p.parseIndexExpression,
+		tokens.LPAREN:   p.parseCallExpression,
 	}
 }
 

@@ -2,7 +2,6 @@ package parser
 
 import (
 	"fmt"
-
 	"interpreter/internal/ast/expressions"
 	"interpreter/internal/ast/statements"
 	"interpreter/internal/lexer/tokens"

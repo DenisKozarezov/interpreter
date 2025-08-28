@@ -11,12 +11,8 @@ type Symbol = rune
 
 const NULL Symbol = 0
 
-type Reader interface {
-	io.ReaderAt
-}
-
 type Lexer struct {
-	reader Reader
+	reader io.ReaderAt
 
 	currentSymbol     Symbol
 	currentLine       int16
@@ -25,7 +21,7 @@ type Lexer struct {
 	lineStartPosition int64
 }
 
-func NewLexer(reader Reader) *Lexer {
+func NewLexer(reader io.ReaderAt) *Lexer {
 	l := &Lexer{
 		reader:          reader,
 		currentLine:     1,
@@ -89,9 +85,17 @@ func (l *Lexer) NextToken() tokens.Token {
 		case '*':
 			token = tokens.NewToken(tokens.ASTERISK, currentSym)
 		case '<':
-			token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
+			if l.peekSymbol() == '<' {
+				token = l.twoCharToken('<', tokens.L_SHIFT, tokens.LT)
+			} else {
+				token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
+			}
 		case '>':
-			token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+			if l.peekSymbol() == '>' {
+				token = l.twoCharToken('>', tokens.R_SHIFT, tokens.GT)
+			} else {
+				token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+			}
 		case '&':
 			token = l.twoCharToken('&', tokens.AND, tokens.AMPERSAND)
 		case '|':
@@ -127,8 +131,8 @@ func (l *Lexer) twoCharToken(peekSym Symbol, twoCharToken tokens.TokenType, oneC
 	if l.peekSymbol() == peekSym {
 		ch := l.currentSymbol
 		l.readSymbol()
-		literal := string(ch) + string(l.currentSymbol)
-		return tokens.NewToken(twoCharToken, literal)
+		buf := [2]Symbol{ch, l.currentSymbol}
+		return tokens.NewToken(twoCharToken, string(buf[:]))
 	} else {
 		return tokens.NewToken(oneCharToken, string(l.currentSymbol))
 	}

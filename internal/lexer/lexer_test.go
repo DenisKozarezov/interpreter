@@ -142,6 +142,8 @@ true & true;
 
 true || true;
 true | true;
+1 << 10;
+1 >> 10;
 `
 
 	tests := []struct {
@@ -268,6 +270,16 @@ true | true;
 		{tokens.TRUE, "true"},
 		{tokens.PIPE, "|"},
 		{tokens.TRUE, "true"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.INT, "1"},
+		{tokens.L_SHIFT, "<<"},
+		{tokens.INT, "10"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.INT, "1"},
+		{tokens.R_SHIFT, ">>"},
+		{tokens.INT, "10"},
 		{tokens.SEMICOLON, ";"},
 
 		{tokens.EOF, ""},
