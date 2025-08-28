@@ -49,7 +49,7 @@ func TestEvalIntegerExpression(t *testing.T) {
 	}
 }
 
-func testEval(t *testing.T, source string) object.Object {
+func testEval(t require.TestingT, source string) object.Object {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
