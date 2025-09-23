@@ -37,42 +37,46 @@ const (
 )
 
 var precedences = map[tokens.TokenType]Precedence{
-	tokens.OR:       EQUALS,      // a || b
-	tokens.EQ:       EQUALS,      // a == b;
-	tokens.NOT_EQ:   EQUALS,      // a != b;
-	tokens.LT:       LESSGREATER, // a < b;
-	tokens.GT:       LESSGREATER, // a > b;
-	tokens.LT_EQ:    LESSGREATER, // a <= b;
-	tokens.GT_EQ:    LESSGREATER, // a >= b;
-	tokens.AND:      LESSGREATER, // a && b
-	tokens.L_SHIFT:  LESSGREATER, // a << b
-	tokens.R_SHIFT:  LESSGREATER, // a >> b
-	tokens.PLUS:     SUM,         // a + b
-	tokens.MINUS:    SUM,         // a - b;
-	tokens.SLASH:    PRODUCT,     // a / b;
-	tokens.ASTERISK: PRODUCT,     // a * b;
-	tokens.LPAREN:   CALL,        // myFunction(arg1, arg2, ...)
-	tokens.LBRACKET: INDEX,       // myArray[X]
+	tokens.OR:        EQUALS,      // a || b
+	tokens.EQ:        EQUALS,      // a == b;
+	tokens.NOT_EQ:    EQUALS,      // a != b;
+	tokens.LT:        LESSGREATER, // a < b;
+	tokens.GT:        LESSGREATER, // a > b;
+	tokens.LT_EQ:     LESSGREATER, // a <= b;
+	tokens.GT_EQ:     LESSGREATER, // a >= b;
+	tokens.AND:       LESSGREATER, // a && b;
+	tokens.PIPE:      LESSGREATER, // a | b;
+	tokens.PLUS:      SUM,         // a + b;
+	tokens.MINUS:     SUM,         // a - b;
+	tokens.L_SHIFT:   SUM,         // a << b;
+	tokens.R_SHIFT:   SUM,         // a >> b;
+	tokens.SLASH:     PRODUCT,     // a / b;
+	tokens.ASTERISK:  PRODUCT,     // a * b;
+	tokens.AMPERSAND: PRODUCT,     // a & b;
+	tokens.LPAREN:    CALL,        // myFunction(arg1, arg2, ...)
+	tokens.LBRACKET:  INDEX,       // myArray[X]
 }
 
 func (p *Parser) initInfixParsers() {
 	p.infixParseFns = map[tokens.TokenType]infixParserFn{
-		tokens.PLUS:     p.parseInfixExpression,
-		tokens.MINUS:    p.parseInfixExpression,
-		tokens.SLASH:    p.parseInfixExpression,
-		tokens.ASTERISK: p.parseInfixExpression,
-		tokens.EQ:       p.parseInfixExpression,
-		tokens.NOT_EQ:   p.parseInfixExpression,
-		tokens.LT:       p.parseInfixExpression,
-		tokens.GT:       p.parseInfixExpression,
-		tokens.LT_EQ:    p.parseInfixExpression,
-		tokens.GT_EQ:    p.parseInfixExpression,
-		tokens.OR:       p.parseInfixExpression,
-		tokens.AND:      p.parseInfixExpression,
-		tokens.L_SHIFT:  p.parseInfixExpression,
-		tokens.R_SHIFT:  p.parseInfixExpression,
-		tokens.LBRACKET: p.parseIndexExpression,
-		tokens.LPAREN:   p.parseCallExpression,
+		tokens.PLUS:      p.parseInfixExpression,
+		tokens.MINUS:     p.parseInfixExpression,
+		tokens.SLASH:     p.parseInfixExpression,
+		tokens.ASTERISK:  p.parseInfixExpression,
+		tokens.EQ:        p.parseInfixExpression,
+		tokens.NOT_EQ:    p.parseInfixExpression,
+		tokens.LT:        p.parseInfixExpression,
+		tokens.GT:        p.parseInfixExpression,
+		tokens.LT_EQ:     p.parseInfixExpression,
+		tokens.GT_EQ:     p.parseInfixExpression,
+		tokens.OR:        p.parseInfixExpression,
+		tokens.AND:       p.parseInfixExpression,
+		tokens.L_SHIFT:   p.parseInfixExpression,
+		tokens.R_SHIFT:   p.parseInfixExpression,
+		tokens.PIPE:      p.parseInfixExpression,
+		tokens.AMPERSAND: p.parseInfixExpression,
+		tokens.LBRACKET:  p.parseIndexExpression,
+		tokens.LPAREN:    p.parseCallExpression,
 	}
 }
 
