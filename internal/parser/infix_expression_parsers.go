@@ -24,37 +24,57 @@ type (
 type Precedence = int8
 
 // Ranks are presented here from the lowest (LOWEST) to the highest (INDEX).
-// LOWEST -> EQUALS -> LESSGREATER -> SUM -> PRODUCT -> PREFIX -> CALL -> INDEX
+// LOWEST -> LOGICAL_OR -> LOGICAL_AND -> EQUALS -> COMPARE -> BITWISE_SHIFT -> ... -> INDEX
 const (
-	LOWEST      Precedence = iota + 1
-	EQUALS                 // ==
-	LESSGREATER            // > or <
-	SUM                    // +
-	PRODUCT                // *
-	PREFIX                 // -X or !X
-	CALL                   // myFunction(X)
-	INDEX                  // myArray[X]
+	LOWEST Precedence = iota + 1 // 1
+
+	LOGICAL_OR  // 2 - ||
+	LOGICAL_AND // 3 - &&
+
+	BITWISE_OR  // 4 - |
+	BITWISE_AND // 6 - &
+
+	EQUALS  // 7 - ==, !=
+	COMPARE // 8 - <, <=, >, >=
+
+	BITWISE_SHIFT // 9 - <<, >>
+
+	SUM     // 10 - +, -
+	PRODUCT // 11 - *, /, %
+
+	PREFIX // 12 - -X, !X, ~X, ++X, --X
+	CALL   // 13 - myFunction(X)
+	INDEX  // 14 - myArray[X]
 )
 
 var precedences = map[tokens.TokenType]Precedence{
-	tokens.OR:        EQUALS,      // a || b
-	tokens.EQ:        EQUALS,      // a == b;
-	tokens.NOT_EQ:    EQUALS,      // a != b;
-	tokens.LT:        LESSGREATER, // a < b;
-	tokens.GT:        LESSGREATER, // a > b;
-	tokens.LT_EQ:     LESSGREATER, // a <= b;
-	tokens.GT_EQ:     LESSGREATER, // a >= b;
-	tokens.AND:       LESSGREATER, // a && b;
-	tokens.PIPE:      LESSGREATER, // a | b;
-	tokens.PLUS:      SUM,         // a + b;
-	tokens.MINUS:     SUM,         // a - b;
-	tokens.L_SHIFT:   SUM,         // a << b;
-	tokens.R_SHIFT:   SUM,         // a >> b;
-	tokens.SLASH:     PRODUCT,     // a / b;
-	tokens.ASTERISK:  PRODUCT,     // a * b;
-	tokens.AMPERSAND: PRODUCT,     // a & b;
-	tokens.LPAREN:    CALL,        // myFunction(arg1, arg2, ...)
-	tokens.LBRACKET:  INDEX,       // myArray[X]
+	tokens.OR:  LOGICAL_OR,  // a || b
+	tokens.AND: LOGICAL_AND, // a && b
+
+	tokens.PIPE:      BITWISE_OR,  // a | b
+	tokens.AMPERSAND: BITWISE_AND, // a & b
+
+	tokens.EQ:     EQUALS, // a == b
+	tokens.NOT_EQ: EQUALS, // a != b
+
+	tokens.LT:    COMPARE, // a < b
+	tokens.GT:    COMPARE, // a > b
+	tokens.LT_EQ: COMPARE, // a <= b
+	tokens.GT_EQ: COMPARE, // a >= b
+
+	tokens.L_SHIFT: BITWISE_SHIFT, // a << b
+	tokens.R_SHIFT: BITWISE_SHIFT, // a >> b
+
+	tokens.PLUS:  SUM, // a + b
+	tokens.MINUS: SUM, // a - b
+
+	tokens.ASTERISK: PRODUCT, // a * b
+	tokens.SLASH:    PRODUCT, // a / b
+
+	tokens.BANG: PREFIX, // !a
+
+	tokens.LPAREN:   CALL,  // myFunction(arg1, arg2, ...)
+	tokens.LBRACKET: INDEX, // myArray[X]
 }
 
 func (p *Parser) initInfixParsers() {
