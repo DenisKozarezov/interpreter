@@ -17,6 +17,7 @@ type Parser struct {
 	lexer  lexer
 	errors []error
 
+	prevToken    tokens.Token
 	currentToken tokens.Token
 	peekToken    tokens.Token
 
@@ -47,6 +48,7 @@ func (p *Parser) Parse() *statements.Program {
 		if statement := p.parseStatement(); statement != nil {
 			program.Statements = append(program.Statements, statement)
 		}
+		p.prevToken = p.currentToken
 		p.nextToken()
 	}
 

@@ -281,7 +281,7 @@ if (10 > 1) {
 		},
 		{
 			"foobar",
-			"identifier not found: foobar",
+			"identifier not found: 'foobar'",
 		},
 		{
 			`"Hello" - "World"`,
@@ -303,19 +303,28 @@ if (10 > 1) {
 func TestLetStatement(t *testing.T) {
 	for _, tt := range []struct {
 		source   string
-		expected int64
+		expected any
 	}{
 		{"let a = 5; a;", 5},
 		{"let a = 5 * 5; a;", 25},
 		{"let a = 5; let b = a; b;", 5},
 		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+		{"let a = 5; let a = 10;", "identifier already exists: 'a'"},
+		{"let a = 5; let b = 10; let b = a + b;", "identifier already exists: 'b'"},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
 			got := testEval(t, tt.source)
 
 			// 2. Assert
-			testIntegerObject(t, got, tt.expected)
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				err, ok := got.(*object.Error)
+				require.True(t, ok, "expected an error")
+				require.Equal(t, tt.expected.(string), err.Message)
+			}
 		})
 	}
 }
@@ -395,6 +404,61 @@ func TestEvalArrayIndex(t *testing.T) {
 			got := testEval(t, tt.source)
 
 			// 2. Assert
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				err, ok := got.(*object.Error)
+				require.True(t, ok, "expected an error")
+				require.Equal(t, tt.expected.(string), err.Message)
+			}
+		})
+	}
+}
+
+func TestAssignOperator(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected any
+	}{
+		{
+			"let a = 5; a = 10; a;",
+			10,
+		},
+		{
+			"let a = fn() { 5; }; let b = a(); b = b + 5; b;",
+			10,
+		},
+		{
+			"let a = 5; b = 10; b;",
+			"identifier not found: 'b'",
+		},
+		{
+			source: `
+let a = 5;
+let b = 2;
+a = a + 10;
+b = a * 2;
+a = a + b;
+a;`,
+			expected: 45,
+		},
+		{
+			"a = 5;",
+			"identifier not found: 'a'",
+		},
+		{
+			"a = 5; b = 10;",
+			"identifier not found: 'a'",
+		},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			t.Log(got.Inspect())
+
 			integer, ok := tt.expected.(int)
 			if ok {
 				testIntegerObject(t, got, int64(integer))

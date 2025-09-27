@@ -90,7 +90,7 @@ func (v *ASTVisitor) VisitIdentifier(identifier *expressions.Identifier) object.
 		return builtin
 	}
 
-	return newRuntimeError("identifier not found: %s", name)
+	return newRuntimeError("identifier not found: '%s'", name)
 }
 
 func (v *ASTVisitor) VisitFunction(function *expressions.FunctionLiteral) object.Object {
