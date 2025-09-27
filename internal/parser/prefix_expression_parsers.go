@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strconv"
 
 	"interpreter/internal/ast/expressions"
@@ -37,7 +36,7 @@ func (p *Parser) parseIntegerLiteral() expressions.Expression {
 
 	value, err := strconv.ParseInt(p.currentToken.Literal, 10, 64)
 	if err != nil {
-		p.parseError(fmt.Sprintf("could not parse '%q' as integer", p.currentToken.Literal))
+		p.parseError("could not parse '%q' as integer", p.currentToken.Literal)
 		return nil
 	}
 

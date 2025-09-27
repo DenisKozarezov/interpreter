@@ -32,6 +32,21 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3 * 3 * 3 + 10", 37},
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+		{"1 << 0", 1},
+		{"1 << 1", 2},
+		{"1 << 2", 4},
+		{"1 << 10", 1024},
+		{"1 >> 2", 0},
+		{"1024 >> 2", 256},
+		{"1 & 0", 0},
+		{"0 & 0", 0},
+		{"0 & 1", 0},
+		{"1 & 1", 1},
+		{"1 | 0", 1},
+		{"0 | 0", 0},
+		{"0 | 1", 1},
+		{"1 | 1", 1},
+		{"1 + 8 >> 2 + 1", 1},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -43,7 +58,7 @@ func TestEvalIntegerExpression(t *testing.T) {
 	}
 }
 
-func testEval(t *testing.T, source string) object.Object {
+func testEval(t require.TestingT, source string) object.Object {
 	// 1. Arrange
 	l := lexer.NewLexer(strings.NewReader(source))
 	p := parser.NewParser(l)
@@ -70,6 +85,7 @@ func TestEvalBoolean(t *testing.T) {
 		source   string
 		expected bool
 	}{
+		// General cases
 		{"true", true},
 		{"false", false},
 		{"1 < 2", true},
@@ -82,14 +98,48 @@ func TestEvalBoolean(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
-		{"true && true", true},
-		{"true && false", false},
+
 		{"true || true", true},
 		{"true || false", true},
-		{"true == true", true},
-		{"true == false", false},
-		{"true != true", false},
-		{"true != false", true},
+		{"false || true", true},
+		{"false || false", false},
+		{"true && true", true},
+		{"true && false", false},
+		{"false && true", false},
+		{"false && false", false},
+
+		// Check priorities
+		{"true || true && false", true},   // true || (true && false) = true || false = true
+		{"false && true || true", true},   // (false && true) || true = false || true = true
+		{"true && false || false", false}, // (true && false) || false = false || false = false
+
+		// Compare operations
+		{"1 == 1 && 2 == 2", true}, // (1==1) && (2==2) = true && true = true
+		{"1 != 1 || 2 == 2", true}, // (1!=1) || (2==2) = false || true = true
+		{"1 < 2 && 3 > 2", true},   // (1<2) && (3>2) = true && true = true
+		{"1 > 2 || 2 < 3", true},   // (1>2) || (2<3) = false || true = true
+
+		// Logical operations with arithmetic
+		{"1 + 1 == 2 && 3 * 3 == 9", true}, // (2==2) && (9==9) = true && true = true
+		{"2 * 2 > 3 || 1 + 1 < 1", true},   // (4>3) || (2<1) = true || false = true
+
+		// Bitwise operations
+		{"1 << 2 == 4 || 8 >> 1 == 3", true}, // (4==4) || (4==3) = true || false = true
+
+		// Complex cases
+		{"(1 < 2 || 3 > 4) && (5 == 5)", true}, // (true||false) && true = true && true = true
+		{"1 == 1 && 2 == 2 || 3 == 4", true},   // (true&&true) || false = true || false = true
+		{"1 == 2 || 2 == 2 && 3 == 3", true},   // false || (true&&true) = false || true = true
+
+		{"true || (true && false)", true},  // true || false = true
+		{"(true || true) && false", false}, // true && false = false
+		{"false && (true || true)", false}, // false && true = false
+		{"(false && true) || true", true},  // false || true = true
+
+		// Corner case
+		{"!true || true", true},    // false || true = true
+		{"!false && true", true},   // true && true = true
+		{"!!true && !false", true}, // true && true = true
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
@@ -231,7 +281,7 @@ if (10 > 1) {
 		},
 		{
 			"foobar",
-			"identifier not found: foobar",
+			"identifier not found: 'foobar'",
 		},
 		{
 			`"Hello" - "World"`,
@@ -253,19 +303,28 @@ if (10 > 1) {
 func TestLetStatement(t *testing.T) {
 	for _, tt := range []struct {
 		source   string
-		expected int64
+		expected any
 	}{
 		{"let a = 5; a;", 5},
 		{"let a = 5 * 5; a;", 25},
 		{"let a = 5; let b = a; b;", 5},
 		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+		{"let a = 5; let a = 10;", "identifier already exists: 'a'"},
+		{"let a = 5; let b = 10; let b = a + b;", "identifier already exists: 'b'"},
 	} {
 		t.Run(tt.source, func(t *testing.T) {
 			// 1. Act
 			got := testEval(t, tt.source)
 
 			// 2. Assert
-			testIntegerObject(t, got, tt.expected)
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				err, ok := got.(*object.Error)
+				require.True(t, ok, "expected an error")
+				require.Equal(t, tt.expected.(string), err.Message)
+			}
 		})
 	}
 }
@@ -345,6 +404,61 @@ func TestEvalArrayIndex(t *testing.T) {
 			got := testEval(t, tt.source)
 
 			// 2. Assert
+			integer, ok := tt.expected.(int)
+			if ok {
+				testIntegerObject(t, got, int64(integer))
+			} else {
+				err, ok := got.(*object.Error)
+				require.True(t, ok, "expected an error")
+				require.Equal(t, tt.expected.(string), err.Message)
+			}
+		})
+	}
+}
+
+func TestAssignOperator(t *testing.T) {
+	for _, tt := range []struct {
+		source   string
+		expected any
+	}{
+		{
+			"let a = 5; a = 10; a;",
+			10,
+		},
+		{
+			"let a = fn() { 5; }; let b = a(); b = b + 5; b;",
+			10,
+		},
+		{
+			"let a = 5; b = 10; b;",
+			"identifier not found: 'b'",
+		},
+		{
+			source: `
+let a = 5;
+let b = 2;
+a = a + 10;
+b = a * 2;
+a = a + b;
+a;`,
+			expected: 45,
+		},
+		{
+			"a = 5;",
+			"identifier not found: 'a'",
+		},
+		{
+			"a = 5; b = 10;",
+			"identifier not found: 'a'",
+		},
+	} {
+		t.Run(tt.source, func(t *testing.T) {
+			// 1. Act
+			got := testEval(t, tt.source)
+
+			// 2. Assert
+			t.Log(got.Inspect())
+
 			integer, ok := tt.expected.(int)
 			if ok {
 				testIntegerObject(t, got, int64(integer))

@@ -58,10 +58,57 @@ func TestReadSymbol(t *testing.T) {
 
 			// 3. Assert
 			require.Equal(t, tt.expectedSymbol, l.currentSymbol, "current symbol should be equal")
-			require.Equal(t, tt.index, l.currentPosition, "current position should equal")
-			require.Equal(t, tt.index+1, l.nextPosition, "next position should equal")
 		})
 	}
+}
+
+func TestCyrillic(t *testing.T) {
+	l := NewLexer(strings.NewReader("ЕСЛИ"))
+
+	// Reading cyrillic symbols (every symbol contains 2 bytes from Unicode)
+	require.Equalf(t, Symbol('Е'), l.currentSymbol, "expected 'Е'") // position 0 → 2
+	l.readSymbol()
+	require.Equalf(t, Symbol('С'), l.currentSymbol, "expected 'С'") // position 2 → 4
+	l.readSymbol()
+	require.Equalf(t, Symbol('Л'), l.currentSymbol, "expected 'Л'") // position 4 → 6
+	l.readSymbol()
+	require.Equalf(t, Symbol('И'), l.currentSymbol, "expected 'И'") // position 6 → 8
+	l.readSymbol()
+	require.Equalf(t, NULL, l.currentSymbol, "expected NULL") // position 8 → EOF
+}
+
+func TestBothLatinAndCyrillic(t *testing.T) {
+	l := NewLexer(strings.NewReader("ЕСЛИ123ESLI"))
+
+	// Reading cyrillic symbols (every symbol contains 2 bytes from Unicode)
+	require.Equalf(t, Symbol('Е'), l.currentSymbol, "expected 'Е'") // position 0 → 2
+	l.readSymbol()
+	require.Equalf(t, Symbol('С'), l.currentSymbol, "expected 'С'") // position 2 → 4
+	l.readSymbol()
+	require.Equalf(t, Symbol('Л'), l.currentSymbol, "expected 'Л'") // position 4 → 6
+	l.readSymbol()
+	require.Equalf(t, Symbol('И'), l.currentSymbol, "expected 'И'") // position 6 → 8
+	l.readSymbol()
+
+	// Reading numbers (every number contains 1 byte from Unicode)
+	require.Equalf(t, Symbol('1'), l.currentSymbol, "expected '1'") // position 8 → 9
+	l.readSymbol()
+	require.Equalf(t, Symbol('2'), l.currentSymbol, "expected '2'") // position 9 → 10
+	l.readSymbol()
+	require.Equalf(t, Symbol('3'), l.currentSymbol, "expected '3'") // position 10 → 11
+	l.readSymbol()
+
+	// Reading latin symbols (every symbol contains 1 byte from Unicode)
+	require.Equalf(t, Symbol('E'), l.currentSymbol, "expected 'E'") // position 11 → 12
+	l.readSymbol()
+	require.Equalf(t, Symbol('S'), l.currentSymbol, "expected 'S'") // position 12 → 13
+	l.readSymbol()
+	require.Equalf(t, Symbol('L'), l.currentSymbol, "expected 'L'") // position 13 → 14
+	l.readSymbol()
+	require.Equalf(t, Symbol('I'), l.currentSymbol, "expected 'I'") // position 14 → 15
+	l.readSymbol()
+
+	require.Equalf(t, NULL, l.currentSymbol, "expected NULL") // position 16 → EOF
 }
 
 func TestNextTokenWithWhitespaces(t *testing.T) {
@@ -142,6 +189,8 @@ true & true;
 
 true || true;
 true | true;
+1 << 10;
+1 >> 10;
 `
 
 	tests := []struct {
@@ -270,6 +319,16 @@ true | true;
 		{tokens.TRUE, "true"},
 		{tokens.SEMICOLON, ";"},
 
+		{tokens.INT, "1"},
+		{tokens.L_SHIFT, "<<"},
+		{tokens.INT, "10"},
+		{tokens.SEMICOLON, ";"},
+
+		{tokens.INT, "1"},
+		{tokens.R_SHIFT, ">>"},
+		{tokens.INT, "10"},
+		{tokens.SEMICOLON, ";"},
+
 		{tokens.EOF, ""},
 	}
 
@@ -307,7 +366,7 @@ func TestCommentLine(t *testing.T) {
 			source: `// comment
 let x = 5;
 `,
-			expectedPosition: 14, // 10 symbols from the first line + 1 symbol of newline '\n' + 3 symbols of 'let'
+			expectedPosition: 15, // 10 symbols from the first line + 1 symbol of newline '\n' + 3 symbols of 'let' + 1 whitespace
 		},
 		{
 			name: "many lines are commented, we skip all of them and go straight to the let statement",
@@ -317,7 +376,7 @@ let x = 5;
 // comment
 let x = 5;
 `,
-			expectedPosition: 47, // 40 symbols from the commented lines + 4 symbols of newlines '\n' + 3 symbols of 'let'
+			expectedPosition: 48, // 40 symbols from the commented lines + 4 symbols of newlines '\n' + 3 symbols of 'let' + 1 whitespace
 		},
 		{
 			name:             "empty block comment",

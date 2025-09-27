@@ -30,6 +30,10 @@ const (
 	AND
 	OR
 
+	// Bitwise
+	L_SHIFT
+	R_SHIFT
+
 	// Separators
 	COMMA
 	SEMICOLON

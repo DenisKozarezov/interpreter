@@ -31,7 +31,28 @@ func (v *ASTVisitor) VisitLetStatement(let *statements.LetStatement) object.Obje
 		return value
 	}
 
-	v.env.Set(let.Identifier.Literal(), value)
+	identifier := let.Identifier.Literal()
+	if _, ok := v.env.Get(identifier); ok {
+		return newRuntimeError("identifier already exists: '%s'", identifier)
+	}
+
+	v.env.Set(identifier, value)
+
+	return object.NULL
+}
+
+func (v *ASTVisitor) VisitAssign(assign *statements.AssignStatement) object.Object {
+	value := EvaluateExpression(assign.Expression, v)
+	if isRuntimeError(value) {
+		return value
+	}
+
+	identifier := assign.Literal()
+	if _, ok := v.env.Get(identifier); !ok {
+		return newRuntimeError("identifier not found: '%s'", identifier)
+	}
+
+	v.env.Set(identifier, value)
 
 	return object.NULL
 }

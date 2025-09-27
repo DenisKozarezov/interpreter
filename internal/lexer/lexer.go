@@ -2,7 +2,9 @@ package lexer
 
 import (
 	"bytes"
+	"errors"
 	"io"
+	"unicode/utf8"
 
 	"interpreter/internal/lexer/tokens"
 )
@@ -11,12 +13,8 @@ type Symbol = rune
 
 const NULL Symbol = 0
 
-type Reader interface {
-	io.ReaderAt
-}
-
 type Lexer struct {
-	reader Reader
+	reader io.ReaderAt
 
 	currentSymbol     Symbol
 	currentLine       int16
@@ -25,7 +23,7 @@ type Lexer struct {
 	lineStartPosition int64
 }
 
-func NewLexer(reader Reader) *Lexer {
+func NewLexer(reader io.ReaderAt) *Lexer {
 	l := &Lexer{
 		reader:          reader,
 		currentLine:     1,
@@ -76,10 +74,10 @@ func (l *Lexer) NextToken() tokens.Token {
 			token = l.twoCharToken('=', tokens.NOT_EQ, tokens.BANG)
 
 		case '/':
-			if l.peekSymbol() == '/' {
+			if l.isPeekSymbol('/') {
 				l.skipLine()
 				continue
-			} else if l.peekSymbol() == '*' {
+			} else if l.isPeekSymbol('*') {
 				l.skipBlockComment()
 				continue
 			} else {
@@ -89,9 +87,17 @@ func (l *Lexer) NextToken() tokens.Token {
 		case '*':
 			token = tokens.NewToken(tokens.ASTERISK, currentSym)
 		case '<':
-			token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
+			if l.isPeekSymbol('<') {
+				token = l.twoCharToken('<', tokens.L_SHIFT, tokens.LT)
+			} else {
+				token = l.twoCharToken('=', tokens.LT_EQ, tokens.LT)
+			}
 		case '>':
-			token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+			if l.isPeekSymbol('>') {
+				token = l.twoCharToken('>', tokens.R_SHIFT, tokens.GT)
+			} else {
+				token = l.twoCharToken('=', tokens.GT_EQ, tokens.GT)
+			}
 		case '&':
 			token = l.twoCharToken('&', tokens.AND, tokens.AMPERSAND)
 		case '|':
@@ -124,11 +130,11 @@ func (l *Lexer) NextToken() tokens.Token {
 }
 
 func (l *Lexer) twoCharToken(peekSym Symbol, twoCharToken tokens.TokenType, oneCharToken tokens.TokenType) tokens.Token {
-	if l.peekSymbol() == peekSym {
+	if l.isPeekSymbol(peekSym) {
 		ch := l.currentSymbol
 		l.readSymbol()
-		literal := string(ch) + string(l.currentSymbol)
-		return tokens.NewToken(twoCharToken, literal)
+		buf := [2]Symbol{ch, l.currentSymbol}
+		return tokens.NewToken(twoCharToken, string(buf[:]))
 	} else {
 		return tokens.NewToken(oneCharToken, string(l.currentSymbol))
 	}
@@ -146,7 +152,7 @@ func (l *Lexer) readLiteral(fn func(Symbol) bool) string {
 }
 
 func (l *Lexer) skipWhitespace() {
-	for l.currentSymbol == whitespace || l.currentSymbol == tabulation || isNewline(l.currentSymbol) {
+	for isWhitespace(l.currentSymbol) {
 		l.readSymbol()
 	}
 }
@@ -158,8 +164,8 @@ func (l *Lexer) skipLine() {
 }
 
 func (l *Lexer) skipBlockComment() {
-	for l.peekSymbol() != NULL {
-		if l.currentSymbol == '*' && l.peekSymbol() == '/' {
+	for !l.isPeekSymbol(NULL) {
+		if l.currentSymbol == '*' && l.isPeekSymbol('/') {
 			l.readSymbol()
 			l.readSymbol()
 			break
@@ -175,9 +181,10 @@ func (l *Lexer) readStringLiteral() string {
 }
 
 func (l *Lexer) readSymbol() {
-	l.currentSymbol = l.peekSymbol()
+	currentSymbol, size := l.peekSymbol()
+	l.currentSymbol = currentSymbol
+	l.nextPosition += int64(size)
 	l.currentPosition = l.nextPosition
-	l.nextPosition++
 
 	if l.currentSymbol == newline {
 		l.currentLine++
@@ -185,12 +192,30 @@ func (l *Lexer) readSymbol() {
 	}
 }
 
-func (l *Lexer) peekSymbol() Symbol {
-	bytes := make([]byte, 1)
+func (l *Lexer) isPeekSymbol(peekSym Symbol) bool {
+	currentSymbol, _ := l.peekSymbol()
+	return currentSymbol == peekSym
+}
 
-	if _, err := l.reader.ReadAt(bytes, l.nextPosition); err == io.EOF {
-		return NULL
+func (l *Lexer) peekSymbol() (Symbol, int) {
+	buf := make([]byte, utf8.UTFMax)
+
+	bytesCount, err := l.reader.ReadAt(buf, l.nextPosition)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return NULL, bytesCount
 	}
 
-	return Symbol(bytes[0])
+	if bytesCount == 0 {
+		return NULL, bytesCount
+	}
+
+	r, size := utf8.DecodeRune(buf[:bytesCount])
+	if r == utf8.RuneError {
+		if bytesCount >= 1 {
+			return Symbol(buf[0]), size
+		}
+		return NULL, size
+	}
+
+	return Symbol(r), size
 }

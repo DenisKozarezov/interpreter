@@ -10,4 +10,5 @@ type StatementVisitor interface {
 	VisitBlockStatement(block *BlockStatement) object.Object
 	VisitReturn(r *ReturnStatement) object.Object
 	VisitLetStatement(let *LetStatement) object.Object
+	VisitAssign(assign *AssignStatement) object.Object
 }

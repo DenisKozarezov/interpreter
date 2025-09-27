@@ -57,6 +57,14 @@ func evalInfixIntegerExpression(left, right object.Object, operator tokens.Token
 		return object.NativeBooleanToObject(leftVal == rightVal)
 	case tokens.NOT_EQ:
 		return object.NativeBooleanToObject(leftVal != rightVal)
+	case tokens.L_SHIFT:
+		return &object.Integer{Value: leftVal << rightVal}
+	case tokens.R_SHIFT:
+		return &object.Integer{Value: leftVal >> rightVal}
+	case tokens.PIPE:
+		return &object.Integer{Value: leftVal | rightVal}
+	case tokens.AMPERSAND:
+		return &object.Integer{Value: leftVal & rightVal}
 	default:
 		return newRuntimeError("unknown operator: %s %s %s", left.Type(), operator.Literal, right.Type())
 	}

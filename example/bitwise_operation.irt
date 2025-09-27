@@ -1,0 +1,20 @@
+/*
+    Here we test some bitwise operations. For example:
+    `1 + 8 >> 2 + 1`
+
+    First of all, in parser precedences table we set the right shift's operation with lower priority than plus, 
+    so it must be evaluated after the sum. Calculations steps are written below:
+
+    I.  1 + 8 >> 2 + 1
+    II. (1 + 8) >> (2 + 1)
+    III. 9 >> 3 = 1001 >> 3 = 0001 = 1
+    
+    Result: 1
+*/
+
+let x = 1 + 8 >> 2 + 1;     // (1 + 8) >> (2 + 1) = 1
+if (x == 1) {
+    return "Correct!";
+} else {
+    return "Incorrect!";
+}

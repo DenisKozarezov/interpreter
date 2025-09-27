@@ -14,9 +14,9 @@ func (e *ParseError) Error() string {
 	return fmt.Sprintf("[line: %d; pos: %d] parse error: %s", e.currentLine, e.currentPosAtLine, e.err)
 }
 
-func (p *Parser) parseError(err string) {
+func (p *Parser) parseError(format string, args ...any) {
 	p.appendError(&ParseError{
-		err:              err,
+		err:              fmt.Sprintf(format, args...),
 		currentLine:      p.lexer.CurrentLine(),
 		currentPosAtLine: p.lexer.CurrentPositionAtLine(),
 	})

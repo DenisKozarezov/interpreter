@@ -14,6 +14,7 @@ func (p *Parser) initStatementParsers() {
 	p.statementsParseFns = map[tokens.TokenType]statementParserFn{
 		tokens.LET:    p.parseLetStatement,
 		tokens.RETURN: p.parseReturnStatement,
+		tokens.ASSIGN: p.parseAssignStatement,
 	}
 }
 
@@ -46,6 +47,26 @@ func (p *Parser) parseReturnStatement() statements.Statement {
 	p.nextToken()
 
 	statement.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(tokens.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return &statement
+}
+
+func (p *Parser) parseAssignStatement() statements.Statement {
+	statement := statements.AssignStatement{
+		Token:      p.currentToken,
+		Identifier: p.prevToken,
+	}
+
+	if !p.currentTokenIs(tokens.ASSIGN) {
+		return nil
+	}
+	p.nextToken()
+
+	statement.Expression = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(tokens.SEMICOLON) {
 		p.nextToken()

@@ -12,9 +12,11 @@ func isDigit(symbol Symbol) bool {
 	return unicode.IsDigit(symbol)
 }
 
+func isWhitespace(symbol Symbol) bool {
+	return unicode.IsSpace(symbol)
+}
+
 const (
-	whitespace     = ' '
-	tabulation     = '\t'
 	newline        = '\n'
 	carriageReturn = '\r'
 	quot           = '"'
