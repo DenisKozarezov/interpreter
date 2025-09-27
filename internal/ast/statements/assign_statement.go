@@ -21,7 +21,12 @@ func (s *AssignStatement) String() string {
 	var buffer bytes.Buffer
 	buffer.WriteString(s.Identifier.Literal)
 	buffer.WriteString(" = ")
-	buffer.WriteString(s.Expression.String())
+
+	if s.Expression != nil {
+		buffer.WriteString(s.Expression.String())
+	}
+	buffer.WriteString(";")
+
 	return buffer.String()
 }
 
