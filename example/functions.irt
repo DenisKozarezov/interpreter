@@ -1,0 +1,14 @@
+// Case 1. Define a factorial function in let-statement as object
+let fact = fn(n) {
+    if (n <= 1) { return 1; }
+    return n * fact(n-1)
+};
+
+// Evaluate a factorial function
+logf("First result = %d", fact(5));
+
+// Case 2. Define a lyambda-function and evaluate it immediately
+logf("Second result = %d", fn(n) {
+    if (n <= 1) { return 1; }
+    return n * fact(n-1)
+}(5));

@@ -13,6 +13,9 @@
 */
 
 let x = 1 + 8 >> 2 + 1;     // (1 + 8) >> (2 + 1) = 1
+
+logf("Result = %d", x)
+
 if (x == 1) {
     return "Correct!";
 } else {

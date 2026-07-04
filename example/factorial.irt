@@ -5,4 +5,4 @@ let fact = fn(n) {
 };
 
 // Evaluate factorial function
-fact(5);
+log(fact(5));
